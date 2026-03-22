@@ -1,0 +1,18 @@
+[project]
+name = "ttlg-bot"
+version = "0.1.0"
+description = "Telegram-бот с LLM для поддержки учёбы (MVP)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiogram>=3.13.0",
+    "openai>=1.50.0",
+    "pydantic-settings>=2.5.0",
+]
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
