@@ -31,8 +31,8 @@
 | 01 | 1 | Согласовать и зафиксировать backend-стек | ✅ Done | [план](impl/backend/tasks/task-01-stack/plan.md) \| [summary](impl/backend/tasks/task-01-stack/summary.md) |
 | 02 | 1 | ADR: ORM, миграции, тестовый раннер | ✅ Done | [план](impl/backend/tasks/task-02-adr-orm-tests/plan.md) \| [summary](impl/backend/tasks/task-02-adr-orm-tests/summary.md) |
 | 03 | 1 | Обновить `.cursor/rules/conventions.mdc` под стек | ✅ Done | [план](impl/backend/tasks/task-03-conventions/plan.md) \| [summary](impl/backend/tasks/task-03-conventions/summary.md) |
-| 04 | 2 | API-контракт сценария диалога (`POST /v1/.../message`) | 📋 Planned | [план](impl/backend/tasks/task-04-api-dialogue-contract/plan.md) \| [summary](impl/backend/tasks/task-04-api-dialogue-contract/summary.md) |
-| 05 | 2 | Конвенции API: префикс, ошибки, коды | 📋 Planned | [план](impl/backend/tasks/task-05-api-conventions/plan.md) \| [summary](impl/backend/tasks/task-05-api-conventions/summary.md) |
+| 04 | 2 | API-контракт сценария диалога (`POST /v1/.../message`) | ✅ Done | [план](impl/backend/tasks/task-04-api-dialogue-contract/plan.md) \| [summary](impl/backend/tasks/task-04-api-dialogue-contract/summary.md) |
+| 05 | 2 | Конвенции API: префикс, ошибки, коды | ✅ Done | [план](impl/backend/tasks/task-05-api-conventions/plan.md) \| [summary](impl/backend/tasks/task-05-api-conventions/summary.md) |
 | 06 | 3 | Каркас `backend/`, FastAPI, `/health` | 📋 Planned | [план](impl/backend/tasks/task-06-scaffold/plan.md) \| [summary](impl/backend/tasks/task-06-scaffold/summary.md) |
 | 07 | 3 | Конфиг, async PostgreSQL, логирование | 📋 Planned | [план](impl/backend/tasks/task-07-config-db-logging/plan.md) \| [summary](impl/backend/tasks/task-07-config-db-logging/summary.md) |
 | 08 | 4 | Pytest + тестовая БД / фикстуры | 📋 Planned | [план](impl/backend/tasks/task-08-test-harness/plan.md) \| [summary](impl/backend/tasks/task-08-test-harness/summary.md) |
@@ -163,7 +163,7 @@
 
 Базовый сценарий из [idea.md](../idea.md): ученик **спрашивает ассистента, как решить задачу или объяснить тему** — первый контракт должен это закрывать без лишних сущностей в запросе.
 
-### Задача 04: Контракт эндпоинта диалога 📋
+### Задача 04: Контракт эндпоинта диалога ✅
 
 #### Цель
 
@@ -171,16 +171,16 @@
 
 #### Состав работ
 
-- [ ] Зафиксировать путь (ориентир `POST /v1/dialogue/message` или эквивалент под префиксом `/v1`)
-- [ ] JSON-схемы request/response, примеры
-- [ ] Добавить раздел **Backend HTTP API** в [docs/integrations.md](../integrations.md) (без дублирования полного OpenAPI — ссылка на `/docs`)
+- [x] Зафиксировать путь (ориентир `POST /v1/dialogue/message` или эквивалент под префиксом `/v1`)
+- [x] JSON-схемы request/response, примеры
+- [x] Добавить раздел **Backend HTTP API** в [docs/integrations.md](../integrations.md) (без дублирования полного OpenAPI — ссылка на `/docs`)
 
 #### Definition of Done
 
 **Агент:**
 
-- [ ] В integrations или отдельном `docs/` фрагменте есть одна таблица/список: метод, назначение, основные поля
-- [ ] Контракт согласован с сущностями `Dialogue` / `Message` из [data-model.md](../data-model.md)
+- [x] В integrations или отдельном `docs/` фрагменте есть одна таблица/список: метод, назначение, основные поля
+- [x] Контракт согласован с сущностями `Dialogue` / `Message` из [data-model.md](../data-model.md)
 
 **Пользователь:**
 
@@ -188,12 +188,12 @@
 
 #### Документы
 
-- 📋 [План](impl/backend/tasks/task-04-api-dialogue-contract/plan.md)
-- 📝 [Summary](impl/backend/tasks/task-04-api-dialogue-contract/summary.md)
+- ✅ [План](impl/backend/tasks/task-04-api-dialogue-contract/plan.md)
+- ✅ [Summary](impl/backend/tasks/task-04-api-dialogue-contract/summary.md)
 
 ---
 
-### Задача 05: Конвенции API (префикс, ошибки, коды) 📋
+### Задача 05: Конвенции API (префикс, ошибки, коды) ✅
 
 #### Цель
 
@@ -201,15 +201,15 @@
 
 #### Состав работ
 
-- [ ] Зафиксировать в `docs/` (например раздел в integrations или `docs/api-conventions.md` по согласованию)
-- [ ] Учесть преподавателя/ученика как будущие роли — заглушки допустимы
+- [x] Зафиксировать в `docs/` (например раздел в integrations или `docs/api-conventions.md` по согласованию)
+- [x] Учесть преподавателя/ученика как будущие роли — заглушки допустимы
 
 #### Definition of Done
 
 **Агент:**
 
-- [ ] Документ содержит пример JSON ошибки и таблицу кодов для типовых случаев
-- [ ] Ссылка из [docs/integrations.md](../integrations.md) на конвенции
+- [x] Документ содержит пример JSON ошибки и таблицу кодов для типовых случаев
+- [x] Ссылка из [docs/integrations.md](../integrations.md) на конвенции
 
 **Пользователь:**
 
@@ -217,8 +217,8 @@
 
 #### Документы
 
-- 📋 [План](impl/backend/tasks/task-05-api-conventions/plan.md)
-- 📝 [Summary](impl/backend/tasks/task-05-api-conventions/summary.md)
+- ✅ [План](impl/backend/tasks/task-05-api-conventions/plan.md)
+- ✅ [Summary](impl/backend/tasks/task-05-api-conventions/summary.md)
 
 ### Проверка этапа 2
 

@@ -4,6 +4,26 @@
 
 ---
 
+## Backend HTTP API
+
+Публичное HTTP API ядра: клиенты (Telegram-бот, веб) обращаются только сюда. Префикс версии, формат ошибок и HTTP-коды — [api-conventions.md](api-conventions.md). Полная OpenAPI-схема будет доступна на `GET /docs` у запущенного backend (после реализации каркаса).
+
+### Диалог с ассистентом
+
+| Метод | Путь | Назначение |
+|-------|------|------------|
+| `POST` | `/v1/dialogue/message` | Принять текст ученика, сохранить сообщения в диалоге, вернуть ответ ассистента |
+
+**Тело запроса (JSON):** `telegram_id` (integer), `text` (string), опционально `dialogue_id` (UUID string) — продолжить существующий диалог.
+
+**Успех `200`:** `dialogue_id`, `message_id` (сообщение ассистента), `text`, `created_at`.
+
+**Ошибки:** см. [api-conventions.md](api-conventions.md); типичные коды — `422` (валидация), `404` (пользователь/диалог не найдены), `503` (LLM недоступен).
+
+Полный контракт — [tech/api-contracts.md](tech/api-contracts.md). План задачи с историей решений — [task-04](tasks/impl/backend/tasks/task-04-api-dialogue-contract/plan.md).
+
+---
+
 ## Внешние системы
 
 ### Telegram Bot API
