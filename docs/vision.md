@@ -84,10 +84,10 @@ graph TD
 - Обрабатывает запросы от обоих клиентов.
 - Содержит логику расписания, напоминаний, фиксации результатов, формирования контекста для LLM.
 - Авторизация и ролевая модель — здесь.
-- Стек: Python 3.12+, **FastAPI** (или аналог), **pydantic-settings** для конфига.
+- Стек: Python 3.12+, **FastAPI**, **pydantic-settings** для конфига. Детали стека данных и тестов — [ADR-002](adr/adr-002-orm-migrations-tests.md).
 
 ### Слой данных
-- Реляционная БД (ориентир: SQLite → PostgreSQL при росте).
+- Реляционная БД: **PostgreSQL** с первого дня ([ADR-001](adr/adr-001-database.md)).
 - Персистентность для всех доменных сущностей (см. раздел ниже).
 - Детали схемы — в `docs/data-model.md` (создаётся отдельно).
 
@@ -159,11 +159,16 @@ graph TD
 | Язык | Python 3.12+ |
 | Зависимости | **uv** — `uv sync` / `uv add`; lock-файл по политике uv |
 | Telegram-клиент | **aiogram**, long polling → webhook по мере роста |
-| Backend-фреймворк | **FastAPI** (или аналог) — фиксируется при старте backend |
+| Backend-фреймворк | **FastAPI** |
+| ASGI-сервер | **uvicorn** (`uvicorn[standard]`) |
+| Драйвер PostgreSQL (async) | **asyncpg** |
+| ORM | **SQLAlchemy** 2.x (async, `sqlalchemy[asyncio]`) |
+| Миграции схемы | **Alembic** |
 | LLM-клиент | OpenAI-compatible SDK (`openai`) с `base_url` на OpenRouter |
 | Конфиг и секреты | **pydantic-settings** + `.env` локально; `.env.example` в репо |
 | Автоматизация | **GNU Make**: `install`, `run`; при необходимости `lint`, `format` |
-| БД (старт) | SQLite → PostgreSQL при росте |
+| БД | **PostgreSQL** ([ADR-001](adr/adr-001-database.md)) |
+| Тесты backend | **pytest**, **httpx**, **pytest-asyncio** ([ADR-002](adr/adr-002-orm-migrations-tests.md)) |
 
 ---
 
@@ -247,6 +252,7 @@ graph TD
 | № | Решение | Статус |
 |---|---|---|
 | [ADR-001](adr/adr-001-database.md) | Выбор СУБД → PostgreSQL | Принято |
+| [ADR-002](adr/adr-002-orm-migrations-tests.md) | ORM (SQLAlchemy async), миграции (Alembic), тестовый стек | Принято |
 
 ---
 

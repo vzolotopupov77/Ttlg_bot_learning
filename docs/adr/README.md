@@ -43,3 +43,4 @@ adr-NNN-тема.md
 | № | Решение | Статус | Дата |
 |---|---|---|---|
 | [ADR-001](adr-001-database.md) | Выбор СУБД | Принято | 2026-03-27 |
+| [ADR-002](adr-002-orm-migrations-tests.md) | ORM (SQLAlchemy async), Alembic, pytest/httpx | Принято | 2026-03-29 |

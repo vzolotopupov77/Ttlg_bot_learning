@@ -2,20 +2,11 @@
 
 ## Обзор
 
-**Backend** — ядро системы: через него работают все клиенты (Telegram-бот, веб) и централизованно подключаются интеграции (БД, LLM, отправка уведомлений в Telegram). Бизнес-логика, данные и авторизация живут здесь; клиенты остаются тонкими.
+**Backend** — ядро системы: клиенты (Telegram-бот, веб) ходят только в API; интеграции (PostgreSQL, LLM, при необходимости Telegram Bot API для исходящих сообщений) подключаются из backend. Этот тасклист описывает **текущий этап**: ядро, диалог ученика с ассистентом («как решить задачу / объяснить тему»), рефакторинг бота на вызовы API, базовое качество.
 
-Детальные итерации и DoD — в [plan.md](../plan.md). Специфичные по итерации списки: [tasklist-backend-iteration-2-core.md](tasklist-backend-iteration-2-core.md), [tasklist-backend-iteration-4-schedule-hw.md](tasklist-backend-iteration-4-schedule-hw.md), [tasklist-backend-iteration-6-progress.md](tasklist-backend-iteration-6-progress.md).
+**Skills:** на этапах выбора стека и проектирования API уместно выполнить `/find-skills` и при необходимости подключить релевантные skills (шаблоны FastAPI, ORM, контракты REST).
 
-## Связь с plan.md
-
-| Этап в plan.md | Роль для backend |
-|----------------|------------------|
-| [Итерация 2: Backend Core](../plan.md#итерация-2-backend-core) | FastAPI, PostgreSQL, доменная модель, базовые CRUD, основа API |
-| [Итерация 3: Персонализированный диалог](../plan.md#итерация-3-персонализированный-диалог) | Контекст и LLM только через backend; бот переводится на вызовы API |
-| [Итерация 4: Расписание и домашние задания](../plan.md#итерация-4-расписание-и-домашние-задания) | Полный цикл занятий и ДЗ через API, напоминания |
-| [Итерация 6: Прогресс и аналитика](../plan.md#итерация-6-прогресс-и-аналитика) | Агрегация `Progress`, отчёты, данные для LLM-контекста |
-
-Итерация 5 (веб) не входит в область backend-тасклиста напрямую; фронт потребляет стабилизированное API после итераций 2–4.
+Дорожная карта по итерациям продукта — [plan.md](../plan.md). Детализация следующих блоков backend — в отдельных файлах: [tasklist-backend-iteration-4-schedule-hw.md](tasklist-backend-iteration-4-schedule-hw.md), [tasklist-backend-iteration-6-progress.md](tasklist-backend-iteration-6-progress.md).
 
 ## Легенда статусов
 
@@ -23,354 +14,752 @@
 - 🚧 In Progress — В работе
 - ✅ Done — Завершён
 
----
+## Связь с plan.md
 
-## Итерация 2 — Backend Core
-
-### Список задач
-
-| Задача | Описание | Статус | Документы |
-|--------|----------|--------|-----------|
-| 01 | Выбор стека и фиксация архитектурных решений (ADR) | 📋 Planned | [план](impl/backend/iteration-2-core/tasks/task-01-adr/plan.md) \| [summary](impl/backend/iteration-2-core/tasks/task-01-adr/summary.md) |
-| 02 | Инициализация пакета `backend/` и базовой конфигурации | 📋 Planned | [план](impl/backend/iteration-2-core/tasks/task-02-init/plan.md) \| [summary](impl/backend/iteration-2-core/tasks/task-02-init/summary.md) |
-| 03 | Проектирование и документирование API-контрактов | 📋 Planned | [план](impl/backend/iteration-2-core/tasks/task-03-api-contracts/plan.md) \| [summary](impl/backend/iteration-2-core/tasks/task-03-api-contracts/summary.md) |
-| 04 | Реализация CRUD API для доменных сущностей | 📋 Planned | [план](impl/backend/iteration-2-core/tasks/task-04-crud-api/plan.md) \| [summary](impl/backend/iteration-2-core/tasks/task-04-crud-api/summary.md) |
-| 05 | PostgreSQL: ORM-модели и миграции | 📋 Planned | [план](impl/backend/iteration-2-core/tasks/task-05-postgres-migrations/plan.md) \| [summary](impl/backend/iteration-2-core/tasks/task-05-postgres-migrations/summary.md) |
-| 06 | LLM-интеграция: клиент и формирование контекста | 📋 Planned | [план](impl/backend/iteration-2-core/tasks/task-06-llm-integration/plan.md) \| [summary](impl/backend/iteration-2-core/tasks/task-06-llm-integration/summary.md) |
+| Итерация plan.md | Содержание этого тасклиста |
+|------------------|----------------------------|
+| [Итерация 2: Backend Core](../plan.md#итерация-2-backend-core) | Этапы 1–6, задачи 01–16 |
+| [Итерация 3: Персонализированный диалог](../plan.md#итерация-3-персонализированный-диалог) | Задачи 13 (контекст), 17–18 (бот через API) |
+| Итерации 4–6 | См. отдельные tasklist'ы; здесь только перекрёстные документы |
 
 ---
 
-### Задача 01: Выбор стека и фиксация архитектурных решений (ADR) 📋
+## Сводная таблица задач
+
+| № | Этап | Описание | Статус | Документы |
+|---|------|----------|--------|-----------|
+| 01 | 1 | Согласовать и зафиксировать backend-стек | ✅ Done | [план](impl/backend/tasks/task-01-stack/plan.md) \| [summary](impl/backend/tasks/task-01-stack/summary.md) |
+| 02 | 1 | ADR: ORM, миграции, тестовый раннер | ✅ Done | [план](impl/backend/tasks/task-02-adr-orm-tests/plan.md) \| [summary](impl/backend/tasks/task-02-adr-orm-tests/summary.md) |
+| 03 | 1 | Обновить `.cursor/rules/conventions.mdc` под стек | ✅ Done | [план](impl/backend/tasks/task-03-conventions/plan.md) \| [summary](impl/backend/tasks/task-03-conventions/summary.md) |
+| 04 | 2 | API-контракт сценария диалога (`POST /v1/.../message`) | 📋 Planned | [план](impl/backend/tasks/task-04-api-dialogue-contract/plan.md) \| [summary](impl/backend/tasks/task-04-api-dialogue-contract/summary.md) |
+| 05 | 2 | Конвенции API: префикс, ошибки, коды | 📋 Planned | [план](impl/backend/tasks/task-05-api-conventions/plan.md) \| [summary](impl/backend/tasks/task-05-api-conventions/summary.md) |
+| 06 | 3 | Каркас `backend/`, FastAPI, `/health` | 📋 Planned | [план](impl/backend/tasks/task-06-scaffold/plan.md) \| [summary](impl/backend/tasks/task-06-scaffold/summary.md) |
+| 07 | 3 | Конфиг, async PostgreSQL, логирование | 📋 Planned | [план](impl/backend/tasks/task-07-config-db-logging/plan.md) \| [summary](impl/backend/tasks/task-07-config-db-logging/summary.md) |
+| 08 | 4 | Pytest + тестовая БД / фикстуры | 📋 Planned | [план](impl/backend/tasks/task-08-test-harness/plan.md) \| [summary](impl/backend/tasks/task-08-test-harness/summary.md) |
+| 09 | 4 | Smoke API-тесты сценариев сообщений (как в боте) | 📋 Planned | [план](impl/backend/tasks/task-09-api-smoke-tests/plan.md) \| [summary](impl/backend/tasks/task-09-api-smoke-tests/summary.md) |
+| 10 | 5 | ORM-модели и миграции по [data-model.md](../data-model.md) | 📋 Planned | [план](impl/backend/tasks/task-10-orm-migrations/plan.md) \| [summary](impl/backend/tasks/task-10-orm-migrations/summary.md) |
+| 11 | 5 | CRUD API для доменных сущностей | 📋 Planned | [план](impl/backend/tasks/task-11-crud-api/plan.md) \| [summary](impl/backend/tasks/task-11-crud-api/summary.md) |
+| 12 | 5 | LLM-клиент OpenRouter + сервис промпта | 📋 Planned | [план](impl/backend/tasks/task-12-llm/plan.md) \| [summary](impl/backend/tasks/task-12-llm/summary.md) |
+| 13 | 5 | Эндпоинт диалога: контекст, LLM, `Dialogue`/`Message` | 📋 Planned | [план](impl/backend/tasks/task-13-dialogue-endpoint/plan.md) \| [summary](impl/backend/tasks/task-13-dialogue-endpoint/summary.md) |
+| 14 | 6 | OpenAPI `/docs`, описания схем | 📋 Planned | [план](impl/backend/tasks/task-14-openapi-docs/plan.md) \| [summary](impl/backend/tasks/task-14-openapi-docs/summary.md) |
+| 15 | 6 | `.env.example`: все переменные backend | 📋 Planned | [план](impl/backend/tasks/task-15-env-example/plan.md) \| [summary](impl/backend/tasks/task-15-env-example/summary.md) |
+| 16 | 6 | README, vision, plan, integrations — актуализация | 📋 Planned | [план](impl/backend/tasks/task-16-docs-sync/plan.md) \| [summary](impl/backend/tasks/task-16-docs-sync/summary.md) |
+| 17 | 7 | Бот: HTTP-клиент backend; убрать прямой LLM | 📋 Planned | [план](impl/backend/tasks/task-17-bot-client/plan.md) \| [summary](impl/backend/tasks/task-17-bot-client/summary.md) |
+| 18 | 7 | Интеграционный smoke: bot → backend | 📋 Planned | [план](impl/backend/tasks/task-18-integration-smoke/plan.md) \| [summary](impl/backend/tasks/task-18-integration-smoke/summary.md) |
+| 19 | 8 | Ruff, форматирование, цели `Makefile` | 📋 Planned | [план](impl/backend/tasks/task-19-lint-format/plan.md) \| [summary](impl/backend/tasks/task-19-lint-format/summary.md) |
+| 20 | 8 | Таймауты, fallback, логи без секретов | 📋 Planned | [план](impl/backend/tasks/task-20-resilience-logging/plan.md) \| [summary](impl/backend/tasks/task-20-resilience-logging/summary.md) |
+
+---
+
+## Этап 1 — Выбор стека и фиксация конвенций
+
+**Skills:** `/find-skills` (FastAPI, SQLAlchemy, Alembic, uv/pytest).
+
+### Задача 01: Согласовать и зафиксировать backend-стек ✅
 
 #### Цель
 
-Зафиксированы ключевые решения по фреймворку (ориентир — FastAPI), СУБД (PostgreSQL, см. [data-model.md](../data-model.md), [ADR-001](../adr/adr-001-database.md)), ORM/миграциям и границам пакета `backend/`.
+Определены версии и пакеты: веб-фреймворк (ориентир — FastAPI), async-доступ к PostgreSQL, ORM, миграции (ориентир — Alembic), тесты (pytest + httpx/TestClient). Согласовано с [vision.md](../vision.md) и [ADR-001](../adr/adr-001-database.md).
 
 #### Состав работ
 
-- [ ] Согласовать стек с [vision.md](../vision.md)
-- [ ] Оформить ADR при необходимости (новые решения помимо уже принятых)
-- [ ] Зафиксировать структуру каталогов `backend/src/ttlg_backend/` (api, services, storage, llm)
+- [x] Зафиксировать список зависимостей в `pyproject.toml` / workspace uv
+- [x] Уточнить структуру `backend/src/ttlg_backend/` (`api/`, `services/`, `storage/`, `llm/`)
+- [x] Актуализировать таблицу технологий в [docs/vision.md](../vision.md) при отличиях от черновика
+
+#### Definition of Done
+
+**Агент:**
+
+- [x] В `docs/` нет противоречий: стек в vision соответствует принятым решениям
+- [x] Есть ссылка на ADR или явная запись в summary задачи при новом решении
+
+**Пользователь:**
+
+- [ ] Прочитать summary задачи 01 и при необходимости vision — стек понятен
 
 #### Артефакты
 
-- `docs/adr/` — записи решений при отклонениях от vision
-- `backend/` — ориентир структуры репозитория из vision
+- `docs/vision.md`, при необходимости новый файл в `docs/adr/`
 
 #### Документы
 
-- 📋 [План](impl/backend/iteration-2-core/tasks/task-01-adr/plan.md)
-- 📝 [Summary](impl/backend/iteration-2-core/tasks/task-01-adr/summary.md)
+- ✅ [План](impl/backend/tasks/task-01-stack/plan.md)
+- ✅ [Summary](impl/backend/tasks/task-01-stack/summary.md)
 
 ---
 
-### Задача 02: Инициализация пакета `backend/` и базовой конфигурации 📋
+### Задача 02: ADR — ORM, миграции, тестовый раннер ✅
 
 #### Цель
 
-Каркас приложения запускается локально; зависимости через **uv**; настройки — **pydantic-settings** + `.env` / `.env.example`.
+Зафиксированы выбор ORM, инструмента миграций и способа изоляции тестовой БД; обоснование в ADR при отклонении от ориентиров vision.
 
 #### Состав работ
 
-- [ ] Создать пакет `backend/`, точку входа приложения FastAPI
-- [ ] Подключить конфиг (`DATABASE_URL`, LLM-параметры из [vision.md](../vision.md))
-- [ ] Обновить `Makefile` / корневой `pyproject.toml` при необходимости
+- [x] Создать/обновить ADR в `docs/adr/`
+- [x] При необходимости обновить [docs/data-model.md](../data-model.md) (только если меняются типы PK/enum и это уже решено) — не требовалось
 
-#### Артефакты
+#### Definition of Done
 
-- `backend/src/ttlg_backend/`
-- `.env.example` — без секретов
-- `Makefile` — цели для установки и запуска backend
+**Агент:**
+
+- [x] ADR содержит контекст, альтернативы, решение
+- [x] Нет «висящих» TODO в ADR без ссылки на следующую задачу
+
+**Пользователь:**
+
+- [ ] Открыть ADR и убедиться, что выбор ORM/миграций назван явно
 
 #### Документы
 
-- 📋 [План](impl/backend/iteration-2-core/tasks/task-02-init/plan.md)
-- 📝 [Summary](impl/backend/iteration-2-core/tasks/task-02-init/summary.md)
+- ✅ [План](impl/backend/tasks/task-02-adr-orm-tests/plan.md)
+- ✅ [Summary](impl/backend/tasks/task-02-adr-orm-tests/summary.md)
 
 ---
 
-### Задача 03: Проектирование и документирование API-контрактов 📋
+### Задача 03: Обновить `.cursor/rules/conventions.mdc` ✅
 
 #### Цель
 
-Описаны REST-контракты для сущностей из [data-model.md](../data-model.md) (`User`, `Lesson`, `Assignment`, `Progress`, `Dialogue`, `Message`): ресурсы, схемы запросов/ответов, коды ошибок (черновик согласуется с задачей 11).
+Правила Cursor отражают фактический backend-стек (команды uv, слои FastAPI, тесты, формат логов).
 
 #### Состав работ
 
-- [ ] Свести эндпоинты к ресурсам домена
-- [ ] Зафиксировать в OpenAPI (генерация из FastAPI) или кратком `docs/` при необходимости
-- [ ] Учесть роли `student` / `teacher` на уровне проектирования
+- [x] Внести правки в [`.cursor/rules/conventions.mdc`](../../.cursor/rules/conventions.mdc)
+- [x] Не расширять стек сверх [vision.md](../vision.md) без правки vision
 
-#### Артефакты
+#### Definition of Done
 
-- OpenAPI-схема приложения (через FastAPI)
-- При необходимости — `docs/api.md` или фрагменты в ADR
+**Агент:**
+
+- [x] В conventions есть явные ориентиры для backend (при появлении кода — пути пакета)
+- [x] Нет устаревших утверждений о «только бот без БД», если уже внедрён backend
+
+**Пользователь:**
+
+- [ ] Просмотреть diff `conventions.mdc` — правила соответствуют договорённостям команды
 
 #### Документы
 
-- 📋 [План](impl/backend/iteration-2-core/tasks/task-03-api-contracts/plan.md)
-- 📝 [Summary](impl/backend/iteration-2-core/tasks/task-03-api-contracts/summary.md)
+- ✅ [План](impl/backend/tasks/task-03-conventions/plan.md)
+- ✅ [Summary](impl/backend/tasks/task-03-conventions/summary.md)
+
+### Проверка этапа 1
+
+**Агент:** наличие ADR (если были новые решения), согласованность vision ↔ conventions.
+
+**Пользователь:** открыть `docs/vision.md`, `docs/adr/`, `.cursor/rules/conventions.mdc`.
+
+**Команды:** не обязательны (документы).
+
+**Результат:** зафиксированный стек и правила для агентов/разработчиков.
 
 ---
 
-### Задача 04: Реализация CRUD API для доменных сущностей 📋
+## Этап 2 — Проектирование API-контракта
+
+**Skills:** `/find-skills` (REST API, OpenAPI, версионирование).
+
+Базовый сценарий из [idea.md](../idea.md): ученик **спрашивает ассистента, как решить задачу или объяснить тему** — первый контракт должен это закрывать без лишних сущностей в запросе.
+
+### Задача 04: Контракт эндпоинта диалога 📋
 
 #### Цель
 
-Базовые операции create/read/update/delete (или read/write по смыслу сущности) для всех перечисленных в [data-model.md](../data-model.md) сущностей; валидация входа (Pydantic), базовые проверки прав (минимум — заготовка под роли).
+Описан черновик контракта (минимум): идентификация ученика (например `telegram_id` или внутренний `student_id` до полноценной auth), тело сообщения, ответ ассистента, идентификаторы `dialogue_id` при необходимости; ошибки 4xx/5xx.
 
 #### Состав работ
 
-- [ ] Роутеры и зависимости FastAPI
-- [ ] Вызовы сервисного слоя / репозиториев
-- [ ] Smoke-проверки ключевых маршрутов
+- [ ] Зафиксировать путь (ориентир `POST /v1/dialogue/message` или эквивалент под префиксом `/v1`)
+- [ ] JSON-схемы request/response, примеры
+- [ ] Добавить раздел **Backend HTTP API** в [docs/integrations.md](../integrations.md) (без дублирования полного OpenAPI — ссылка на `/docs`)
 
-#### Артефакты
+#### Definition of Done
 
-- `backend/src/ttlg_backend/api/`
-- `backend/src/ttlg_backend/services/`
+**Агент:**
+
+- [ ] В integrations или отдельном `docs/` фрагменте есть одна таблица/список: метод, назначение, основные поля
+- [ ] Контракт согласован с сущностями `Dialogue` / `Message` из [data-model.md](../data-model.md)
+
+**Пользователь:**
+
+- [ ] Прочитать раздел в [docs/integrations.md](../integrations.md) и понять, что отправляет клиент и что получает
 
 #### Документы
 
-- 📋 [План](impl/backend/iteration-2-core/tasks/task-04-crud-api/plan.md)
-- 📝 [Summary](impl/backend/iteration-2-core/tasks/task-04-crud-api/summary.md)
+- 📋 [План](impl/backend/tasks/task-04-api-dialogue-contract/plan.md)
+- 📝 [Summary](impl/backend/tasks/task-04-api-dialogue-contract/summary.md)
 
 ---
 
-### Задача 05: PostgreSQL: ORM-модели и миграции 📋
+### Задача 05: Конвенции API (префикс, ошибки, коды) 📋
 
 #### Цель
 
-Схема БД соответствует [data-model.md](../data-model.md); миграции применяются без ошибок; `DATABASE_URL` из конфига.
+Единый префикс версии (`/v1`), формат тела ошибки, согласованные HTTP-коды; описание для клиентов бота и будущего веба.
 
 #### Состав работ
 
-- [ ] Модели ORM и связи
-- [ ] Цепочка миграций (инициализация + enum/поля как в модели)
-- [ ] Документировать локальный запуск БД (например Docker Compose) при необходимости
+- [ ] Зафиксировать в `docs/` (например раздел в integrations или `docs/api-conventions.md` по согласованию)
+- [ ] Учесть преподавателя/ученика как будущие роли — заглушки допустимы
 
-#### Артефакты
+#### Definition of Done
 
-- `backend/src/ttlg_backend/storage/` или аналог
-- Файлы миграций в репозитории
+**Агент:**
+
+- [ ] Документ содержит пример JSON ошибки и таблицу кодов для типовых случаев
+- [ ] Ссылка из [docs/integrations.md](../integrations.md) на конвенции
+
+**Пользователь:**
+
+- [ ] Открыть документ конвенций и проверить наличие примера ошибки
 
 #### Документы
 
-- 📋 [План](impl/backend/iteration-2-core/tasks/task-05-postgres-migrations/plan.md)
-- 📝 [Summary](impl/backend/iteration-2-core/tasks/task-05-postgres-migrations/summary.md)
+- 📋 [План](impl/backend/tasks/task-05-api-conventions/plan.md)
+- 📝 [Summary](impl/backend/tasks/task-05-api-conventions/summary.md)
+
+### Проверка этапа 2
+
+**Агент:** контракт диалога + конвенции не противоречат друг другу.
+
+**Пользователь:** [docs/integrations.md](../integrations.md), файл конвенций.
+
+**Результат:** готовая спецификация для реализации в этапе 3–5.
 
 ---
 
-### Задача 06: LLM-интеграция: клиент и формирование контекста 📋
+## Этап 3 — Каркас backend-сервиса
+
+### Задача 06: Инициализация пакета и `/health` 📋
 
 #### Цель
 
-Единая точка вызова **OpenRouter** (OpenAI-compatible) из backend по [integrations.md](../integrations.md): `base_url`, модель и ключ из конфига; заготовка сборки промпта (системная роль + контекст из БД + вопрос) без утечек секретов в логи.
+Поднимается приложение FastAPI; есть маршрут проверки готовности (например `GET /health`).
 
 #### Состав работ
 
-- [ ] Клиент LLM с таймаутом и обработкой ошибок
-- [ ] Сервис формирования контекста ученика (занятия, ДЗ — по мере наличия данных)
-- [ ] Не логировать токены и избыточные персональные данные
+- [ ] Создать `backend/src/ttlg_backend/`, точка входа ASGI
+- [ ] Добавить в [Makefile](../../Makefile) цели: `backend-install`, `backend-run` (имена уточнить в репо, но **новые команды фиксировать в Makefile**)
+
+#### Definition of Done
+
+**Агент:**
+
+- [ ] Импорт приложения без ошибок; роут `/health` возвращает успешный ответ
+- [ ] В README или корневом docs указан порт (или «по умолчанию из uvicorn»)
+
+**Пользователь:**
+
+- [ ] `make backend-run` (или эквивалент из Makefile после merge)
+- [ ] Открыть `http://127.0.0.1:<port>/health` — 200 OK
 
 #### Артефакты
 
-- `backend/src/ttlg_backend/llm/` (или `services/llm.py` — по структуре репо)
+- `backend/`, [Makefile](../../Makefile), при необходимости [README.md](../../README.md)
 
 #### Документы
 
-- 📋 [План](impl/backend/iteration-2-core/tasks/task-06-llm-integration/plan.md)
-- 📝 [Summary](impl/backend/iteration-2-core/tasks/task-06-llm-integration/summary.md)
+- 📋 [План](impl/backend/tasks/task-06-scaffold/plan.md)
+- 📝 [Summary](impl/backend/tasks/task-06-scaffold/summary.md)
 
 ---
 
-## Итерация 3 — Персонализированный диалог (backend-аспект)
-
-Связанный tasklist бота: [tasklist-bot-iteration-3-personalized-dialog.md](tasklist-bot-iteration-3-personalized-dialog.md).
-
-### Список задач
-
-| Задача | Описание | Статус | Документы |
-|--------|----------|--------|-----------|
-| 07 | Готовность API для бота без прямого LLM: диалог, история, контекст | 📋 Planned | [план](impl/backend/iteration-3-personalized-dialog/tasks/task-07-dialog-api/plan.md) \| [summary](impl/backend/iteration-3-personalized-dialog/tasks/task-07-dialog-api/summary.md) |
-
----
-
-### Задача 07: Готовность API для бота без прямого LLM: диалог, история, контекст 📋
+### Задача 07: Конфиг, БД, логирование 📋
 
 #### Цель
 
-Бот может полностью обходиться без прямых вызовов LLM: эндпоинт(ы) для отправки сообщения ученика, сохранения `Dialogue` / `Message`, получения ответа ассистента с обогащением контекста из БД (см. DoD итерации 3 в [plan.md](../plan.md)).
+`pydantic-settings`, `DATABASE_URL`, переменные LLM из [vision.md](../vision.md); структурированное логирование без секретов в сообщениях.
 
 #### Состав работ
 
-- [ ] API сценария «сообщение ученика → ответ ассистента» с персистентностью истории
-- [ ] Включение в промпт данных ученика (расписание, ДЗ при наличии)
-- [ ] Согласование контракта с рефакторингом бота (бот — тонкий клиент)
+- [ ] Async-подключение к PostgreSQL (или пул) при старте приложения
+- [ ] Расширить [.env.example](../../.env.example): `DATABASE_URL`, URL/модель LLM, уровень логов
+- [ ] При необходимости `docker compose` / `make backend-db-up` для локальной БД
+
+#### Definition of Done
+
+**Агент:**
+
+- [ ] Приложение стартует с валидным `.env`; при неверном `DATABASE_URL` — понятная ошибка в логе (без пароля целиком)
+- [ ] `.env.example` без секретов, с комментариями
+
+**Пользователь:**
+
+- [ ] Скопировать `.env.example` → `.env`, поднять БД, запустить backend — без падения на конфиге
 
 #### Артефакты
 
-- Расширение `backend/src/ttlg_backend/api/` и сервисов диалога
+- `.env.example`, `backend/src/ttlg_backend/config.py` (или аналог), Makefile
 
 #### Документы
 
-- 📋 [План](impl/backend/iteration-3-personalized-dialog/tasks/task-07-dialog-api/plan.md)
-- 📝 [Summary](impl/backend/iteration-3-personalized-dialog/tasks/task-07-dialog-api/summary.md)
+- 📋 [План](impl/backend/tasks/task-07-config-db-logging/plan.md)
+- 📝 [Summary](impl/backend/tasks/task-07-config-db-logging/summary.md)
 
-> **Примечание:** сам рефакторинг кода бота на вызовы backend — в области bot; здесь — обеспечение и стабильность backend API для этого сценария.
+### Проверка этапа 3
+
+**Агент:** Makefile содержит актуальные цели; `.env.example` полон для backend.
+
+**Пользователь:**
+
+```text
+make backend-db-up    # если добавлено
+make backend-install
+make backend-run
+```
+
+Открыть `/health`. **Ожидание:** сервис отвечает, в логе нет токенов.
 
 ---
 
-## Итерация 4 — Расписание и домашние задания
+## Этап 4 — Базовые API-тесты
 
-### Список задач
-
-| Задача | Описание | Статус | Документы |
-|--------|----------|--------|-----------|
-| 08 | Расписание и ДЗ: полный цикл API + статусы | 📋 Planned | [план](impl/backend/iteration-4-schedule-hw/tasks/task-08-schedule-hw-api/plan.md) \| [summary](impl/backend/iteration-4-schedule-hw/tasks/task-08-schedule-hw-api/summary.md) |
-| 09 | Напоминания через backend (Notifier → Telegram Bot API) | 📋 Planned | [план](impl/backend/iteration-4-schedule-hw/tasks/task-09-reminders-notifier/plan.md) \| [summary](impl/backend/iteration-4-schedule-hw/tasks/task-09-reminders-notifier/summary.md) |
-
----
-
-### Задача 08: Расписание и ДЗ: полный цикл API + статусы 📋
+### Задача 08: Окружение pytest 📋
 
 #### Цель
 
-Создание/обновление/завершение занятий; создание ДЗ; корректные переходы статусов `Assignment` (`pending` / `submitted` / `overdue`) по [data-model.md](../data-model.md) и DoD итерации 4 в [plan.md](../plan.md).
+Запуск тестов одной командой; изолированная/транзакционная работа с БД или тестовый контейнер.
 
 #### Состав работ
 
-- [ ] Эндпоинты для жизненного цикла `Lesson` и `Assignment`
-- [ ] Бизнес-правила смены статусов (в т.ч. просрочка при необходимости)
-- [ ] Данные доступны для ответов бота («что задано?», «когда занятие?»)
+- [ ] Зависимости dev: pytest, httpx (или starlette TestClient), фикстуры приложения
+- [ ] Цель `make backend-test`
 
-#### Артефакты
+#### Definition of Done
 
-- Расширение API и сервисов итерации 4
+**Агент:**
+
+- [ ] `make backend-test` завершается 0 даже при пустом наборе или с одним smoke
+- [ ] В CI (если есть) команда совпадает с Makefile
+
+**Пользователь:**
+
+- [ ] Выполнить `make backend-test` — успех
 
 #### Документы
 
-- 📋 [План](impl/backend/iteration-4-schedule-hw/tasks/task-08-schedule-hw-api/plan.md)
-- 📝 [Summary](impl/backend/iteration-4-schedule-hw/tasks/task-08-schedule-hw-api/summary.md)
+- 📋 [План](impl/backend/tasks/task-08-test-harness/plan.md)
+- 📝 [Summary](impl/backend/tasks/task-08-test-harness/summary.md)
 
 ---
 
-### Задача 09: Напоминания через backend (Notifier → Telegram Bot API) 📋
+### Задача 09: Smoke-тесты сценариев сообщений 📋
 
 #### Цель
 
-Триггеры напоминаний о занятиях и ДЗ инициируются из backend; доставка — через [Telegram Bot API](https://core.telegram.org/bots/api) согласно [integrations.md](../integrations.md) (клиенты не шлют напрямую в LLM; исходящие уведомления — через единый слой Notifier в ядре).
+Покрыть сценарии **уже доступные через бота**: свободный текст ученика → ответ ассистента (на этапе без LLM — mock; с LLM — opt-in или помеченные integration).
 
 #### Состав работ
 
-- [ ] Механизм планирования/очереди или периодические задачи (минимально достаточный вариант)
-- [ ] Вызов `sendMessage` (или аналог) с учётом `telegram_id` пользователя
-- [ ] Устойчивость к сбоям Telegram (таймаут, логирование без токенов)
+- [ ] Тests вызывают HTTP API так же, как будет бот
+- [ ] Негативные кейсы: пустое тело, неизвестный пользователь — по конвенции ошибок
 
-#### Артефакты
+#### Definition of Done
 
-- Модуль уведомлений в `backend/src/ttlg_backend/` (например `services/notifier.py`)
+**Агент:**
+
+- [ ] Минимум два теста: успех и ошибка клиента
+- [ ] Нет хардкода секретов; ключи из env для integration
+
+**Пользователь:**
+
+- [ ] `make backend-test` — все зелёные
 
 #### Документы
 
-- 📋 [План](impl/backend/iteration-4-schedule-hw/tasks/task-09-reminders-notifier/plan.md)
-- 📝 [Summary](impl/backend/iteration-4-schedule-hw/tasks/task-09-reminders-notifier/summary.md)
+- 📋 [План](impl/backend/tasks/task-09-api-smoke-tests/plan.md)
+- 📝 [Summary](impl/backend/tasks/task-09-api-smoke-tests/summary.md)
+
+### Проверка этапа 4
+
+**Агент:** тесты не флаки, документирован способ mock LLM.
+
+**Пользователь:** `make backend-test`.
+
+**Результат:** регрессия по контракту диалога ловится автоматически.
 
 ---
 
-## Итерация 6 — Прогресс и аналитика
+## Этап 5 — Эндпоинты и серверная логика
 
-### Список задач
-
-| Задача | Описание | Статус | Документы |
-|--------|----------|--------|-----------|
-| 10 | Прогресс: агрегация за период и отчёты | 📋 Planned | [план](impl/backend/iteration-6-progress/tasks/task-10-progress-analytics/plan.md) \| [summary](impl/backend/iteration-6-progress/tasks/task-10-progress-analytics/summary.md) |
-
----
-
-### Задача 10: Прогресс: агрегация за период и отчёты 📋
+### Задача 10: ORM и миграции 📋
 
 #### Цель
 
-Автоматический или инициируемый расчёт `Progress` за период; API для сводок по ученику и учителю; данные прогресса могут подмешиваться в LLM-контекст (см. DoD итерации 6 в [plan.md](../plan.md)).
+Таблицы соответствуют [data-model.md](../data-model.md) (`User`, `Lesson`, `Assignment`, `Progress`, `Dialogue`, `Message`); миграции применимы с нуля.
 
 #### Состав работ
 
-- [ ] Агрегация по занятиям и ДЗ за `period_start` / `period_end`
-- [ ] Эндпоинты отчётов (ученик / преподаватель)
-- [ ] Интеграция с сервисом формирования промпта при необходимости
+- [ ] Модели и связи в `storage/`; Alembic (или выбранный инструмент)
+- [ ] При отличии схемы от документа — обновить [docs/data-model.md](../data-model.md) и зафиксировать в summary
 
-#### Артефакты
+#### Definition of Done
 
-- Сервисы и API раздела прогресса
+**Агент:**
+
+- [ ] `alembic upgrade head` (или аналог) без ошибок на чистой БД
+- [ ] Enum и FK согласованы с документом
+
+**Пользователь:**
+
+- [ ] По инструкции в README применить миграции и убедиться, что таблицы созданы
 
 #### Документы
 
-- 📋 [План](impl/backend/iteration-6-progress/tasks/task-10-progress-analytics/plan.md)
-- 📝 [Summary](impl/backend/iteration-6-progress/tasks/task-10-progress-analytics/summary.md)
+- 📋 [План](impl/backend/tasks/task-10-orm-migrations/plan.md)
+- 📝 [Summary](impl/backend/tasks/task-10-orm-migrations/summary.md)
 
 ---
 
-## Cross-итерационные задачи
-
-### Список задач
-
-| Задача | Описание | Статус | Документы |
-|--------|----------|--------|-----------|
-| 11 | Конвенции API: форматы запросов, коды ошибок, версионирование | 📋 Planned | [план](impl/backend/cross/task-11-api-conventions/plan.md) \| [summary](impl/backend/cross/task-11-api-conventions/summary.md) |
-| 12 | Актуализация документации и сценарии локального запуска всей системы | 📋 Planned | [план](impl/backend/cross/task-12-docs-and-run/plan.md) \| [summary](impl/backend/cross/task-12-docs-and-run/summary.md) |
-
----
-
-### Задача 11: Конвенции API: форматы запросов, коды ошибок, версионирование 📋
+### Задача 11: CRUD API 📋
 
 #### Цель
 
-Единые правила для клиентов: структура тел ошибок, HTTP-коды, идемпотентность где нужно; политика версионирования API (префикс `/v1` или аналог); описание зафиксировано в `docs/` и соблюдается в реализации.
+Базовые операции для сущностей из data-model; валидация Pydantic; заготовка проверок по ролям (хотя бы dependency placeholder).
 
 #### Состав работ
 
-- [ ] Зафиксировать формат ошибок и коды в документе или ADR
-- [ ] Согласовать префикс версии и правила breaking changes
-- [ ] Применить единый обработчик исключений FastAPI
+- [ ] Роутеры, сервисы, репозитории
+- [ ] Актуализировать OpenAPI после добавления роутов
 
-#### Артефакты
+#### Definition of Done
 
-- Фрагмент в `docs/` (например раздел в `integrations.md` или отдельный `docs/api-conventions.md`)
+**Агент:**
+
+- [ ] Smoke или тесты на create/read для каждой сущности (или согласованный минимум)
+- [ ] Нет дублирования бизнес-логики в роутерах сверх тривиального
+
+**Пользователь:**
+
+- [ ] Открыть `/docs`, проверить наличие основных ресурсов
 
 #### Документы
 
-- 📋 [План](impl/backend/cross/task-11-api-conventions/plan.md)
-- 📝 [Summary](impl/backend/cross/task-11-api-conventions/summary.md)
+- 📋 [План](impl/backend/tasks/task-11-crud-api/plan.md)
+- 📝 [Summary](impl/backend/tasks/task-11-crud-api/summary.md)
 
 ---
 
-### Задача 12: Актуализация документации и сценарии локального запуска всей системы 📋
+### Задача 12: LLM-клиент и промпт 📋
 
 #### Цель
 
-[vision.md](../vision.md), [data-model.md](../data-model.md), [integrations.md](../integrations.md) отражают фактическую реализацию; в README / Makefile описан запуск bot + backend + БД одной командой или краткой последовательностью.
+Вызов OpenRouter через OpenAI-compatible клиент; `base_url`, модель, ключ из конфига; сборка системного сообщения + контекст ученика + вопрос.
 
 #### Состав работ
 
-- [ ] Синхронизировать документацию с реализованными эндпоинтами и схемой
-- [ ] Описать переменные окружения и порядок `make` / `uv`
-- [ ] При необходимости обновить [plan.md](../plan.md) только статусами/ссылками, без расширения scope
+- [ ] Модуль `llm/`; таймаут и обработка ошибок провайдера
+- [ ] Синхронизировать детали с [docs/integrations.md](../integrations.md)
 
-#### Артефакты
+#### Definition of Done
 
-- `README.md`, `docs/*.md`, `Makefile`
+**Агент:**
+
+- [ ] Юнит-тест с моком HTTP к провайдеру или записанным ответом
+- [ ] В логах нет `OPENROUTER_API_KEY` и полного промпта с персональными данными в production-уровне
+
+**Пользователь:**
+
+- [ ] При локальном запуске с ключом — один ручной запрос к тестовому эндпоинту (после задачи 13) возвращает осмысленный ответ
 
 #### Документы
 
-- 📋 [План](impl/backend/cross/task-12-docs-and-run/plan.md)
-- 📝 [Summary](impl/backend/cross/task-12-docs-and-run/summary.md)
+- 📋 [План](impl/backend/tasks/task-12-llm/plan.md)
+- 📝 [Summary](impl/backend/tasks/task-12-llm/summary.md)
 
 ---
 
-## Качество и инженерные практики
+### Задача 13: Эндпоинт диалога (полный сценарий) 📋
 
-- **Тесты:** smoke на критичных эндпоинтах; по мере роста — unit-тесты сервисов и репозиториев.
-- **Линтинг и форматирование:** Ruff (или согласованный в Makefile инструмент), цели в Makefile.
-- **Наблюдаемость:** стандартный `logging` с именем модуля; внешние вызовы (LLM, Telegram) — таймауты, обработка ошибок, в логах без токенов и лишних персональных данных.
-- **Контракты API:** обратно совместимые изменения без смены версии; ломающие — новая версия маршрута или явное решение в ADR; клиенты бота и веб опираются на одни соглашения (задача 11).
+#### Цель
+
+Реализован контракт задачи 04: сохранение сообщений, вызов LLM, ответ клиенту; контекст из БД (занятия, ДЗ) подмешивается, когда данные есть.
+
+#### Состав работ
+
+- [ ] Связать сервис диалога с репозиториями `Dialogue`/`Message`
+- [ ] Сверить ответы с [tasklist-bot-iteration-3-personalized-dialog.md](tasklist-bot-iteration-3-personalized-dialog.md) при необходимости
+
+#### Definition of Done
+
+**Агент:**
+
+- [ ] Тесты задачи 09 проходят против реальной реализации
+- [ ] История переписки сохраняется в БД
+
+**Пользователь:**
+
+- [ ] Через `/docs` выполнить запрос к эндпоинту диалога — ответ и запись в БД
+
+#### Документы
+
+- 📋 [План](impl/backend/tasks/task-13-dialogue-endpoint/plan.md)
+- 📝 [Summary](impl/backend/tasks/task-13-dialogue-endpoint/summary.md)
+
+### Проверка этапа 5
+
+**Агент:** CRUD + диалог + миграции; OpenAPI не пустой; data-model в sync.
+
+**Пользователь:**
+
+```text
+make backend-test
+make backend-run
+```
+
+Открыть `/docs`, вызвать диалог и CRUD пример. **Ожидание:** данные в PostgreSQL, ответ ассистента при валидном ключе LLM.
+
+---
+
+## Этап 6 — Документирование backend
+
+### Задача 14: OpenAPI и `/docs` 📋
+
+#### Цель
+
+Swagger/OpenAPI отражает все публичные роуты; описания полей и примеры где уместно.
+
+#### Состав работ
+
+- [ ] `summary`/`description` у эндпоинтов; теги по областям
+- [ ] Опционально: `make openapi-export` — выгрузка схемы в `docs/` (если добавят)
+
+#### Definition of Done
+
+**Агент:**
+
+- [ ] Нет незадокументированных публичных POST/PUT без короткого description
+- [ ] Версия API в пути соответствует задаче 05
+
+**Пользователь:**
+
+- [ ] Открыть `http://127.0.0.1:<port>/docs` — все основные группы на месте
+
+#### Документы
+
+- 📋 [План](impl/backend/tasks/task-14-openapi-docs/plan.md)
+- 📝 [Summary](impl/backend/tasks/task-14-openapi-docs/summary.md)
+
+---
+
+### Задача 15: `.env.example` 📋
+
+#### Цель
+
+Полный перечень переменных backend с краткими комментариями; те же имена используются в коде.
+
+#### Состав работ
+
+- [ ] Сверить с [docs/integrations.md](../integrations.md) и [docs/vision.md](../vision.md)
+- [ ] Отдельные переменные для тестов (если нужны)
+
+#### Definition of Done
+
+**Агент:**
+
+- [ ] Нет переменной в коде, которой нет в `.env.example`
+- [ ] В README есть отсылка к `.env.example`
+
+**Пользователь:**
+
+- [ ] Заполнить `.env` только по примеру — сервис и тесты стартуют
+
+#### Документы
+
+- 📋 [План](impl/backend/tasks/task-15-env-example/plan.md)
+- 📝 [Summary](impl/backend/tasks/task-15-env-example/summary.md)
+
+---
+
+### Задача 16: Синхронизация документации 📋
+
+#### Цель
+
+Актуальны: [README.md](../../README.md), [docs/vision.md](../vision.md), [docs/plan.md](../plan.md), [docs/data-model.md](../data-model.md), [docs/integrations.md](../integrations.md) — только факты о реализованном backend и запуске.
+
+#### Состав работ
+
+- [ ] README: последовательность «БД → backend → бот»; команды Makefile
+- [ ] plan.md: статусы итераций 2–3 при достижении вех (без расширения scope)
+
+#### Definition of Done
+
+**Агент:**
+
+- [ ] Пройтись чек-листом файлов; нет ссылок на несуществующие команды
+- [ ] vision отражает «тонкие клиенты» при готовности задачи 17
+
+**Пользователь:**
+
+- [ ] Зайти с нуля в репо по README — окружение поднимается
+
+#### Документы
+
+- 📋 [План](impl/backend/tasks/task-16-docs-sync/plan.md)
+- 📝 [Summary](impl/backend/tasks/task-16-docs-sync/summary.md)
+
+### Проверка этапа 6
+
+**Агент:** перечисленные md и `.env.example` согласованы.
+
+**Пользователь:** пройти README end-to-end; открыть `/docs`.
+
+---
+
+## Этап 7 — Рефакторинг клиента (бота)
+
+### Задача 17: Бот как тонкий клиент 📋
+
+#### Цель
+
+Исходящий путь: **Update → handler → backend HTTP API**; прямых вызовов LLM из бота нет. Ориентир: `src/ttlg_bot/services/backend_client.py` (или согласованный путь из [vision.md](../vision.md)).
+
+#### Состав работ
+
+- [ ] Конфиг URL backend и таймауты
+- [ ] Удалить/отключить старый LLM-клиент из бота
+- [ ] Обновить [docs/vision.md](../vision.md), если фактическая структура пакета бота изменилась
+
+#### Definition of Done
+
+**Агент:**
+
+- [ ] В коде бота нет импорта OpenAI/OpenRouter SDK (кроме тестовых заглушек)
+- [ ] Ошибки backend маппятся в короткое сообщение пользователю
+
+**Пользователь:**
+
+- [ ] Запустить только backend + бот; в Telegram отправить текст — ответ приходит
+
+#### Документы
+
+- 📋 [План](impl/backend/tasks/task-17-bot-client/plan.md)
+- 📝 [Summary](impl/backend/tasks/task-17-bot-client/summary.md)
+
+---
+
+### Задача 18: Интеграционный smoke 📋
+
+#### Цель
+
+Один сценарий «как у пользователя»: бот → backend → (mock/real LLM) → ответ в чат.
+
+#### Состав работ
+
+- [ ] Документировать в README команду или скрипт smoke (опционально `make smoke-integration`)
+- [ ] При необходимости добавить pytest с поднятием обоих процессов (опционально, не блокер MVP)
+
+#### Definition of Done
+
+**Агент:**
+
+- [ ] Чек-лист ручной проверки записан в summary или README
+- [ ] Нет регрессии `make backend-test`
+
+**Пользователь:**
+
+- [ ] Выполнить ручной smoke по README
+
+#### Документы
+
+- 📋 [План](impl/backend/tasks/task-18-integration-smoke/plan.md)
+- 📝 [Summary](impl/backend/tasks/task-18-integration-smoke/summary.md)
+
+### Проверка этапа 7
+
+**Агент:** grep по репо — нет прямого LLM в боте.
+
+**Пользователь:**
+
+```text
+make backend-run   # терминал 1
+make run           # или make bot-run — как зафиксировано в Makefile, терминал 2
+```
+
+Telegram: `/start` и произвольное сообщение. **Ожидание:** ответ как до рефакторинга по UX, источник — backend.
+
+---
+
+## Этап 8 — Качество и инженерные практики
+
+### Задача 19: Линт и формат 📋
+
+#### Цель
+
+Единый стиль: Ruff (lint + format или согласованный split); цели `make lint`, `make format`, при необходимости `make check` (линт + тесты).
+
+#### Состав работ
+
+- [ ] Конфиг Ruff в репозитории
+- [ ] Обновить [Makefile](../../Makefile) и [README.md](../../README.md)
+
+#### Definition of Done
+
+**Агент:**
+
+- [ ] `make lint` и `make format` завершаются без ошибок на чистом дереве
+- [ ] Игноры обоснованы в `pyproject` или ruff.toml
+
+**Пользователь:**
+
+- [ ] Запустить `make lint` перед PR
+
+#### Документы
+
+- 📋 [План](impl/backend/tasks/task-19-lint-format/plan.md)
+- 📝 [Summary](impl/backend/tasks/task-19-lint-format/summary.md)
+
+---
+
+### Задача 20: Устойчивость и логи 📋
+
+#### Цель
+
+Таймауты на HTTP к LLM и к backend из бота; при сбое — краткий текст пользователю; логи без токенов и PII.
+
+#### Состав работ
+
+- [ ] Проверить все внешние вызовы (бот ↔ backend, backend ↔ OpenRouter)
+- [ ] Актуализировать раздел безопасности в [docs/vision.md](../vision.md) при новых правилах
+
+#### Definition of Done
+
+**Агент:**
+
+- [ ] Искусственно обрубить сеть к LLM — сервис не падает, пользователь видит fallback
+- [ ] В логе нет полного Authorization header
+
+**Пользователь:**
+
+- [ ] Симулировать неверный ключ API — понятное сообщение в Telegram
+
+#### Документы
+
+- 📋 [План](impl/backend/tasks/task-20-resilience-logging/plan.md)
+- 📝 [Summary](impl/backend/tasks/task-20-resilience-logging/summary.md)
+
+### Проверка этапа 8
+
+**Агент:** пройти Ruff + тесты; spot-check логов.
+
+**Пользователь:**
+
+```text
+make lint
+make backend-test
+```
+
+**Результат:** репозиторий готов к расширению API (расписание, ДЗ — см. отдельные tasklist'ы).
+
+---
+
+## Дальнейшие итерации backend (вне текущего этапа)
+
+| Тема | Документ |
+|------|----------|
+| Расписание, ДЗ, напоминания | [tasklist-backend-iteration-4-schedule-hw.md](tasklist-backend-iteration-4-schedule-hw.md) |
+| Прогресс и аналитика | [tasklist-backend-iteration-6-progress.md](tasklist-backend-iteration-6-progress.md) |
+
+При появлении новых команд локального запуска, проверки и обслуживания — **добавлять или обновлять цели в [Makefile](../../Makefile)** и одну строку в [README.md](../../README.md).
