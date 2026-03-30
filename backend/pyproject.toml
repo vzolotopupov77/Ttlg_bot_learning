@@ -1,13 +1,16 @@
 [project]
-name = "ttlg-bot"
+name = "ttlg-backend"
 version = "0.1.0"
-description = "Telegram-бот с LLM для поддержки учёбы (MVP)"
-readme = "README.md"
+description = "Backend ядро TTLG (FastAPI, PostgreSQL, LLM)"
 requires-python = ">=3.12"
 dependencies = [
-    "aiogram>=3.13.0",
-    "openai>=1.50.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "sqlalchemy[asyncio]>=2.0.36",
+    "asyncpg>=0.30.0",
+    "alembic>=1.14.0",
     "pydantic-settings>=2.5.0",
+    "openai>=1.50.0",
 ]
 
 [project.optional-dependencies]
@@ -24,9 +27,8 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[tool.uv.workspace]
-members = [".", "backend"]
-
-[tool.pytest.ini_options]
-asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope = "function"
+[dependency-groups]
+dev = [
+    "aiosqlite>=0.22.1",
+    "respx>=0.22.0",
+]

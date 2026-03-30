@@ -46,11 +46,13 @@ graph TD
 | # | Итерация | Цель | Статус |
 |---|----------|------|--------|
 | 1 | Базовый бот с LLM | Рабочий бот с диалогом через LLM | 📋 Planned |
-| 2 | Backend Core | FastAPI + PostgreSQL + доменная модель | 📋 Planned |
+| 2 | Backend Core | FastAPI + PostgreSQL + доменная модель | 🚧 In Progress |
 | 3 | Персонализированный диалог | Бот как тонкий клиент; контекст из БД в LLM | 📋 Planned |
 | 4 | Расписание и домашние задания | Занятия, ДЗ, напоминания через backend | 📋 Planned |
 | 5 | Веб-интерфейс | Фронтенд для ученика и преподавателя | 📋 Planned |
 | 6 | Прогресс и аналитика | Агрегация результатов, отчёты | 📋 Planned |
+
+Детальный ход работ — [docs/tasks/tasklist-backend.md](docs/tasks/tasklist-backend.md).
 
 ## Документация
 
@@ -58,9 +60,31 @@ graph TD
 - [Архитектурное видение](docs/vision.md)
 - [Модель данных](docs/data-model.md)
 - [Интеграции](docs/integrations.md)
-- [План](docs/plan.md)
-- [Задачи](docs/tasks/)
+- [HTTP API: контракты](docs/tech/api-contracts.md)
+- [Конвенции HTTP API](docs/api-conventions.md)
+- [Дорожная карта](docs/plan.md)
+- [Задачи backend](docs/tasks/tasklist-backend.md)
 
-## Быстрый старт
+## Быстрый старт (бот)
 
-Инструкция появится после реализации итерации 1. До этого: `uv sync`, заполнить `.env` по `.env.example`, `make run`.
+```bash
+cp .env.example .env   # заполнить TELEGRAM_BOT_TOKEN, OPENROUTER_API_KEY, LLM_MODEL
+make install           # uv sync
+make run               # запустить бота
+```
+
+Переменные окружения описаны в [.env.example](.env.example).
+
+## Backend (FastAPI)
+
+По умолчанию сервер слушает **http://127.0.0.1:8000** (`GET /health` — проверка готовности и доступности PostgreSQL).
+
+```bash
+make install              # зависимости workspace (бот + backend)
+make backend-db-up        # опционально: PostgreSQL в Docker (localhost:5432)
+# В .env задать DATABASE_URL=postgresql+asyncpg://... (см. .env.example)
+make backend-db-migrate   # Alembic: применить миграции (нужен DATABASE_URL в окружении)
+make backend-run
+```
+
+Пока база недоступна, `/health` отвечает **503** с телом `{"status":"degraded","database":"unavailable"}`.
