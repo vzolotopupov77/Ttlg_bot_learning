@@ -75,16 +75,40 @@ make run               # запустить бота
 
 Переменные окружения описаны в [.env.example](.env.example).
 
+> Бот пока обращается к LLM напрямую (Итерация 1). В Итерации 3 он станет тонким клиентом backend API.
+
 ## Backend (FastAPI)
 
-По умолчанию сервер слушает **http://127.0.0.1:8000** (`GET /health` — проверка готовности и доступности PostgreSQL).
+По умолчанию сервер слушает **http://127.0.0.1:8000**.  
+`GET /health` — проверка готовности: `{"status":"ok"}` или `{"status":"degraded","database":"unavailable"}` (503) при недоступной БД.
+
+### С PostgreSQL
 
 ```bash
 make install              # зависимости workspace (бот + backend)
-make backend-db-up        # опционально: PostgreSQL в Docker (localhost:5432)
+make backend-db-up        # PostgreSQL в Docker (localhost:5432)
 # В .env задать DATABASE_URL=postgresql+asyncpg://... (см. .env.example)
-make backend-db-migrate   # Alembic: применить миграции (нужен DATABASE_URL в окружении)
+make backend-db-migrate   # Alembic: применить миграции
+make backend-run          # http://127.0.0.1:8000
+```
+
+### Без PostgreSQL (SQLite, только для локальной проверки)
+
+```bash
+# В .env:
+# DATABASE_URL=sqlite+aiosqlite:///./local.db
+# TTLG_ALLOW_SQLITE_TEST=1
 make backend-run
 ```
 
-Пока база недоступна, `/health` отвечает **503** с телом `{"status":"degraded","database":"unavailable"}`.
+Схема создаётся автоматически при старте. Миграции Alembic при SQLite не применяются.
+
+### Тесты
+
+```bash
+make backend-test   # pytest backend/tests -v (SQLite in-memory, LLM замокан)
+```
+
+### OpenAPI
+
+Swagger UI доступен по адресу **http://127.0.0.1:8000/docs** при запущенном сервере.
