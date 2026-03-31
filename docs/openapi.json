@@ -1,0 +1,986 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "TTLG Backend",
+    "description": "HTTP API ядра системы сопровождения учебного процесса: пользователи, занятия, домашние задания, диалог с ассистентом (LLM). Версия в пути: `/v1`.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/v1/dialogue/message": {
+      "post": {
+        "tags": [
+          "dialogue"
+        ],
+        "summary": "Сообщение в диалог с ассистентом",
+        "description": "Сохраняет реплику ученика и ответ ассистента в БД; при наличии данных подмешивает контекст занятий и ДЗ. Пользователь с указанным `telegram_id` должен быть заранее создан через `POST /v1/users`.",
+        "operationId": "post_dialogue_message_v1_dialogue_message_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DialogueMessageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DialogueMessageResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/users": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Создать пользователя",
+        "description": "Регистрирует пользователя (MVP). В будущем потребуется реальная авторизация.",
+        "operationId": "create_user_v1_users_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/{user_id}": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Получить пользователя по id",
+        "description": "Возвращает карточку пользователя или 404.",
+        "operationId": "read_user_v1_users__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/{user_id}/progress": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Сводка прогресса ученика",
+        "description": "Агрегаты по занятиям и домашним заданиям для указанного пользователя.",
+        "operationId": "read_user_progress_v1_users__user_id__progress_get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgressSummaryRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/lessons": {
+      "post": {
+        "tags": [
+          "lessons"
+        ],
+        "summary": "Создать занятие",
+        "description": "Создаёт запись занятия для пары ученик–преподаватель.",
+        "operationId": "create_lesson_v1_lessons_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/lessons/{lesson_id}": {
+      "get": {
+        "tags": [
+          "lessons"
+        ],
+        "summary": "Получить занятие по id",
+        "description": "Возвращает занятие или 404.",
+        "operationId": "read_lesson_v1_lessons__lesson_id__get",
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Lesson Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/lessons/{lesson_id}/status": {
+      "patch": {
+        "tags": [
+          "lessons"
+        ],
+        "summary": "Обновить статус занятия",
+        "description": "Частичное обновление: только `status`.",
+        "operationId": "patch_lesson_status_v1_lessons__lesson_id__status_patch",
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Lesson Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonStatusPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assignments": {
+      "post": {
+        "tags": [
+          "assignments"
+        ],
+        "summary": "Создать домашнее задание",
+        "description": "Назначает ДЗ ученику с дедлайном и опциональной привязкой к занятию.",
+        "operationId": "create_assignment_v1_assignments_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignmentCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssignmentRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assignments/{assignment_id}": {
+      "get": {
+        "tags": [
+          "assignments"
+        ],
+        "summary": "Получить ДЗ по id",
+        "description": "Возвращает задание или 404.",
+        "operationId": "read_assignment_v1_assignments__assignment_id__get",
+        "parameters": [
+          {
+            "name": "assignment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Assignment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssignmentRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assignments/{assignment_id}/status": {
+      "patch": {
+        "tags": [
+          "assignments"
+        ],
+        "summary": "Обновить статус ДЗ",
+        "description": "Частичное обновление: только `status` (например сдано / просрочено).",
+        "operationId": "patch_assignment_status_v1_assignments__assignment_id__status_patch",
+        "parameters": [
+          {
+            "name": "assignment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Assignment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignmentStatusPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssignmentRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Проверка готовности сервиса",
+        "description": "Возвращает `{\"status\":\"ok\"}`, если БД настроена и доступна. Если `DATABASE_URL` не задан или БД недоступна — **503** с телом `degraded`.",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AssignmentCreate": {
+        "properties": {
+          "student_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Student Id",
+            "description": "UUID ученика"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Description",
+            "description": "Текст задания"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Due Date",
+            "description": "Срок сдачи (дата)"
+          },
+          "lesson_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lesson Id",
+            "description": "Связанное занятие, если есть"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AssignmentStatus",
+            "description": "Статус выполнения",
+            "default": "pending"
+          }
+        },
+        "type": "object",
+        "required": [
+          "student_id",
+          "description",
+          "due_date"
+        ],
+        "title": "AssignmentCreate"
+      },
+      "AssignmentRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Идентификатор ДЗ"
+          },
+          "lesson_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lesson Id",
+            "description": "Связанное занятие"
+          },
+          "student_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Student Id",
+            "description": "UUID ученика"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Текст задания"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Due Date",
+            "description": "Дедлайн"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AssignmentStatus",
+            "description": "Статус"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "student_id",
+          "description",
+          "due_date",
+          "status"
+        ],
+        "title": "AssignmentRead"
+      },
+      "AssignmentStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "submitted",
+          "overdue"
+        ],
+        "title": "AssignmentStatus"
+      },
+      "AssignmentStatusPatch": {
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/AssignmentStatus",
+            "description": "Новый статус ДЗ"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "AssignmentStatusPatch"
+      },
+      "DialogueMessageRequest": {
+        "properties": {
+          "telegram_id": {
+            "type": "integer",
+            "title": "Telegram Id",
+            "description": "Telegram ID ученика (целое число)"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Текст сообщения ученика; после trim не пустой"
+          },
+          "dialogue_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dialogue Id",
+            "description": "Продолжить существующий диалог; если не задан — создаётся новый"
+          }
+        },
+        "type": "object",
+        "required": [
+          "telegram_id",
+          "text"
+        ],
+        "title": "DialogueMessageRequest"
+      },
+      "DialogueMessageResponse": {
+        "properties": {
+          "dialogue_id": {
+            "type": "string",
+            "title": "Dialogue Id",
+            "description": "Идентификатор диалога (UUID строкой)"
+          },
+          "message_id": {
+            "type": "string",
+            "title": "Message Id",
+            "description": "Идентификатор сообщения ассистента (UUID строкой)"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Текст ответа ассистента"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At",
+            "description": "Время создания ответа, ISO 8601 в UTC (суффикс Z)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dialogue_id",
+          "message_id",
+          "text",
+          "created_at"
+        ],
+        "title": "DialogueMessageResponse",
+        "description": "Ответ ассистента после обработки сообщения ученика."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LessonCreate": {
+        "properties": {
+          "student_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Student Id",
+            "description": "UUID ученика"
+          },
+          "teacher_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Teacher Id",
+            "description": "UUID преподавателя"
+          },
+          "topic": {
+            "type": "string",
+            "maxLength": 512,
+            "minLength": 1,
+            "title": "Topic",
+            "description": "Тема занятия"
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Scheduled At",
+            "description": "Время занятия (timezone-aware предпочтителен)"
+          },
+          "status": {
+            "$ref": "#/components/schemas/LessonStatus",
+            "description": "Статус занятия",
+            "default": "scheduled"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes",
+            "description": "Заметки (что принести и т.п.)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "student_id",
+          "teacher_id",
+          "topic",
+          "scheduled_at"
+        ],
+        "title": "LessonCreate"
+      },
+      "LessonRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Идентификатор занятия"
+          },
+          "student_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Student Id",
+            "description": "UUID ученика"
+          },
+          "teacher_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Teacher Id",
+            "description": "UUID преподавателя"
+          },
+          "topic": {
+            "type": "string",
+            "title": "Topic",
+            "description": "Тема"
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Scheduled At",
+            "description": "Запланированное время"
+          },
+          "status": {
+            "$ref": "#/components/schemas/LessonStatus",
+            "description": "Текущий статус"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes",
+            "description": "Заметки"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "student_id",
+          "teacher_id",
+          "topic",
+          "scheduled_at",
+          "status"
+        ],
+        "title": "LessonRead"
+      },
+      "LessonStatus": {
+        "type": "string",
+        "enum": [
+          "scheduled",
+          "completed",
+          "cancelled"
+        ],
+        "title": "LessonStatus"
+      },
+      "LessonStatusPatch": {
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/LessonStatus",
+            "description": "Новый статус занятия"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "LessonStatusPatch"
+      },
+      "ProgressSummaryRead": {
+        "properties": {
+          "student_id": {
+            "type": "string",
+            "title": "Student Id",
+            "description": "UUID ученика строкой"
+          },
+          "lessons_completed": {
+            "type": "integer",
+            "title": "Lessons Completed",
+            "description": "Число завершённых занятий"
+          },
+          "lessons_total": {
+            "type": "integer",
+            "title": "Lessons Total",
+            "description": "Всего занятий у ученика"
+          },
+          "assignments_done": {
+            "type": "integer",
+            "title": "Assignments Done",
+            "description": "Число выполненных ДЗ"
+          },
+          "assignments_total": {
+            "type": "integer",
+            "title": "Assignments Total",
+            "description": "Всего назначенных ДЗ"
+          }
+        },
+        "type": "object",
+        "required": [
+          "student_id",
+          "lessons_completed",
+          "lessons_total",
+          "assignments_done",
+          "assignments_total"
+        ],
+        "title": "ProgressSummaryRead"
+      },
+      "UserCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name",
+            "description": "Отображаемое имя пользователя"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole",
+            "description": "Роль: ученик или преподаватель"
+          },
+          "telegram_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telegram Id",
+            "description": "Telegram user id; для бота обязателен у ученика"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "role"
+        ],
+        "title": "UserCreate"
+      },
+      "UserRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Внутренний идентификатор пользователя"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Имя"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole",
+            "description": "Роль"
+          },
+          "telegram_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telegram Id",
+            "description": "Привязка к Telegram, если задана"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "Время создания записи (UTC)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "role",
+          "created_at"
+        ],
+        "title": "UserRead"
+      },
+      "UserRole": {
+        "type": "string",
+        "enum": [
+          "student",
+          "teacher"
+        ],
+        "title": "UserRole"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

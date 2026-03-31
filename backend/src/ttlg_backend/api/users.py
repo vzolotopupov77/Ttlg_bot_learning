@@ -22,30 +22,42 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 
 class UserCreate(BaseModel):
-    name: str = Field(..., min_length=1, max_length=255)
-    role: UserRole
-    telegram_id: int | None = None
+    name: str = Field(..., min_length=1, max_length=255, description="Отображаемое имя пользователя")
+    role: UserRole = Field(..., description="Роль: ученик или преподаватель")
+    telegram_id: int | None = Field(
+        default=None,
+        description="Telegram user id; для бота обязателен у ученика",
+    )
 
 
 class UserRead(BaseModel):
-    id: UUID
-    name: str
-    role: UserRole
-    telegram_id: int | None
-    created_at: datetime
+    id: UUID = Field(..., description="Внутренний идентификатор пользователя")
+    name: str = Field(..., description="Имя")
+    role: UserRole = Field(..., description="Роль")
+    telegram_id: int | None = Field(
+        default=None,
+        description="Привязка к Telegram, если задана",
+    )
+    created_at: datetime = Field(..., description="Время создания записи (UTC)")
 
     model_config = {"from_attributes": True}
 
 
 class ProgressSummaryRead(BaseModel):
-    student_id: str
-    lessons_completed: int
-    lessons_total: int
-    assignments_done: int
-    assignments_total: int
+    student_id: str = Field(..., description="UUID ученика строкой")
+    lessons_completed: int = Field(..., description="Число завершённых занятий")
+    lessons_total: int = Field(..., description="Всего занятий у ученика")
+    assignments_done: int = Field(..., description="Число выполненных ДЗ")
+    assignments_total: int = Field(..., description="Всего назначенных ДЗ")
 
 
-@router.post("", response_model=UserRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=UserRead,
+    status_code=status.HTTP_201_CREATED,
+    summary="Создать пользователя",
+    description="Регистрирует пользователя (MVP). В будущем потребуется реальная авторизация.",
+)
 async def create_user(
     body: UserCreate,
     _auth: Annotated[None, Depends(require_auth)],
@@ -62,7 +74,12 @@ async def create_user(
     return UserRead.model_validate(user)
 
 
-@router.get("/{user_id}", response_model=UserRead)
+@router.get(
+    "/{user_id}",
+    response_model=UserRead,
+    summary="Получить пользователя по id",
+    description="Возвращает карточку пользователя или 404.",
+)
 async def read_user(
     user_id: UUID,
     _auth: Annotated[None, Depends(require_auth)],
@@ -74,7 +91,12 @@ async def read_user(
     return UserRead.model_validate(user)
 
 
-@router.get("/{user_id}/progress", response_model=ProgressSummaryRead)
+@router.get(
+    "/{user_id}/progress",
+    response_model=ProgressSummaryRead,
+    summary="Сводка прогресса ученика",
+    description="Агрегаты по занятиям и домашним заданиям для указанного пользователя.",
+)
 async def read_user_progress(
     user_id: UUID,
     _auth: Annotated[None, Depends(require_auth)],

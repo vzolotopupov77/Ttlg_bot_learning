@@ -1,4 +1,4 @@
-"""Входящие сообщения: диалог с LLM."""
+"""Входящие сообщения: диалог через backend API."""
 
 from __future__ import annotations
 

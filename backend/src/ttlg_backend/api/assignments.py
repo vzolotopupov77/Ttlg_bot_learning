@@ -21,29 +21,38 @@ router = APIRouter(prefix="/assignments", tags=["assignments"])
 
 
 class AssignmentCreate(BaseModel):
-    student_id: UUID
-    description: str = Field(..., min_length=1)
-    due_date: date
-    lesson_id: UUID | None = None
-    status: AssignmentStatus = AssignmentStatus.pending
+    student_id: UUID = Field(..., description="UUID ученика")
+    description: str = Field(..., min_length=1, description="Текст задания")
+    due_date: date = Field(..., description="Срок сдачи (дата)")
+    lesson_id: UUID | None = Field(default=None, description="Связанное занятие, если есть")
+    status: AssignmentStatus = Field(
+        default=AssignmentStatus.pending,
+        description="Статус выполнения",
+    )
 
 
 class AssignmentRead(BaseModel):
-    id: UUID
-    lesson_id: UUID | None
-    student_id: UUID
-    description: str
-    due_date: date
-    status: AssignmentStatus
+    id: UUID = Field(..., description="Идентификатор ДЗ")
+    lesson_id: UUID | None = Field(default=None, description="Связанное занятие")
+    student_id: UUID = Field(..., description="UUID ученика")
+    description: str = Field(..., description="Текст задания")
+    due_date: date = Field(..., description="Дедлайн")
+    status: AssignmentStatus = Field(..., description="Статус")
 
     model_config = {"from_attributes": True}
 
 
 class AssignmentStatusPatch(BaseModel):
-    status: AssignmentStatus
+    status: AssignmentStatus = Field(..., description="Новый статус ДЗ")
 
 
-@router.post("", response_model=AssignmentRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=AssignmentRead,
+    status_code=status.HTTP_201_CREATED,
+    summary="Создать домашнее задание",
+    description="Назначает ДЗ ученику с дедлайном и опциональной привязкой к занятию.",
+)
 async def create_assignment(
     body: AssignmentCreate,
     _auth: Annotated[None, Depends(require_auth)],
@@ -62,7 +71,12 @@ async def create_assignment(
     return AssignmentRead.model_validate(assignment)
 
 
-@router.get("/{assignment_id}", response_model=AssignmentRead)
+@router.get(
+    "/{assignment_id}",
+    response_model=AssignmentRead,
+    summary="Получить ДЗ по id",
+    description="Возвращает задание или 404.",
+)
 async def read_assignment(
     assignment_id: UUID,
     _auth: Annotated[None, Depends(require_auth)],
@@ -74,7 +88,12 @@ async def read_assignment(
     return AssignmentRead.model_validate(assignment)
 
 
-@router.patch("/{assignment_id}/status", response_model=AssignmentRead)
+@router.patch(
+    "/{assignment_id}/status",
+    response_model=AssignmentRead,
+    summary="Обновить статус ДЗ",
+    description="Частичное обновление: только `status` (например сдано / просрочено).",
+)
 async def patch_assignment_status(
     assignment_id: UUID,
     body: AssignmentStatusPatch,

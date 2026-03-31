@@ -21,31 +21,40 @@ router = APIRouter(prefix="/lessons", tags=["lessons"])
 
 
 class LessonCreate(BaseModel):
-    student_id: UUID
-    teacher_id: UUID
-    topic: str = Field(..., min_length=1, max_length=512)
-    scheduled_at: datetime
-    status: LessonStatus = LessonStatus.scheduled
-    notes: str | None = None
+    student_id: UUID = Field(..., description="UUID ученика")
+    teacher_id: UUID = Field(..., description="UUID преподавателя")
+    topic: str = Field(..., min_length=1, max_length=512, description="Тема занятия")
+    scheduled_at: datetime = Field(..., description="Время занятия (timezone-aware предпочтителен)")
+    status: LessonStatus = Field(
+        default=LessonStatus.scheduled,
+        description="Статус занятия",
+    )
+    notes: str | None = Field(default=None, description="Заметки (что принести и т.п.)")
 
 
 class LessonRead(BaseModel):
-    id: UUID
-    student_id: UUID
-    teacher_id: UUID
-    topic: str
-    scheduled_at: datetime
-    status: LessonStatus
-    notes: str | None
+    id: UUID = Field(..., description="Идентификатор занятия")
+    student_id: UUID = Field(..., description="UUID ученика")
+    teacher_id: UUID = Field(..., description="UUID преподавателя")
+    topic: str = Field(..., description="Тема")
+    scheduled_at: datetime = Field(..., description="Запланированное время")
+    status: LessonStatus = Field(..., description="Текущий статус")
+    notes: str | None = Field(default=None, description="Заметки")
 
     model_config = {"from_attributes": True}
 
 
 class LessonStatusPatch(BaseModel):
-    status: LessonStatus
+    status: LessonStatus = Field(..., description="Новый статус занятия")
 
 
-@router.post("", response_model=LessonRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=LessonRead,
+    status_code=status.HTTP_201_CREATED,
+    summary="Создать занятие",
+    description="Создаёт запись занятия для пары ученик–преподаватель.",
+)
 async def create_lesson(
     body: LessonCreate,
     _auth: Annotated[None, Depends(require_auth)],
@@ -65,7 +74,12 @@ async def create_lesson(
     return LessonRead.model_validate(lesson)
 
 
-@router.get("/{lesson_id}", response_model=LessonRead)
+@router.get(
+    "/{lesson_id}",
+    response_model=LessonRead,
+    summary="Получить занятие по id",
+    description="Возвращает занятие или 404.",
+)
 async def read_lesson(
     lesson_id: UUID,
     _auth: Annotated[None, Depends(require_auth)],
@@ -77,7 +91,12 @@ async def read_lesson(
     return LessonRead.model_validate(lesson)
 
 
-@router.patch("/{lesson_id}/status", response_model=LessonRead)
+@router.patch(
+    "/{lesson_id}/status",
+    response_model=LessonRead,
+    summary="Обновить статус занятия",
+    description="Частичное обновление: только `status`.",
+)
 async def patch_lesson_status(
     lesson_id: UUID,
     body: LessonStatusPatch,

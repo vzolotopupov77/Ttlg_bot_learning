@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pydantic import Field, field_validator
+from pydantic import Field, HttpUrl, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Корень репозитория (рядом с pyproject.toml), а не cwd — иначе .env не находится при другом каталоге запуска
@@ -13,7 +13,7 @@ ENV_FILE_PATH = _ENV_FILE
 
 
 class Settings(BaseSettings):
-    """Конфигурация бота и LLM."""
+    """Конфигурация бота (Telegram + HTTP к backend)."""
 
     model_config = SettingsConfigDict(
         env_file=_ENV_FILE,
@@ -54,21 +54,16 @@ class Settings(BaseSettings):
             raise ValueError(msg)
         return token
 
-    openrouter_api_key: str = Field(
+    backend_url: HttpUrl = Field(
         ...,
-        description="API-ключ OpenRouter",
+        description="Базовый URL backend (например http://127.0.0.1:8000)",
     )
-    openrouter_base_url: str = Field(
-        default="https://openrouter.ai/api/v1",
-        description="Базовый URL OpenAI-compatible API",
+
+    backend_timeout: float = Field(
+        default=30.0,
+        ge=1.0,
+        le=300.0,
+        description="Таймаут HTTP к backend, секунды",
     )
-    llm_model: str = Field(
-        default="openai/gpt-4o-mini",
-        description="Идентификатор модели в OpenRouter",
-    )
+
     log_level: str = Field(default="INFO", description="Уровень логирования")
-    history_depth: int = Field(
-        default=20,
-        ge=1,
-        description="Глубина истории сообщений на пользователя",
-    )

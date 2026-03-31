@@ -11,9 +11,8 @@ from pydantic import ValidationError
 
 from ttlg_bot.bot import create_bot, create_dispatcher
 from ttlg_bot.config import ENV_FILE_PATH, Settings
+from ttlg_bot.services.backend_client import BackendClient
 from ttlg_bot.services.chat_service import ChatService
-from ttlg_bot.services.history import HistoryStore
-from ttlg_bot.services.llm_client import LLMClient
 
 
 def _ensure_utf8_stdio() -> None:
@@ -51,31 +50,29 @@ async def _main() -> None:
         getattr(logging, settings.log_level.upper(), logging.INFO),
     )
 
-    # Секреты в лог не пишем — только признак, что значение подхватилось (для отладки)
     tid, _, tsec = settings.telegram_bot_token.partition(":")
     log.info(
         "TELEGRAM_BOT_TOKEN: загружен (bot_id=%s, символов после ':': %d)",
         tid,
         len(tsec),
     )
-    log.info(
-        "OPENROUTER_API_KEY: загружен (длина ключа: %d символов)",
-        len(settings.openrouter_api_key),
-    )
+    base = str(settings.backend_url).rstrip("/")
+    log.info("BACKEND_URL: %s (timeout=%.1fs)", base, settings.backend_timeout)
 
-    history = HistoryStore(depth=settings.history_depth)
-    llm = LLMClient(
-        api_key=settings.openrouter_api_key,
-        base_url=settings.openrouter_base_url,
-        model=settings.llm_model,
+    backend_client = BackendClient(
+        base_url=base,
+        timeout=settings.backend_timeout,
     )
-    chat_service = ChatService(history, llm)
+    chat_service = ChatService(backend_client)
 
     bot = create_bot(settings.telegram_bot_token)
     dp = create_dispatcher(chat_service)
 
     logging.getLogger(__name__).info("Starting bot (long polling)")
-    await dp.start_polling(bot)
+    try:
+        await dp.start_polling(bot)
+    finally:
+        await backend_client.aclose()
 
 
 def main() -> None:

@@ -10,8 +10,9 @@ from ttlg_backend.main import app
 
 
 async def test_health_without_database_returns_503(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("DATABASE_URL", raising=False)
-    monkeypatch.delenv("TTLG_ALLOW_SQLITE_TEST", raising=False)
+    # Пустая строка → None через empty_database_url_as_none; перекрывает значение из .env-файла.
+    monkeypatch.setenv("DATABASE_URL", "")
+    monkeypatch.setenv("TTLG_ALLOW_SQLITE_TEST", "0")
     get_settings.cache_clear()
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:

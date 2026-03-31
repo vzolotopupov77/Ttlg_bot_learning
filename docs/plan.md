@@ -23,8 +23,8 @@
 | Итерация | Название | Цель | Статус | Tasklist |
 |----------|----------|------|--------|----------|
 | 1 | Базовый бот с LLM | Рабочий бот с диалогом через LLM | 📋 Planned | [tasklist-bot-iteration-1-basic-bot.md](tasks/tasklist-bot-iteration-1-basic-bot.md) |
-| 2 | Backend Core | FastAPI + PostgreSQL + доменная модель | 🚧 In Progress | [tasklist-backend.md](tasks/tasklist-backend.md) |
-| 3 | Персонализированный диалог | Бот как тонкий клиент; контекст из БД в LLM | 📋 Planned | [tasklist-bot-iteration-3-personalized-dialog.md](tasks/tasklist-bot-iteration-3-personalized-dialog.md) |
+| 2 | Backend Core | FastAPI + PostgreSQL + доменная модель | ✅ Done | [tasklist-backend.md](tasks/tasklist-backend.md) |
+| 3 | Персонализированный диалог | Бот как тонкий клиент; контекст из БД в LLM | ✅ Done | [tasklist-bot-iteration-3-personalized-dialog.md](tasks/tasklist-bot-iteration-3-personalized-dialog.md) |
 | 4 | Расписание и домашние задания | Занятия, ДЗ, напоминания через backend | 📋 Planned | [tasklist-backend-iteration-4-schedule-hw.md](tasks/tasklist-backend-iteration-4-schedule-hw.md) |
 | 5 | Веб-интерфейс | Фронтенд для ученика и преподавателя | 📋 Planned | [tasklist-frontend-iteration-5-web.md](tasks/tasklist-frontend-iteration-5-web.md) |
 | 6 | Прогресс и аналитика | Агрегация результатов, отчёты | 📋 Planned | [tasklist-backend-iteration-6-progress.md](tasks/tasklist-backend-iteration-6-progress.md) |

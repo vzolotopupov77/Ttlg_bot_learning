@@ -6,7 +6,23 @@
 
 ## Backend HTTP API
 
-Публичное HTTP API ядра: клиенты (Telegram-бот, веб) обращаются только сюда. Префикс версии, формат ошибок и HTTP-коды — [api-conventions.md](api-conventions.md). Полная OpenAPI-схема будет доступна на `GET /docs` у запущенного backend (после реализации каркаса).
+Публичное HTTP API ядра: клиенты (Telegram-бот, веб) обращаются только сюда. Префикс версии, формат ошибок и HTTP-коды — [api-conventions.md](api-conventions.md). У запущенного backend интерактивная схема: **Swagger UI** `GET /docs`; выгрузка JSON: `make openapi-export` → [openapi.json](openapi.json) в корне `docs/`.
+
+### CRUD и прогресс (MVP)
+
+| Метод | Путь | Назначение |
+|-------|------|------------|
+| `POST` | `/v1/users` | Создать пользователя |
+| `GET` | `/v1/users/{user_id}` | Получить пользователя |
+| `GET` | `/v1/users/{user_id}/progress` | Сводка прогресса ученика |
+| `POST` | `/v1/lessons` | Создать занятие |
+| `GET` | `/v1/lessons/{lesson_id}` | Получить занятие |
+| `PATCH` | `/v1/lessons/{lesson_id}/status` | Обновить статус занятия |
+| `POST` | `/v1/assignments` | Создать домашнее задание |
+| `GET` | `/v1/assignments/{assignment_id}` | Получить ДЗ |
+| `PATCH` | `/v1/assignments/{assignment_id}/status` | Обновить статус ДЗ |
+
+Проверка готовности: `GET /health` (вне префикса `/v1`).
 
 ### Диалог с ассистентом
 

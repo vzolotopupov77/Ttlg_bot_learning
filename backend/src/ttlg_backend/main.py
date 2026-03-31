@@ -35,7 +35,12 @@ def create_app() -> FastAPI:
         await close_db()
 
     app = FastAPI(
-        title="ttlg-backend",
+        title="TTLG Backend",
+        description=(
+            "HTTP API ядра системы сопровождения учебного процесса: пользователи, занятия, "
+            "домашние задания, диалог с ассистентом (LLM). Версия в пути: `/v1`."
+        ),
+        version="0.1.0",
         lifespan=lifespan,
     )
 
@@ -60,7 +65,16 @@ def create_app() -> FastAPI:
             },
         )
 
-    @app.get("/health", response_model=None)
+    @app.get(
+        "/health",
+        response_model=None,
+        summary="Проверка готовности сервиса",
+        description=(
+            "Возвращает `{\"status\":\"ok\"}`, если БД настроена и доступна. "
+            "Если `DATABASE_URL` не задан или БД недоступна — **503** с телом `degraded`."
+        ),
+        tags=["health"],
+    )
     async def health() -> Response:
         settings = get_settings()
         if settings.database_url is None:

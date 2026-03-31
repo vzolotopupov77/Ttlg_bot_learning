@@ -186,11 +186,10 @@ graph TD
 │   ├── vision.md
 │   ├── data-model.md       # доменная модель, связи сущностей
 │   └── integrations.md     # детали внешних интеграций
-├── bot/                    # Telegram-бот (клиент)
-│   └── src/ttlg_bot/
-│       ├── handlers/
-│       ├── services/       # вызовы backend API
-│       └── config.py
+├── src/ttlg_bot/           # Telegram-бот (клиент)
+│   ├── handlers/
+│   ├── services/           # HTTP-клиент backend (`backend_client.py`), без LLM
+│   └── config.py
 ├── backend/                # ядро системы
 │   └── src/ttlg_backend/
 │       ├── api/            # маршруты
@@ -218,8 +217,8 @@ graph TD
 
 ## Конфигурация и безопасность
 
-- `TELEGRAM_BOT_TOKEN`, `OPENROUTER_API_KEY` — обязательны для бота.
-- `DATABASE_URL`, `LLM_MODEL`, `OPENROUTER_BASE_URL` — для backend.
+- `TELEGRAM_BOT_TOKEN`, `BACKEND_URL`, `BACKEND_TIMEOUT` — для бота; LLM в процессе бота не используется.
+- `OPENROUTER_API_KEY`, `DATABASE_URL`, `LLM_MODEL`, `OPENROUTER_BASE_URL` — для backend.
 - В логах не писать токены и персональные данные.
 - Ошибки API — краткое сообщение пользователю, детали в лог.
 

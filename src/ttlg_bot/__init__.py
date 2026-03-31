@@ -1,1 +1,1 @@
-"""Telegram-бот с LLM (MVP)."""
+"""Telegram-бот — тонкий клиент backend API (MVP)."""

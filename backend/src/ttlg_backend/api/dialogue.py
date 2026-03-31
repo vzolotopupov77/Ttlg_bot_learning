@@ -25,11 +25,11 @@ router = APIRouter(tags=["dialogue"])
 
 
 class DialogueMessageRequest(BaseModel):
-    telegram_id: int = Field(..., description="Student telegram id")
-    text: str = Field(..., description="User message; non-empty after trim")
+    telegram_id: int = Field(..., description="Telegram ID ученика (целое число)")
+    text: str = Field(..., description="Текст сообщения ученика; после trim не пустой")
     dialogue_id: UUID | None = Field(
         default=None,
-        description="Continue existing dialogue",
+        description="Продолжить существующий диалог; если не задан — создаётся новый",
     )
 
     @field_validator("text")
@@ -41,6 +41,18 @@ class DialogueMessageRequest(BaseModel):
         return s
 
 
+class DialogueMessageResponse(BaseModel):
+    """Ответ ассистента после обработки сообщения ученика."""
+
+    dialogue_id: str = Field(..., description="Идентификатор диалога (UUID строкой)")
+    message_id: str = Field(..., description="Идентификатор сообщения ассистента (UUID строкой)")
+    text: str = Field(..., description="Текст ответа ассистента")
+    created_at: str = Field(
+        ...,
+        description="Время создания ответа, ISO 8601 в UTC (суффикс Z)",
+    )
+
+
 def get_llm_client() -> LLMClient:
     return LLMClient.from_settings(get_settings())
 
@@ -50,12 +62,20 @@ def _format_created_at(dt: datetime) -> str:
     return utc.isoformat().replace("+00:00", "Z")
 
 
-@router.post("/dialogue/message")
+@router.post(
+    "/dialogue/message",
+    response_model=DialogueMessageResponse,
+    summary="Сообщение в диалог с ассистентом",
+    description=(
+        "Сохраняет реплику ученика и ответ ассистента в БД; при наличии данных подмешивает контекст занятий и ДЗ. "
+        "Пользователь с указанным `telegram_id` должен быть заранее создан через `POST /v1/users`."
+    ),
+)
 async def post_dialogue_message(
     body: DialogueMessageRequest,
     session: Annotated[AsyncSession, Depends(get_session)],
     llm: Annotated[LLMClient, Depends(get_llm_client)],
-):
+) -> DialogueMessageResponse | JSONResponse:
     try:
         result = await dialogue_svc.process_dialogue_message(
             session,
@@ -74,12 +94,9 @@ async def post_dialogue_message(
         logger.exception("Unexpected error in dialogue endpoint")
         return api_error(500, "internal_error", "Internal server error")
 
-    return JSONResponse(
-        status_code=200,
-        content={
-            "dialogue_id": str(result.dialogue_id),
-            "message_id": str(result.assistant_message_id),
-            "text": result.text,
-            "created_at": _format_created_at(result.created_at),
-        },
+    return DialogueMessageResponse(
+        dialogue_id=str(result.dialogue_id),
+        message_id=str(result.assistant_message_id),
+        text=result.text,
+        created_at=_format_created_at(result.created_at),
     )
