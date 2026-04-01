@@ -1,4 +1,4 @@
-.PHONY: install run bot-test backend-install backend-run backend-db-up backend-db-migrate backend-test smoke-integration openapi-export
+.PHONY: install run bot-test backend-install backend-run backend-db-up backend-db-migrate backend-test smoke-integration openapi-export lint format check
 
 install:
 	uv sync --all-packages
@@ -7,7 +7,16 @@ run:
 	uv run python -m ttlg_bot
 
 bot-test:
-	uv run --all-packages --extra dev pytest tests -v
+	uv run --all-packages pytest tests -v
+
+# Ruff: бот + backend + Alembic (корневой pyproject workspace)
+lint:
+	uv run ruff check src backend/src backend/tests tests backend/alembic
+
+format:
+	uv run ruff format src backend/src backend/tests tests backend/alembic
+
+check: lint backend-test bot-test
 
 # Печатает чек-лист ручного smoke (бот + backend). См. README «End-to-end».
 smoke-integration:
@@ -31,7 +40,7 @@ backend-db-migrate:
 	uv run --package ttlg-backend alembic -c backend/alembic.ini upgrade head
 
 backend-test:
-	uv run --package ttlg-backend --extra dev pytest backend/tests -v
+	uv run --package ttlg-backend pytest backend/tests -v
 
 # Выгрузить OpenAPI JSON в docs/openapi.json (без запуска сервера)
 openapi-export:

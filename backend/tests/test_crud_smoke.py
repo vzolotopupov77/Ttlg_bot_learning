@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from uuid import UUID
 
 import pytest
@@ -40,7 +40,7 @@ async def test_lesson_create_get_patch(
     teacher_and_student: tuple[UUID, UUID],
 ) -> None:
     teacher_id, student_id = teacher_and_student
-    when = datetime(2026, 4, 1, 12, 0, tzinfo=timezone.utc)
+    when = datetime(2026, 4, 1, 12, 0, tzinfo=UTC)
     c = await api_client_sqlite.post(
         "/v1/lessons",
         json={
@@ -93,7 +93,7 @@ async def test_user_progress_summary(
     teacher_and_student: tuple[UUID, UUID],
 ) -> None:
     teacher_id, student_id = teacher_and_student
-    when = datetime(2026, 4, 2, 10, 0, tzinfo=timezone.utc)
+    when = datetime(2026, 4, 2, 10, 0, tzinfo=UTC)
     lr = await api_client_sqlite.post(
         "/v1/lessons",
         json={

@@ -42,10 +42,8 @@ class UserNotFound(Exception):
 async def _build_student_context(session: AsyncSession, student_id: UUID, student_name: str) -> StudentContextForPrompt:
     lessons = await lessons_repo.list_recent_lessons_for_student(session, student_id, limit=8)
     assigns = await assignments_repo.list_recent_assignments_for_student(session, student_id, limit=8)
-    lesson_lines = [format_lesson_line(l.topic, l.scheduled_at, l.status.value) for l in lessons]
-    assign_lines = [
-        format_assignment_line(a.description, a.due_date, a.status.value) for a in assigns
-    ]
+    lesson_lines = [format_lesson_line(lesson.topic, lesson.scheduled_at, lesson.status.value) for lesson in lessons]
+    assign_lines = [format_assignment_line(a.description, a.due_date, a.status.value) for a in assigns]
     return StudentContextForPrompt(
         student_name=student_name,
         upcoming_lessons=lesson_lines,
@@ -109,10 +107,7 @@ async def process_dialogue_message(
         await session.rollback()
         raise
     created_at = assistant_msg.created_at
-    if created_at.tzinfo is None:
-        created_at = created_at.replace(tzinfo=UTC)
-    else:
-        created_at = created_at.astimezone(UTC)
+    created_at = created_at.replace(tzinfo=UTC) if created_at.tzinfo is None else created_at.astimezone(UTC)
     return DialogueSuccess(
         dialogue_id=dialogue.id,
         assistant_message_id=assistant_msg.id,

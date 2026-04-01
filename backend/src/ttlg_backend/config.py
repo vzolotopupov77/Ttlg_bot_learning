@@ -65,10 +65,7 @@ class Settings(BaseSettings):
             return self
         if v.startswith("sqlite+aiosqlite://") and self.allow_sqlite_test:
             return self
-        msg = (
-            "DATABASE_URL must use postgresql+asyncpg:// "
-            "(or sqlite+aiosqlite:// with TTLG_ALLOW_SQLITE_TEST=1)"
-        )
+        msg = "DATABASE_URL must use postgresql+asyncpg:// (or sqlite+aiosqlite:// with TTLG_ALLOW_SQLITE_TEST=1)"
         raise ValueError(msg)
 
 

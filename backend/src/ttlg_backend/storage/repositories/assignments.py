@@ -56,10 +56,7 @@ async def list_recent_assignments_for_student(
     limit: int = 8,
 ) -> list[Assignment]:
     stmt = (
-        select(Assignment)
-        .where(Assignment.student_id == student_id)
-        .order_by(Assignment.due_date.desc())
-        .limit(limit)
+        select(Assignment).where(Assignment.student_id == student_id).order_by(Assignment.due_date.desc()).limit(limit)
     )
     result = await session.execute(stmt)
     return list(result.scalars().all())

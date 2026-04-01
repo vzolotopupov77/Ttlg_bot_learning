@@ -51,11 +51,6 @@ async def list_messages_for_dialogue(
     *,
     limit: int = 50,
 ) -> list[Message]:
-    stmt = (
-        select(Message)
-        .where(Message.dialogue_id == dialogue_id)
-        .order_by(Message.created_at.asc())
-        .limit(limit)
-    )
+    stmt = select(Message).where(Message.dialogue_id == dialogue_id).order_by(Message.created_at.asc()).limit(limit)
     result = await session.execute(stmt)
     return list(result.scalars().all())

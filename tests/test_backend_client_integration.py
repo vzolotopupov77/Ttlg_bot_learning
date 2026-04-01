@@ -8,19 +8,18 @@ from __future__ import annotations
 
 import pytest
 
-from ttlg_bot.services.backend_client import (
-    BackendClient,
-    BackendError,
-    MSG_LLM_UNAVAILABLE,
-    MSG_SERVICE_DOWN,
-    MSG_USER_NOT_FOUND,
-)
-
 from tests.conftest import (
     TELEGRAM_ID_KNOWN,
     TELEGRAM_ID_UNKNOWN,
     _seed_student,
     make_bot_client,
+)
+from ttlg_bot.services.backend_client import (
+    MSG_LLM_UNAVAILABLE,
+    MSG_SERVICE_DOWN,
+    MSG_USER_NOT_FOUND,
+    BackendClient,
+    BackendError,
 )
 
 
@@ -106,9 +105,7 @@ async def test_invalid_dialogue_id_cleared_on_not_found() -> None:
     with pytest.raises(BackendError):
         await client.send_message(TELEGRAM_ID_KNOWN, "Продолжить диалог")
 
-    assert TELEGRAM_ID_KNOWN not in client._dialogues, (
-        "dialogue_id должен быть удалён после 404 dialogue_not_found"
-    )
+    assert TELEGRAM_ID_KNOWN not in client._dialogues, "dialogue_id должен быть удалён после 404 dialogue_not_found"
     await client.aclose()
 
 
@@ -117,8 +114,6 @@ async def test_connect_error_raises_service_down(monkeypatch: pytest.MonkeyPatch
     import httpx
 
     client = BackendClient(base_url="http://127.0.0.1:19999", timeout=1.0)
-
-    original_post = client._client.post
 
     async def _raise_connect(*_args: object, **_kwargs: object) -> None:
         raise httpx.ConnectError("connection refused")

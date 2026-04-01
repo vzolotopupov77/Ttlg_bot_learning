@@ -70,7 +70,7 @@ def create_app() -> FastAPI:
         response_model=None,
         summary="Проверка готовности сервиса",
         description=(
-            "Возвращает `{\"status\":\"ok\"}`, если БД настроена и доступна. "
+            'Возвращает `{"status":"ok"}`, если БД настроена и доступна. '
             "Если `DATABASE_URL` не задан или БД недоступна — **503** с телом `degraded`."
         ),
         tags=["health"],

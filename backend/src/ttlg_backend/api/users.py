@@ -15,8 +15,8 @@ from ttlg_backend.api.errors import api_error
 from ttlg_backend.db import get_session
 from ttlg_backend.dependencies import require_auth
 from ttlg_backend.storage.models import UserRole
-from ttlg_backend.storage.repositories import users as users_repo
 from ttlg_backend.storage.repositories import progress_summary
+from ttlg_backend.storage.repositories import users as users_repo
 
 router = APIRouter(prefix="/users", tags=["users"])
 

@@ -57,11 +57,6 @@ async def list_recent_lessons_for_student(
     *,
     limit: int = 8,
 ) -> list[Lesson]:
-    stmt = (
-        select(Lesson)
-        .where(Lesson.student_id == student_id)
-        .order_by(Lesson.scheduled_at.desc())
-        .limit(limit)
-    )
+    stmt = select(Lesson).where(Lesson.student_id == student_id).order_by(Lesson.scheduled_at.desc()).limit(limit)
     result = await session.execute(stmt)
     return list(result.scalars().all())

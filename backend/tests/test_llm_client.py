@@ -50,6 +50,34 @@ async def test_llm_client_success(respx_mock: respx.MockRouter) -> None:
     assert out == "Hello"
 
 
+async def test_llm_client_api_error_does_not_log_secret_key(
+    caplog: pytest.LogCaptureFixture,
+    respx_mock: respx.MockRouter,
+) -> None:
+    caplog.set_level(logging.DEBUG)
+    secret = "super-secret-key-99999"
+    settings = Settings(
+        database_url=None,
+        openrouter_base_url="https://openrouter.test/v1",
+        openrouter_api_key=secret,
+        llm_model="test/model",
+        llm_timeout_seconds=5.0,
+        allow_sqlite_test=False,
+    )
+    respx_mock.post("https://openrouter.test/v1/chat/completions").mock(
+        return_value=httpx.Response(
+            401,
+            json={"error": {"message": "Invalid credentials"}},
+        ),
+    )
+    client = LLMClient(settings)
+    with pytest.raises(LLMUnavailableError):
+        await client.complete_chat(system_prompt="s", user_message="u")
+    joined = " ".join(caplog.messages)
+    assert secret not in joined
+    assert "Authorization" not in joined
+
+
 async def test_llm_client_does_not_log_api_key(caplog: pytest.LogCaptureFixture) -> None:
     caplog.set_level(logging.DEBUG)
     settings = Settings(

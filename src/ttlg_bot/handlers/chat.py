@@ -19,8 +19,7 @@ def create_chat_router(chat_service: ChatService) -> Router:
     @router.message(CommandStart())
     async def cmd_start(message: Message) -> None:
         await message.answer(
-            "Привет! Я помогу с математикой (7–9 класс, ОГЭ). "
-            "Напиши вопрос или задачу текстом.",
+            "Привет! Я помогу с математикой (7–9 класс, ОГЭ). Напиши вопрос или задачу текстом.",
         )
 
     @router.message(F.text)

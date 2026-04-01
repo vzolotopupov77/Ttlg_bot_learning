@@ -11,9 +11,7 @@ logger = logging.getLogger(__name__)
 
 MSG_SERVICE_DOWN = "Сервис временно недоступен. Попробуйте позже."
 MSG_BAD_REQUEST = "Ошибка запроса. Обратитесь к администратору."
-MSG_USER_NOT_FOUND = (
-    "Профиль не найден. Попросите преподавателя зарегистрировать вас в системе."
-)
+MSG_USER_NOT_FOUND = "Профиль не найден. Попросите преподавателя зарегистрировать вас в системе."
 MSG_DIALOGUE_NOT_FOUND = "Диалог не найден. Напишите снова — начнём новый."
 MSG_LLM_UNAVAILABLE = "Ассистент временно недоступен. Попробуйте позже."
 MSG_RATE_LIMIT = "Слишком много запросов. Подождите немного и повторите."
@@ -38,7 +36,13 @@ class BackendClient:
         _client: httpx.AsyncClient | None = None,
     ) -> None:
         self._base = base_url.rstrip("/")
-        self._client = _client if _client is not None else httpx.AsyncClient(timeout=timeout)
+        if _client is not None:
+            self._client = _client
+        else:
+            t = float(timeout)
+            # Отдельный лимит на connect: быстрее отказ при «мёртвом» хосте; read/write — полный таймаут.
+            connect = min(10.0, t)
+            self._client = httpx.AsyncClient(timeout=httpx.Timeout(t, connect=connect))
         self._dialogues: dict[int, UUID] = {}
 
     async def aclose(self) -> None:

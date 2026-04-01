@@ -11,18 +11,30 @@ from ttlg_backend.storage.models import Assignment, AssignmentStatus, Lesson, Le
 
 
 async def get_student_progress_summary(session: AsyncSession, student_id: UUID) -> dict:
-    lessons_completed_stmt = select(func.count()).select_from(Lesson).where(
-        Lesson.student_id == student_id,
-        Lesson.status == LessonStatus.completed,
+    lessons_completed_stmt = (
+        select(func.count())
+        .select_from(Lesson)
+        .where(
+            Lesson.student_id == student_id,
+            Lesson.status == LessonStatus.completed,
+        )
     )
     lessons_total_stmt = select(func.count()).select_from(Lesson).where(Lesson.student_id == student_id)
 
-    assignments_done_stmt = select(func.count()).select_from(Assignment).where(
-        Assignment.student_id == student_id,
-        Assignment.status == AssignmentStatus.submitted,
+    assignments_done_stmt = (
+        select(func.count())
+        .select_from(Assignment)
+        .where(
+            Assignment.student_id == student_id,
+            Assignment.status == AssignmentStatus.submitted,
+        )
     )
-    assignments_total_stmt = select(func.count()).select_from(Assignment).where(
-        Assignment.student_id == student_id,
+    assignments_total_stmt = (
+        select(func.count())
+        .select_from(Assignment)
+        .where(
+            Assignment.student_id == student_id,
+        )
     )
 
     lessons_completed = int((await session.execute(lessons_completed_stmt)).scalar_one())

@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-import enum
 import uuid
 from datetime import date, datetime
+from enum import StrEnum
+
 from sqlalchemy import BigInteger, Date, DateTime, ForeignKey, String, Text, Uuid
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -15,29 +16,29 @@ class Base(DeclarativeBase):
     """Declarative base for all ORM models."""
 
 
-class UserRole(str, enum.Enum):
+class UserRole(StrEnum):
     student = "student"
     teacher = "teacher"
 
 
-class LessonStatus(str, enum.Enum):
+class LessonStatus(StrEnum):
     scheduled = "scheduled"
     completed = "completed"
     cancelled = "cancelled"
 
 
-class AssignmentStatus(str, enum.Enum):
+class AssignmentStatus(StrEnum):
     pending = "pending"
     submitted = "submitted"
     overdue = "overdue"
 
 
-class DialogueChannel(str, enum.Enum):
+class DialogueChannel(StrEnum):
     telegram = "telegram"
     web = "web"
 
 
-class MessageRole(str, enum.Enum):
+class MessageRole(StrEnum):
     user = "user"
     assistant = "assistant"
 
@@ -57,17 +58,17 @@ class User(Base):
         server_default=func.now(),
     )
 
-    lessons_as_student: Mapped[list["Lesson"]] = relationship(
+    lessons_as_student: Mapped[list[Lesson]] = relationship(
         back_populates="student",
         foreign_keys="Lesson.student_id",
     )
-    lessons_as_teacher: Mapped[list["Lesson"]] = relationship(
+    lessons_as_teacher: Mapped[list[Lesson]] = relationship(
         back_populates="teacher",
         foreign_keys="Lesson.teacher_id",
     )
-    assignments: Mapped[list["Assignment"]] = relationship(back_populates="student")
-    progress_rows: Mapped[list["Progress"]] = relationship(back_populates="student")
-    dialogues: Mapped[list["Dialogue"]] = relationship(back_populates="student")
+    assignments: Mapped[list[Assignment]] = relationship(back_populates="student")
+    progress_rows: Mapped[list[Progress]] = relationship(back_populates="student")
+    dialogues: Mapped[list[Dialogue]] = relationship(back_populates="student")
 
 
 class Lesson(Base):
