@@ -45,3 +45,4 @@ adr-NNN-тема.md
 | [ADR-001](adr-001-database.md) | Выбор СУБД | Принято | 2026-03-27 |
 | [ADR-002](adr-002-orm-migrations-tests.md) | ORM (SQLAlchemy async), Alembic, pytest/httpx | Принято | 2026-03-29 |
 | [ADR-003](adr-003-quality-tooling.md) | Ruff, dependency-groups, Makefile-цели качества | Принято | 2026-04-01 |
+| [ADR-004](adr-004-backend-stack.md) | FastAPI, uvicorn, asyncpg, pydantic-settings, openai SDK | Принято | 2026-04-01 |

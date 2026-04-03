@@ -58,12 +58,13 @@ graph TD
 
 - [Идея продукта](docs/idea.md)
 - [Архитектурное видение](docs/vision.md)
-- [Модель данных](docs/data-model.md)
+- [Модель данных](docs/data-model.md) — логическая модель, физическая схема (PostgreSQL-типы, индексы, FK-каскады)
 - [Интеграции](docs/integrations.md)
 - [HTTP API: контракты](docs/tech/api-contracts.md)
 - [Конвенции HTTP API](docs/api-conventions.md)
 - [Дорожная карта](docs/plan.md)
 - [Задачи backend](docs/tasks/tasklist-backend.md)
+- [Задачи: слой данных](docs/tasks/tasklist-database.md)
 
 ## Быстрый старт (бот)
 

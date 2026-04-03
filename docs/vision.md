@@ -159,14 +159,16 @@ graph TD
 | Язык | Python 3.12+ |
 | Зависимости | **uv** — `uv sync` / `uv add`; lock-файл по политике uv |
 | Telegram-клиент | **aiogram**, long polling → webhook по мере роста |
-| Backend-фреймворк | **FastAPI** |
-| ASGI-сервер | **uvicorn** (`uvicorn[standard]`) |
-| Драйвер PostgreSQL (async) | **asyncpg** |
+| Backend-фреймворк | **FastAPI** ([ADR-004](adr/adr-004-backend-stack.md)) |
+| ASGI-сервер | **uvicorn** (`uvicorn[standard]`) ([ADR-004](adr/adr-004-backend-stack.md)) |
+| Драйвер PostgreSQL (async) | **asyncpg** ([ADR-004](adr/adr-004-backend-stack.md)) |
 | ORM | **SQLAlchemy** 2.x (async, `sqlalchemy[asyncio]`) |
 | Миграции схемы | **Alembic** |
-| LLM-клиент | OpenAI-compatible SDK (`openai`) с `base_url` на OpenRouter |
-| Конфиг и секреты | **pydantic-settings** + `.env` локально; `.env.example` в репо |
-| Автоматизация | **GNU Make**: `install`, `run`; при необходимости `lint`, `format` |
+| LLM-клиент | OpenAI-compatible SDK (`openai`) с `base_url` на OpenRouter ([ADR-004](adr/adr-004-backend-stack.md)) |
+| Конфиг и секреты | **pydantic-settings** + `.env` локально; `.env.example` в репо ([ADR-004](adr/adr-004-backend-stack.md)) |
+| Автоматизация | **GNU Make**: `install`, `run`, `lint`, `format`, `check` |
+| Линт и формат | **Ruff** ([ADR-003](adr/adr-003-quality-tooling.md)) |
+| Dev-зависимости | **`[dependency-groups]`** (PEP 735); авто-установка через `[tool.uv] default-groups` ([ADR-003](adr/adr-003-quality-tooling.md)) |
 | БД | **PostgreSQL** ([ADR-001](adr/adr-001-database.md)) |
 | Тесты backend | **pytest**, **httpx**, **pytest-asyncio** ([ADR-002](adr/adr-002-orm-migrations-tests.md)) |
 
@@ -253,6 +255,8 @@ graph TD
 |---|---|---|
 | [ADR-001](adr/adr-001-database.md) | Выбор СУБД → PostgreSQL | Принято |
 | [ADR-002](adr/adr-002-orm-migrations-tests.md) | ORM (SQLAlchemy async), миграции (Alembic), тестовый стек | Принято |
+| [ADR-003](adr/adr-003-quality-tooling.md) | Ruff (линт + формат), dependency-groups, отложенный тайпчекер | Принято |
+| [ADR-004](adr/adr-004-backend-stack.md) | FastAPI, uvicorn, asyncpg, pydantic-settings, openai SDK | Принято |
 
 ---
 
