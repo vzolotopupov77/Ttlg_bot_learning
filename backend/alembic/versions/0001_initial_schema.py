@@ -19,18 +19,20 @@ depends_on = None
 
 
 def upgrade() -> None:
-    user_role = postgresql.ENUM("student", "teacher", name="user_role", create_type=True)
-    lesson_status = postgresql.ENUM("scheduled", "completed", "cancelled", name="lesson_status", create_type=True)
-    assignment_status = postgresql.ENUM("pending", "submitted", "overdue", name="assignment_status", create_type=True)
-    dialogue_channel = postgresql.ENUM("telegram", "web", name="dialogue_channel", create_type=True)
-    message_role = postgresql.ENUM("user", "assistant", name="message_role", create_type=True)
-
     bind = op.get_bind()
-    user_role.create(bind, checkfirst=True)
-    lesson_status.create(bind, checkfirst=True)
-    assignment_status.create(bind, checkfirst=True)
-    dialogue_channel.create(bind, checkfirst=True)
-    message_role.create(bind, checkfirst=True)
+    # Создаём enum-типы явно с checkfirst=True (идемпотентно)
+    postgresql.ENUM("student", "teacher", name="user_role").create(bind, checkfirst=True)
+    postgresql.ENUM("scheduled", "completed", "cancelled", name="lesson_status").create(bind, checkfirst=True)
+    postgresql.ENUM("pending", "submitted", "overdue", name="assignment_status").create(bind, checkfirst=True)
+    postgresql.ENUM("telegram", "web", name="dialogue_channel").create(bind, checkfirst=True)
+    postgresql.ENUM("user", "assistant", name="message_role").create(bind, checkfirst=True)
+
+    # create_type=False — SQLAlchemy не пытается создать тип повторно при create_table
+    user_role = postgresql.ENUM("student", "teacher", name="user_role", create_type=False)
+    lesson_status = postgresql.ENUM("scheduled", "completed", "cancelled", name="lesson_status", create_type=False)
+    assignment_status = postgresql.ENUM("pending", "submitted", "overdue", name="assignment_status", create_type=False)
+    dialogue_channel = postgresql.ENUM("telegram", "web", name="dialogue_channel", create_type=False)
+    message_role = postgresql.ENUM("user", "assistant", name="message_role", create_type=False)
 
     op.create_table(
         "users",

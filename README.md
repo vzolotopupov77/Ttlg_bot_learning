@@ -60,6 +60,7 @@ graph TD
 - [Архитектурное видение](docs/vision.md)
 - [Модель данных](docs/data-model.md) — логическая модель, физическая схема (PostgreSQL-типы, индексы, FK-каскады)
 - [Интеграции](docs/integrations.md)
+- [Практическая справка: работа с БД](docs/tech/db-guide.md) — миграции, репозитории, сессия, SQL-сниппеты
 - [HTTP API: контракты](docs/tech/api-contracts.md)
 - [Конвенции HTTP API](docs/api-conventions.md)
 - [Дорожная карта](docs/plan.md)

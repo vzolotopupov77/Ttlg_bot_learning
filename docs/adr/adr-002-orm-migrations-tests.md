@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Статус** | Принято |
-| **Дата** | 2026-03-29 |
+| **Дата** | 2026-04-04 |
 | **Контекст** | Старт backend на FastAPI с PostgreSQL ([ADR-001](adr-001-database.md)); нужны персистентная схема, эволюция схемы и автоматизированные тесты API. |
 
 ---
@@ -114,12 +114,17 @@ Backend хранит доменные сущности в PostgreSQL и отда
 1. **ORM:** **SQLAlchemy 2.x** в async-режиме (`AsyncSession`, `asyncpg`).
 2. **Миграции:** **Alembic**, ревизии в репо; `DATABASE_URL` async-формата `postgresql+asyncpg://...` ([ADR-001](adr-001-database.md)).
 3. **Тесты:** **pytest**, **pytest-asyncio**, **httpx** (`AsyncClient`) для вызова ASGI-приложения.
-4. **Изоляция БД в тестах:** на этапе внедрения harness (задача 08 tasklist) — отдельная тестовая база или транзакция с откатом после теста; конкретная схема фикстур фиксируется в задаче 08, без противоречия с этим ADR.
+4. **Изоляция БД в тестах (текущее):** SQLite+aiosqlite через `TTLG_ALLOW_SQLITE_TEST=1` — принятое временное решение; позволяет запускать тесты без поднятого PostgreSQL. PostgreSQL test harness реализуется в **итерации 5 (задача 13)**: транзакционная изоляция или отдельная тестовая база; `TTLG_ALLOW_SQLITE_TEST` снимается.
+5. **UUID PK:** все таблицы используют `Uuid(as_uuid=True)` + `default=uuid.uuid4` — генерация на стороне Python, не автоинкремент.
+6. **StrEnum + native PostgreSQL enum:** `StrEnum` (Python 3.11+) + `SQLEnum(native_enum=True, values_callable=lambda e: [i.value for i in e])` — единый паттерн для всех enum-полей; создаёт именованные типы в PostgreSQL (`user_role`, `lesson_status`, и т.д.).
+7. **pytest-asyncio:** `asyncio_mode = "auto"` + `asyncio_default_fixture_loop_scope = "function"` в корневом `pyproject.toml`; распространяется на backend-тесты через uv workspace.
 
 ---
 
 ## Последствия
 
-- В `pyproject.toml` (или workspace uv) по мере реализации появятся зависимости: `sqlalchemy[asyncio]`, `asyncpg`, `alembic`, `pytest`, `pytest-asyncio`, `httpx` (часть — dev).
-- Разработчики поддерживают модели в `storage/` (или согласованном модуле) и ревизии Alembic в паре с изменениями схемы.
+- В `pyproject.toml` (workspace uv) зависимости `sqlalchemy[asyncio]`, `asyncpg`, `alembic` — в `[project.dependencies]` backend; `pytest`, `pytest-asyncio`, `httpx`, `aiosqlite`, `respx` — в `[dependency-groups] dev`.
+- Разработчики поддерживают модели в `storage/` и ревизии Alembic в паре с изменениями схемы.
 - Документ [docs/data-model.md](../data-model.md) остаётся источником доменной схемы; расхождения моделей и документа устраняются в задачах ORM/миграций с явной записью в summary задачи.
+- До замены harness в итерации 5 (задача 13) `make backend-test` требует `TTLG_ALLOW_SQLITE_TEST=1` — это допустимо и явно принято.
+- Практическая справка по работе с БД: [docs/tech/db-guide.md](../tech/db-guide.md).
