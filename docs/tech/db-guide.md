@@ -39,14 +39,18 @@ backend/
 
 ## 2. Миграции
 
-### Существующие Makefile-цели
+### Makefile-цели
 
 ```bash
-make backend-db-up       # docker compose up -d db  — поднять контейнер PostgreSQL
-make backend-db-migrate  # alembic upgrade head      — применить все ревизии
+make backend-db-up       # docker compose up -d db              — поднять контейнер PostgreSQL
+make backend-db-migrate  # alembic upgrade head                  — применить все ревизии
+make backend-db-reset    # down -v → up --wait → migrate         — чистый старт с нуля
+make backend-db-shell    # psql -U ttlg -d ttlg                  — интерактивный шелл
+make backend-db-logs     # docker compose logs -f db             — логи контейнера
+make backend-db-seed     # python backend/scripts/seed.py        — наполнить тестовыми данными
 ```
 
-> **Итерация 4 (задача 08)** добавит: `backend-db-reset`, `backend-db-shell`, `backend-db-logs`.
+`backend-db-reset` останавливает контейнер, удаляет volume `ttlg_pg_data`, поднимает PostgreSQL заново (ожидая healthcheck) и сразу накатывает все миграции.
 
 ### Прямые команды через uv
 
@@ -194,9 +198,7 @@ HTTP Request
 
 ## 5. SQL-сниппеты
 
-Для выполнения через `make backend-db-shell` (добавляется в итерации 4) или через `psql` напрямую.
-
-> Верификация на seed-данных — задача 10, итерация 4.
+Для выполнения через `make backend-db-shell` или через `psql` напрямую. Проверены на seed-данных (`make backend-db-seed`).
 
 ### 5.1. Все пользователи с ролями
 
@@ -270,6 +272,42 @@ FROM progress p
 JOIN users u ON u.id = p.student_id
 ORDER BY p.period_start DESC, u.name;
 ```
+
+---
+
+## 6. Просмотр данных
+
+Открыть интерактивный шелл: `make backend-db-shell`
+
+### Полезные `psql`-мета-команды
+
+| Команда | Что делает |
+|---------|-----------|
+| `\dt` | Список всех таблиц в текущей схеме |
+| `\d+ users` | Структура таблицы `users` с индексами и constraints |
+| `\x` | Переключить расширенный (вертикальный) вывод строк |
+| `\timing` | Включить/выключить отображение времени выполнения запроса |
+| `\q` | Выйти из `psql` |
+
+### Быстрая инспекция seed-данных
+
+```sql
+-- убедиться, что seed применён
+SELECT name, role FROM users ORDER BY role;
+
+-- посмотреть UUID seed-ученика (нужен для запросов ниже)
+SELECT id FROM users WHERE telegram_id = 111111111;
+
+-- занятия seed-ученика
+SELECT topic, scheduled_at, status FROM lessons
+WHERE student_id = (SELECT id FROM users WHERE telegram_id = 111111111);
+
+-- задания seed-ученика
+SELECT description, due_date, status FROM assignments
+WHERE student_id = (SELECT id FROM users WHERE telegram_id = 111111111);
+```
+
+> `DEV_STUDENT_TELEGRAM_ID = 111111111` — фиксированный telegram_id тестового ученика из `backend/scripts/seed.py`.
 
 ---
 

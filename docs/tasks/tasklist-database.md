@@ -25,9 +25,9 @@
 | 05 | 2 | Ревью схемы через skill postgresql-table-design | ✅ Done | [план](impl/database/iteration-2-schema-design/tasks/task-05-schema-review/plan.md) \| [summary](impl/database/iteration-2-schema-design/tasks/task-05-schema-review/summary.md) |
 | 06 | 3 | Ревью и актуализация ADR-002 | ✅ Done | [план](impl/database/iteration-3-db-tooling/tasks/task-06-adr-review/plan.md) \| [summary](impl/database/iteration-3-db-tooling/tasks/task-06-adr-review/summary.md) |
 | 07 | 3 | Практическая справка `docs/tech/db-guide.md` | ✅ Done | [план](impl/database/iteration-3-db-tooling/tasks/task-07-db-guide/plan.md) \| [summary](impl/database/iteration-3-db-tooling/tasks/task-07-db-guide/summary.md) |
-| 08 | 4 | Недостающие make-цели (reset, shell, logs) | 📋 Planned | [план](impl/database/iteration-4-db-infra/tasks/task-08-make-targets/plan.md) \| [summary](impl/database/iteration-4-db-infra/tasks/task-08-make-targets/summary.md) |
-| 09 | 4 | Seed-скрипт и цель `make backend-db-seed` | 📋 Planned | [план](impl/database/iteration-4-db-infra/tasks/task-09-seed/plan.md) \| [summary](impl/database/iteration-4-db-infra/tasks/task-09-seed/summary.md) |
-| 10 | 4 | Команды просмотра данных и SQL-сниппеты | 📋 Planned | [план](impl/database/iteration-4-db-infra/tasks/task-10-inspection/plan.md) \| [summary](impl/database/iteration-4-db-infra/tasks/task-10-inspection/summary.md) |
+| 08 | 4 | Недостающие make-цели (reset, shell, logs) | ✅ Done | [план](impl/database/iteration-4-db-infra/tasks/task-08-make-targets/plan.md) \| [summary](impl/database/iteration-4-db-infra/tasks/task-08-make-targets/summary.md) |
+| 09 | 4 | Seed-скрипт и цель `make backend-db-seed` | ✅ Done | [план](impl/database/iteration-4-db-infra/tasks/task-09-seed/plan.md) \| [summary](impl/database/iteration-4-db-infra/tasks/task-09-seed/summary.md) |
+| 10 | 4 | Команды просмотра данных и SQL-сниппеты | ✅ Done | [план](impl/database/iteration-4-db-infra/tasks/task-10-inspection/plan.md) \| [summary](impl/database/iteration-4-db-infra/tasks/task-10-inspection/summary.md) |
 | 11 | 5 | Актуализация ORM-моделей | 📋 Planned | [план](impl/database/iteration-5-orm-integration/tasks/task-11-orm-models/plan.md) \| [summary](impl/database/iteration-5-orm-integration/tasks/task-11-orm-models/summary.md) |
 | 12 | 5 | Ревью и доработка репозиториев | 📋 Planned | [план](impl/database/iteration-5-orm-integration/tasks/task-12-repositories/plan.md) \| [summary](impl/database/iteration-5-orm-integration/tasks/task-12-repositories/summary.md) |
 | 13 | 5 | Тестовый стенд с PostgreSQL | 📋 Planned | [план](impl/database/iteration-5-orm-integration/tasks/task-13-pg-test-harness/plan.md) \| [summary](impl/database/iteration-5-orm-integration/tasks/task-13-pg-test-harness/summary.md) |
@@ -364,7 +364,7 @@
 
 ---
 
-### Задача 08: Недостающие make-цели 📋
+### Задача 08: Недостающие make-цели ✅
 
 #### Цель
 
@@ -403,7 +403,7 @@
 
 ---
 
-### Задача 09: Seed-скрипт и `make backend-db-seed` 📋
+### Задача 09: Seed-скрипт и `make backend-db-seed` ✅
 
 #### Цель
 
@@ -443,7 +443,7 @@
 
 ---
 
-### Задача 10: Команды просмотра данных и SQL-сниппеты 📋
+### Задача 10: Команды просмотра данных и SQL-сниппеты ✅
 
 #### Цель
 

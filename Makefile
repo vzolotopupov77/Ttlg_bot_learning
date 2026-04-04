@@ -1,4 +1,4 @@
-.PHONY: install run bot-test backend-install backend-run backend-db-up backend-db-migrate backend-test smoke-integration openapi-export lint format check
+.PHONY: install run bot-test backend-install backend-run backend-db-up backend-db-migrate backend-db-reset backend-db-shell backend-db-logs backend-db-seed backend-test smoke-integration openapi-export lint format check
 
 install:
 	uv sync --all-packages
@@ -11,10 +11,10 @@ bot-test:
 
 # Ruff: бот + backend + Alembic (корневой pyproject workspace)
 lint:
-	uv run ruff check src backend/src backend/tests tests backend/alembic
+	uv run ruff check src backend/src backend/tests tests backend/alembic backend/scripts
 
 format:
-	uv run ruff format src backend/src backend/tests tests backend/alembic
+	uv run ruff format src backend/src backend/tests tests backend/alembic backend/scripts
 
 check: lint backend-test bot-test
 
@@ -38,6 +38,20 @@ backend-db-up:
 
 backend-db-migrate:
 	uv run --package ttlg-backend alembic -c backend/alembic.ini upgrade head
+
+backend-db-reset:
+	docker compose down -v
+	docker compose up -d --wait db
+	uv run --package ttlg-backend alembic -c backend/alembic.ini upgrade head
+
+backend-db-shell:
+	docker compose exec db psql -U ttlg -d ttlg
+
+backend-db-logs:
+	docker compose logs -f db
+
+backend-db-seed:
+	uv run --package ttlg-backend python backend/scripts/seed.py
 
 backend-test:
 	uv run --package ttlg-backend pytest backend/tests -v
