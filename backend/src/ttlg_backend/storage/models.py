@@ -6,7 +6,7 @@ import uuid
 from datetime import date, datetime
 from enum import StrEnum
 
-from sqlalchemy import BigInteger, Date, DateTime, ForeignKey, String, Text, Uuid
+from sqlalchemy import BigInteger, Date, DateTime, ForeignKey, Index, String, Text, UniqueConstraint, Uuid
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
@@ -45,13 +45,14 @@ class MessageRole(StrEnum):
 
 class User(Base):
     __tablename__ = "users"
+    __table_args__ = (Index("ix_users_telegram_id", "telegram_id", unique=True),)
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     role: Mapped[UserRole] = mapped_column(
         SQLEnum(UserRole, name="user_role", native_enum=True, values_callable=lambda e: [i.value for i in e]),
     )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    telegram_id: Mapped[int | None] = mapped_column(BigInteger(), nullable=True, unique=True)
+    telegram_id: Mapped[int | None] = mapped_column(BigInteger(), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
@@ -73,6 +74,7 @@ class User(Base):
 
 class Lesson(Base):
     __tablename__ = "lessons"
+    __table_args__ = (Index("ix_lessons_scheduled_at", "scheduled_at"),)
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     student_id: Mapped[uuid.UUID] = mapped_column(
@@ -138,6 +140,9 @@ class Assignment(Base):
 
 class Progress(Base):
     __tablename__ = "progress"
+    __table_args__ = (
+        UniqueConstraint("student_id", "period_start", "period_end", name="uq_progress_student_period"),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     student_id: Mapped[uuid.UUID] = mapped_column(
@@ -189,6 +194,7 @@ class Dialogue(Base):
 
 class Message(Base):
     __tablename__ = "messages"
+    __table_args__ = (Index("ix_messages_dialogue_created", "dialogue_id", "created_at"),)
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     dialogue_id: Mapped[uuid.UUID] = mapped_column(

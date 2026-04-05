@@ -1,4 +1,4 @@
-.PHONY: install run bot-test backend-install backend-run backend-db-up backend-db-migrate backend-db-reset backend-db-shell backend-db-logs backend-db-seed backend-test smoke-integration openapi-export lint format check
+.PHONY: install run bot-test backend-install backend-run backend-db-up backend-db-migrate backend-db-reset backend-db-shell backend-db-logs backend-db-seed backend-db-test-create backend-test smoke-integration openapi-export lint format check
 
 install:
 	uv sync --all-packages
@@ -21,7 +21,7 @@ check: lint backend-test bot-test
 # Печатает чек-лист ручного smoke (бот + backend). См. README «End-to-end».
 smoke-integration:
 	@echo "Smoke (ручной): 1) .env: DATABASE_URL, OPENROUTER_API_KEY, TELEGRAM_BOT_TOKEN, BACKEND_URL"
-	@echo "  2) make backend-db-up && make backend-db-migrate (или SQLite по README)"
+	@echo "  2) make backend-db-up && make backend-db-migrate && make backend-db-seed"
 	@echo "  3) POST /v1/users с вашим telegram_id (роль student)"
 	@echo "  4) терминал 1: make backend-run"
 	@echo "  5) терминал 2: make run"
@@ -52,6 +52,9 @@ backend-db-logs:
 
 backend-db-seed:
 	uv run --package ttlg-backend python backend/scripts/seed.py
+
+backend-db-test-create:
+	-docker compose exec db psql -U ttlg -c "CREATE DATABASE ttlg_test;"
 
 backend-test:
 	uv run --package ttlg-backend pytest backend/tests -v

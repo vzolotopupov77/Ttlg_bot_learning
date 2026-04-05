@@ -28,10 +28,10 @@
 | 08 | 4 | Недостающие make-цели (reset, shell, logs) | ✅ Done | [план](impl/database/iteration-4-db-infra/tasks/task-08-make-targets/plan.md) \| [summary](impl/database/iteration-4-db-infra/tasks/task-08-make-targets/summary.md) |
 | 09 | 4 | Seed-скрипт и цель `make backend-db-seed` | ✅ Done | [план](impl/database/iteration-4-db-infra/tasks/task-09-seed/plan.md) \| [summary](impl/database/iteration-4-db-infra/tasks/task-09-seed/summary.md) |
 | 10 | 4 | Команды просмотра данных и SQL-сниппеты | ✅ Done | [план](impl/database/iteration-4-db-infra/tasks/task-10-inspection/plan.md) \| [summary](impl/database/iteration-4-db-infra/tasks/task-10-inspection/summary.md) |
-| 11 | 5 | Актуализация ORM-моделей | 📋 Planned | [план](impl/database/iteration-5-orm-integration/tasks/task-11-orm-models/plan.md) \| [summary](impl/database/iteration-5-orm-integration/tasks/task-11-orm-models/summary.md) |
-| 12 | 5 | Ревью и доработка репозиториев | 📋 Planned | [план](impl/database/iteration-5-orm-integration/tasks/task-12-repositories/plan.md) \| [summary](impl/database/iteration-5-orm-integration/tasks/task-12-repositories/summary.md) |
-| 13 | 5 | Тестовый стенд с PostgreSQL | 📋 Planned | [план](impl/database/iteration-5-orm-integration/tasks/task-13-pg-test-harness/plan.md) \| [summary](impl/database/iteration-5-orm-integration/tasks/task-13-pg-test-harness/summary.md) |
-| 14 | 5 | End-to-end smoke на PostgreSQL + документация | 📋 Planned | [план](impl/database/iteration-5-orm-integration/tasks/task-14-e2e-smoke/plan.md) \| [summary](impl/database/iteration-5-orm-integration/tasks/task-14-e2e-smoke/summary.md) |
+| 11 | 5 | Актуализация ORM-моделей | ✅ Done | [план](impl/database/iteration-5-orm-integration/tasks/task-11-orm-models/plan.md) \| [summary](impl/database/iteration-5-orm-integration/tasks/task-11-orm-models/summary.md) |
+| 12 | 5 | Ревью и доработка репозиториев | ✅ Done | [план](impl/database/iteration-5-orm-integration/tasks/task-12-repositories/plan.md) \| [summary](impl/database/iteration-5-orm-integration/tasks/task-12-repositories/summary.md) |
+| 13 | 5 | Тестовый стенд с PostgreSQL | ✅ Done | [план](impl/database/iteration-5-orm-integration/tasks/task-13-pg-test-harness/plan.md) \| [summary](impl/database/iteration-5-orm-integration/tasks/task-13-pg-test-harness/summary.md) |
+| 14 | 5 | End-to-end smoke на PostgreSQL + документация | ✅ Done | [план](impl/database/iteration-5-orm-integration/tasks/task-14-e2e-smoke/plan.md) \| [summary](impl/database/iteration-5-orm-integration/tasks/task-14-e2e-smoke/summary.md) |
 
 ---
 
@@ -510,7 +510,7 @@ make backend-db-shell
 
 ---
 
-### Задача 11: Актуализация ORM-моделей 📋
+### Задача 11: Актуализация ORM-моделей ✅
 
 #### Цель
 
@@ -548,7 +548,7 @@ make backend-db-shell
 
 ---
 
-### Задача 12: Ревью и доработка репозиториев 📋
+### Задача 12: Ревью и доработка репозиториев ✅
 
 **Skill:** перед началом прочитать skill `fastapi-templates` и применить его паттерны к слою репозиториев и dependency injection.
 
@@ -593,7 +593,7 @@ make backend-db-shell
 
 ---
 
-### Задача 13: Тестовый стенд с PostgreSQL 📋
+### Задача 13: Тестовый стенд с PostgreSQL ✅
 
 **Skill:** перед реализацией фикстур прочитать skill `python-testing-patterns` и применить его рекомендации по async-фикстурам, изоляции БД и организации `conftest.py`. Если в ходе задачи или задачи 14 появляются дополнительные тестовые сценарии (репозитории, граничные случаи, параметризованные кейсы) — применить паттерны skill для их оформления.
 
@@ -641,7 +641,7 @@ make backend-db-shell
 
 ---
 
-### Задача 14: End-to-end smoke на PostgreSQL + документация 📋
+### Задача 14: End-to-end smoke на PostgreSQL + документация ✅
 
 #### Цель
 
@@ -689,6 +689,7 @@ make backend-db-shell
 - `make check` — lint + все тесты — зелёный
 - `make backend-db-reset && make backend-db-migrate && make backend-db-seed` — без ошибок
 - README, vision, plan.md актуальны
+- Слой хранения сверен с `docs/tech/api-contracts.md` и `docs/integrations.md` — все 10 эндпоинтов покрыты репозиториями и ORM-моделями, расхождений нет (проверено 2026-04-05) ✅
 
 **Пользователь:**
 
@@ -699,6 +700,8 @@ make backend-db-seed
 make backend-run   # терминал 1
 make run           # терминал 2
 ```
+
+Зарегистрировать себя: `POST /v1/users` с реальным `telegram_id` (инструкция — [docs/integrations.md](../integrations.md#регистрация-пользователя-перед-smoke-тестом)).
 
 Telegram: `/start` и вопрос → ответ из backend. `make backend-db-shell` → `SELECT * FROM messages LIMIT 5;` → сообщения сохранены в PostgreSQL.
 

@@ -24,6 +24,26 @@
 
 Проверка готовности: `GET /health` (вне префикса `/v1`).
 
+#### Регистрация пользователя перед smoke-тестом
+
+Бот возвращает `Профиль не найден` если `telegram_id` отправителя отсутствует в БД. Перед тестом зарегистрируйте себя (узнать свой `telegram_id` можно через [@userinfobot](https://t.me/userinfobot)).
+
+**curl (bash/WSL):**
+```bash
+curl -s -X POST http://localhost:8000/v1/users \
+  -H "Content-Type: application/json" \
+  -d '{"telegram_id": <ваш_telegram_id>, "name": "Test User", "role": "student"}' | python -m json.tool
+```
+
+**PowerShell:**
+```powershell
+Invoke-RestMethod -Method Post -Uri http://localhost:8000/v1/users `
+  -ContentType "application/json" `
+  -Body '{"telegram_id": <ваш_telegram_id>, "name": "Test User", "role": "student"}'
+```
+
+Успешный ответ — объект пользователя с `id` (UUID). После этого бот принимает сообщения.
+
 ### Диалог с ассистентом
 
 | Метод | Путь | Назначение |

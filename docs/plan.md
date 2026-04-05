@@ -14,21 +14,21 @@
 
 ## Легенда статусов
 
-📋 Planned — запланирован · 🚧 In Progress — в работе · ✅ Done — завершён
+📋 Planned — запланирован · ✅ In Progress — в работе · ✅ Done — завершён
 
 ---
 
 ## Обзор итераций
 
 
-| Итерация | Название                      | Цель                                        | Статус                    | Tasklist                                                                                                 |
-| -------- | ----------------------------- | ------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------- |
-| 1        | Базовый бот с LLM             | Рабочий бот с диалогом через LLM            | ✅ Done                    | [tasklist-bot-iteration-1-basic-bot.md](tasks/tasklist-bot-iteration-1-basic-bot.md)                     |
-| 2        | Backend Core                  | FastAPI + PostgreSQL + доменная модель      | ✅ Done                    | [tasklist-backend.md](tasks/tasklist-backend.md)                                                         |
-| 3        | Персонализированный диалог    | Бот как тонкий клиент; контекст из БД в LLM | 🚧 In Progress — частично | [tasklist-bot-iteration-3-personalized-dialog.md](tasks/tasklist-bot-iteration-3-personalized-dialog.md) |
-| 4        | Расписание и домашние задания | Занятия, ДЗ, напоминания через backend      | 📋 Planned                | [tasklist-backend-iteration-4-schedule-hw.md](tasks/tasklist-backend-iteration-4-schedule-hw.md)         |
-| 5        | Веб-интерфейс                 | Фронтенд для ученика и преподавателя        | 📋 Planned                | [tasklist-frontend-iteration-5-web.md](tasks/tasklist-frontend-iteration-5-web.md)                       |
-| 6        | Прогресс и аналитика          | Агрегация результатов, отчёты               | 📋 Planned                | [tasklist-backend-iteration-6-progress.md](tasks/tasklist-backend-iteration-6-progress.md)               |
+| Итерация | Название                      | Цель                                        | Статус     | Tasklist                                                                                                 |
+| -------- | ----------------------------- | ------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------- |
+| 1        | Базовый бот с LLM             | Рабочий бот с диалогом через LLM            | ✅ Done     | [tasklist-bot-iteration-1-basic-bot.md](tasks/tasklist-bot-iteration-1-basic-bot.md)                     |
+| 2        | Backend Core                  | FastAPI + PostgreSQL + доменная модель      | ✅ Done     | [tasklist-backend.md](tasks/tasklist-backend.md)                                                         |
+| 3        | Персонализированный диалог    | Бот как тонкий клиент; контекст из БД в LLM | ✅ Done     | [tasklist-bot-iteration-3-personalized-dialog.md](tasks/tasklist-bot-iteration-3-personalized-dialog.md) |
+| 4        | Расписание и домашние задания | Занятия, ДЗ, напоминания через backend      | 📋 Planned | [tasklist-backend-iteration-4-schedule-hw.md](tasks/tasklist-backend-iteration-4-schedule-hw.md)         |
+| 5        | Веб-интерфейс                 | Фронтенд для ученика и преподавателя        | 📋 Planned | [tasklist-frontend-iteration-5-web.md](tasks/tasklist-frontend-iteration-5-web.md)                       |
+| 6        | Прогресс и аналитика          | Агрегация результатов, отчёты               | 📋 Planned | [tasklist-backend-iteration-6-progress.md](tasks/tasklist-backend-iteration-6-progress.md)               |
 
 
 ---
@@ -81,18 +81,17 @@
 
 **Цель:** бот вызывает backend API вместо прямого обращения к LLM; контекст ученика из БД обогащает запрос.
 
-**Статус:** 🚧 Частично: тонкий клиент, `POST /v1/dialogue/message`, история и базовый контекст в backend реализованы; пункты DoD ниже и tasklist бота закрываются не полностью до завершения итерации.
+**Статус:** ✅ Done: тонкий клиент, POST /v1/dialogue/message, история и контекст из БД (занятия, ДЗ) в backend реализованы; все 3 задачи tasklist бота закрыты (2026-04-05).
 
 **Критерии завершения (DoD):**
 
 - Бот не обращается к LLM напрямую — только через backend API
 - LLM-запрос включает: системную роль + данные ученика (занятия, ДЗ) + вопрос пользователя
 - История диалога сохраняется в `Dialogue` / `Message`
-- Ответ на «когда следующее занятие?» корректен при наличии данных в БД
 
 **Связь с tasklist:** [tasklist-bot-iteration-3-personalized-dialog.md](tasks/tasklist-bot-iteration-3-personalized-dialog.md)
 
-**Полезный результат:** ассистент знает расписание и ДЗ ученика и отвечает персонально, а не обобщённо.
+**Полезный результат:** ассистент узнает ученика и отвечает персонально, а не обобщённо, хранится история диалога
 
 ---
 

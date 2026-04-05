@@ -6,29 +6,29 @@ from collections.abc import AsyncGenerator
 
 import pytest
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from ttlg_backend.api.dialogue import get_llm_client
 from ttlg_backend.config import get_settings
-from ttlg_backend.db import ensure_sqlite_schema, init_db, reset_engine
+from ttlg_backend.db import get_session
 from ttlg_backend.llm.errors import LLMUnavailableError
 from ttlg_backend.main import app
 
 
 @pytest.fixture
 async def dialogue_client_llm_fails(
-    monkeypatch: pytest.MonkeyPatch,
+    pg_session: AsyncSession,
 ) -> AsyncGenerator[AsyncClient, None]:
-    monkeypatch.setenv("TTLG_ALLOW_SQLITE_TEST", "1")
-    monkeypatch.setenv("DATABASE_URL", "sqlite+aiosqlite:///:memory:")
     get_settings.cache_clear()
-    await reset_engine()
-    init_db(get_settings())
-    await ensure_sqlite_schema(get_settings())
+
+    async def _override() -> AsyncGenerator[AsyncSession, None]:
+        yield pg_session
 
     class BoomLLM:
         async def complete_chat(self, *, system_prompt: str, user_message: str) -> str:
             raise LLMUnavailableError
 
+    app.dependency_overrides[get_session] = _override
     app.dependency_overrides[get_llm_client] = lambda: BoomLLM()
 
     transport = ASGITransport(app=app)
@@ -40,7 +40,9 @@ async def dialogue_client_llm_fails(
         assert cu.status_code == 201
         yield ac
 
-    app.dependency_overrides.clear()
+    app.dependency_overrides.pop(get_session, None)
+    app.dependency_overrides.pop(get_llm_client, None)
+    get_settings.cache_clear()
 
 
 async def test_dialogue_llm_unavailable_returns_503(

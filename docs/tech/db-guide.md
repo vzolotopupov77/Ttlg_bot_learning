@@ -80,6 +80,10 @@ uv run --package ttlg-backend alembic -c backend/alembic.ini history --verbose
 
 При изменении `storage/models.py` — сразу создать и проверить ревизию. Коммитить оба файла вместе.
 
+### Важно: шаблон ревизии
+
+`backend/alembic/script.py.mako` содержит переменные `revision`, `down_revision` и т.д. — они обязательны для работы Alembic. Не удалять из шаблона.
+
 ---
 
 ## 3. Репозитории
@@ -128,6 +132,20 @@ async def list_some_entities(session: AsyncSession) -> list[SomeEntity]:
     result = await session.execute(select(SomeEntity))
     return list(result.scalars().all())
 ```
+
+### Итоги ревью (задача 12, итерация 5)
+
+Все 5 репозиториев проверены по чек-листу:
+
+| Репозиторий | None-handling | scalars() | Нет утечки сессии | DI через Depends | Итог |
+|-------------|--------------|-----------|-------------------|-----------------|------|
+| `users.py` | ✅ `session.get()` → None | ✅ `scalar_one_or_none()` | ✅ | ✅ | OK |
+| `dialogues.py` | ✅ `scalar_one_or_none()` | ✅ `scalars().all()` для списка | ✅ | ✅ | OK |
+| `lessons.py` | ✅ `session.get()` → None | ✅ `scalars().all()` для списка | ✅ | ✅ | OK |
+| `assignments.py` | ✅ `session.get()` → None | ✅ `scalars().all()` для списка | ✅ | ✅ | OK |
+| `progress_summary.py` | n/a (агрегация) | ✅ `scalar_one()` для COUNT | ✅ | ✅ | OK |
+
+Паттерн class-based Repository (из skill `fastapi-templates`) **отклонён**: проект использует модульные async-функции — проще, достаточно для MVP, не требует абстракции.
 
 ### Реальный пример — `users.py`
 
@@ -308,6 +326,58 @@ WHERE student_id = (SELECT id FROM users WHERE telegram_id = 111111111);
 ```
 
 > `DEV_STUDENT_TELEGRAM_ID = 111111111` — фиксированный telegram_id тестового ученика из `backend/scripts/seed.py`.
+
+---
+
+## 7. Тесты с PostgreSQL
+
+### Быстрый старт
+
+```bash
+make backend-db-up           # поднять контейнер PostgreSQL
+make backend-db-test-create  # создать базу ttlg_test (однократно)
+make backend-test            # запустить все тесты против PostgreSQL
+```
+
+### Конфигурация
+
+`DATABASE_TEST_URL` — URL тестовой базы. По умолчанию: `postgresql+asyncpg://ttlg:ttlg@127.0.0.1:5432/ttlg_test`.
+
+Задать через переменную окружения или `.env`:
+```
+DATABASE_TEST_URL=postgresql+asyncpg://ttlg:ttlg@127.0.0.1:5432/ttlg_test
+```
+
+### Стратегия изоляции
+
+Каждый тест получает чистую схему: `drop_all + create_all` при каждом вызове фикстуры `pg_session`. Это гарантирует полную изоляцию без зависимости от порядка тестов.
+
+Примечание: session-scoped fixtures с `asyncio_default_fixture_loop_scope="function"` не поддерживаются asyncpg (event loop mismatch), поэтому используется function-scoped подход с drop/create.
+
+### Структура фикстур (`backend/tests/conftest.py`)
+
+| Фикстура | Scope | Назначение |
+|----------|-------|-----------|
+| `pg_session` | function | async engine → drop_all → create_all → session |
+| `api_client_sqlite` | function | ASGI client с override `get_session` → `pg_session` |
+| `dialogue_client` | function | ASGI client + mock LLM + pre-seeded student user |
+
+### Добавить новый тест с PostgreSQL
+
+```python
+async def test_something(api_client_sqlite: AsyncClient) -> None:
+    r = await api_client_sqlite.post("/v1/users", json={"name": "U", "role": "student"})
+    assert r.status_code == 201
+```
+
+Если нужна прямая работа с сессией (без HTTP):
+```python
+async def test_repo(pg_session: AsyncSession) -> None:
+    from ttlg_backend.storage.repositories import users as repo
+    user = await repo.create_user(pg_session, name="U", role="student")
+    await pg_session.commit()
+    assert user.id is not None
+```
 
 ---
 
