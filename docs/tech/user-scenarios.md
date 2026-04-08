@@ -16,7 +16,7 @@
 1. Ученик открывает бот или веб-приложение.
 2. Запрашивает информацию о следующем занятии (командой, кнопкой или вопросом в свободной форме).
 3. Система находит ближайшее запланированное занятие для данного ученика.
-4. Ученик получает: дату и время, тему, имя преподавателя, пометку о том, что нужно принести/подготовить (если есть в заметках).
+4. Ученик получает: дату и время, тему, планируемую длительность занятия, имя преподавателя, пометку о том, что нужно принести/подготовить (если есть в заметках).
 
 **Ожидаемый результат:** ученик знает, когда и что будет на занятии, без необходимости уточнять у преподавателя.
 
@@ -24,8 +24,8 @@
 
 | Сущность | Поля |
 |----------|------|
-| `User` | `id`, `name` (преподаватель) |
-| `Lesson` | `student_id`, `teacher_id`, `topic`, `scheduled_at`, `status` (`scheduled`), `notes` |
+| `User` | `id`, `name` (преподаватель); у ученика опционально `class_label` для отображения |
+| `Lesson` | `student_id`, `teacher_id`, `topic`, `scheduled_at`, `duration_minutes`, `status` (`scheduled`), `notes` |
 
 ---
 
@@ -46,7 +46,7 @@
 | Сущность | Поля |
 |----------|------|
 | `User` | `id`, `telegram_id` (для отправки уведомления) |
-| `Lesson` | `student_id`, `scheduled_at`, `status`, `topic` |
+| `Lesson` | `student_id`, `scheduled_at`, `duration_minutes`, `status`, `topic` |
 | `Assignment` | `student_id`, `due_date`, `status`, `description` |
 
 ---
@@ -68,7 +68,7 @@
 
 | Сущность | Поля |
 |----------|------|
-| `User` | `id`, `telegram_id`, `role` |
+| `User` | `id`, `telegram_id`, `role`; опционально `class_label`, `phone`, `email` (персонализация) |
 | `Lesson` | `student_id`, `topic`, `scheduled_at` (для контекста) |
 | `Dialogue` | `student_id`, `channel`, `started_at` |
 | `Message` | `dialogue_id`, `role`, `content`, `created_at` |
@@ -113,7 +113,7 @@
 | Сущность | Поля |
 |----------|------|
 | `User` | `id`, `telegram_id` |
-| `Lesson` | `student_id`, `teacher_id`, `scheduled_at`, `status` |
+| `Lesson` | `student_id`, `teacher_id`, `scheduled_at`, `duration_minutes`, `status` |
 
 > **Примечание:** Механизм запроса переноса (отдельная сущность `RescheduleRequest` или поле-флаг в `Lesson`) в текущей схеме не предусмотрен — потенциальный пробел для итерации 2.
 
@@ -135,8 +135,8 @@
 
 | Сущность | Поля |
 |----------|------|
-| `User` | `id` |
-| `Lesson` | `student_id`, `status` (`completed`), `scheduled_at`, `topic` |
+| `User` | `id`, опционально `class_label` |
+| `Lesson` | `student_id`, `status` (`completed`), `scheduled_at`, `topic`, `duration_minutes` |
 | `Assignment` | `student_id`, `status`, `due_date` |
 | `Progress` | `student_id`, `period_start`, `period_end`, `lessons_completed`, `assignments_done`, `assignments_total`, `summary` |
 
@@ -151,8 +151,8 @@
 **Шаги:**
 1. Преподаватель открывает раздел «Расписание» в веб-приложении.
 2. Видит список занятий по всем ученикам (или с фильтром по ученику).
-3. Создаёт новое занятие: выбирает ученика, дату/время, тему.
-4. При необходимости редактирует существующее занятие (тема, время, статус) или отменяет его.
+3. Создаёт новое занятие: выбирает ученика, дату/время, тему, при необходимости длительность (по умолчанию 60 минут).
+4. При необходимости редактирует существующее занятие (тема, время, длительность, статус) или отменяет его.
 5. Ученик получает уведомление об изменении (SC-S-05).
 
 **Ожидаемый результат:** преподаватель управляет расписанием всех учеников из единого интерфейса.
@@ -161,8 +161,8 @@
 
 | Сущность | Поля |
 |----------|------|
-| `User` | `id`, `name`, `role` (`student` / `teacher`) |
-| `Lesson` | `student_id`, `teacher_id`, `topic`, `scheduled_at`, `status`, `notes` |
+| `User` | `id`, `name`, `role` (`student` / `teacher`); у ученика опционально `class_label`, `phone`, `email` |
+| `Lesson` | `student_id`, `teacher_id`, `topic`, `scheduled_at`, `duration_minutes`, `status`, `notes` |
 
 ---
 
@@ -204,7 +204,7 @@
 
 | Сущность | Поля |
 |----------|------|
-| `Lesson` | `id`, `status` (`completed`), `notes` |
+| `Lesson` | `id`, `status` (`completed`), `notes`, `duration_minutes` |
 
 ---
 
@@ -225,9 +225,9 @@
 
 | Сущность | Поля |
 |----------|------|
-| `User` | `id`, `name` |
+| `User` | `id`, `name`, опционально `class_label` |
 | `Assignment` | `student_id`, `status`, `due_date` |
-| `Lesson` | `student_id`, `status` (`completed`), `scheduled_at` |
+| `Lesson` | `student_id`, `status` (`completed`), `scheduled_at`, `duration_minutes` |
 | `Progress` | `student_id`, `period_start`, `period_end`, `lessons_completed`, `assignments_done`, `assignments_total`, `summary` |
 
 ---

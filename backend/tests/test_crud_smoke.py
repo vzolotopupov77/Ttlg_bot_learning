@@ -52,15 +52,60 @@ async def test_lesson_create_get_patch(
         },
     )
     assert c.status_code == 201, c.text
+    assert c.json()["duration_minutes"] == 60
     lid = c.json()["id"]
     g = await api_client_sqlite.get(f"/v1/lessons/{lid}")
     assert g.status_code == 200
+    assert g.json()["duration_minutes"] == 60
     p = await api_client_sqlite.patch(
         f"/v1/lessons/{lid}/status",
         json={"status": "completed"},
     )
     assert p.status_code == 200
     assert p.json()["status"] == "completed"
+
+
+async def test_lesson_custom_duration(
+    api_client_sqlite: AsyncClient,
+    teacher_and_student: tuple[UUID, UUID],
+) -> None:
+    teacher_id, student_id = teacher_and_student
+    when = datetime(2026, 4, 3, 15, 0, tzinfo=UTC)
+    c = await api_client_sqlite.post(
+        "/v1/lessons",
+        json={
+            "student_id": str(student_id),
+            "teacher_id": str(teacher_id),
+            "topic": "Trig",
+            "scheduled_at": when.isoformat(),
+            "status": "scheduled",
+            "duration_minutes": 90,
+        },
+    )
+    assert c.status_code == 201, c.text
+    assert c.json()["duration_minutes"] == 90
+
+
+async def test_create_user_with_profile(api_client_sqlite: AsyncClient) -> None:
+    r = await api_client_sqlite.post(
+        "/v1/users",
+        json={
+            "name": "Student Full",
+            "role": "student",
+            "telegram_id": 424242,
+            "class_label": "10А",
+            "phone": "+7 900 000-00-00",
+            "email": "student@example.com",
+        },
+    )
+    assert r.status_code == 201, r.text
+    data = r.json()
+    assert data["class_label"] == "10А"
+    assert data["phone"] == "+7 900 000-00-00"
+    assert data["email"] == "student@example.com"
+    g = await api_client_sqlite.get(f"/v1/users/{data['id']}")
+    assert g.status_code == 200
+    assert g.json()["email"] == "student@example.com"
 
 
 async def test_assignment_create_get_patch(

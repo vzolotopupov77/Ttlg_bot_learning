@@ -59,6 +59,7 @@ async def _get_or_create_student(session: AsyncSession) -> User:
             role=UserRole.student,
             name="Ученик",
             telegram_id=DEV_STUDENT_TELEGRAM_ID,
+            class_label="10А",
         )
         session.add(student)
         await session.flush()

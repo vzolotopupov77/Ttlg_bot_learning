@@ -725,6 +725,14 @@
             ],
             "title": "Notes",
             "description": "Заметки (что принести и т.п.)"
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "maximum": 32767.0,
+            "minimum": 1.0,
+            "title": "Duration Minutes",
+            "description": "Длительность занятия в минутах (по умолчанию 60)",
+            "default": 60
           }
         },
         "type": "object",
@@ -767,6 +775,11 @@
             "title": "Scheduled At",
             "description": "Запланированное время"
           },
+          "duration_minutes": {
+            "type": "integer",
+            "title": "Duration Minutes",
+            "description": "Длительность занятия, минуты"
+          },
           "status": {
             "$ref": "#/components/schemas/LessonStatus",
             "description": "Текущий статус"
@@ -791,6 +804,7 @@
           "teacher_id",
           "topic",
           "scheduled_at",
+          "duration_minutes",
           "status"
         ],
         "title": "LessonRead"
@@ -879,6 +893,45 @@
             ],
             "title": "Telegram Id",
             "description": "Telegram user id; для бота обязателен у ученика"
+          },
+          "class_label": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Class Label",
+            "description": "Номер/литера класса (например 10А); обычно у ученика"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone",
+            "description": "Телефон"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "email"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email",
+            "description": "Email"
           }
         },
         "type": "object",
@@ -916,6 +969,42 @@
             ],
             "title": "Telegram Id",
             "description": "Привязка к Telegram, если задана"
+          },
+          "class_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Class Label",
+            "description": "Класс (лейбл)"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone",
+            "description": "Телефон"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email",
+            "description": "Email"
           },
           "created_at": {
             "type": "string",

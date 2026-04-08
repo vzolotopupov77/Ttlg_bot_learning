@@ -16,8 +16,18 @@ async def create_user(
     name: str,
     role: UserRole,
     telegram_id: int | None = None,
+    class_label: str | None = None,
+    phone: str | None = None,
+    email: str | None = None,
 ) -> User:
-    user = User(name=name, role=role, telegram_id=telegram_id)
+    user = User(
+        name=name,
+        role=role,
+        telegram_id=telegram_id,
+        class_label=class_label,
+        phone=phone,
+        email=email,
+    )
     session.add(user)
     await session.flush()
     return user

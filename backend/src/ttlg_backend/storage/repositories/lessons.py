@@ -20,6 +20,7 @@ async def create_lesson(
     scheduled_at: datetime,
     status: LessonStatus = LessonStatus.scheduled,
     notes: str | None = None,
+    duration_minutes: int = 60,
 ) -> Lesson:
     lesson = Lesson(
         student_id=student_id,
@@ -28,6 +29,7 @@ async def create_lesson(
         scheduled_at=scheduled_at,
         status=status,
         notes=notes,
+        duration_minutes=duration_minutes,
     )
     session.add(lesson)
     await session.flush()

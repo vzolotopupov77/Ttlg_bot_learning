@@ -48,6 +48,13 @@
 | 18 | 7 | README, vision, plan, integrations — актуализация | ✅ Done | [план](impl/backend/tasks/task-18-docs-sync/plan.md) \| [summary](impl/backend/tasks/task-18-docs-sync/summary.md) |
 | 19 | 8 | Ruff, форматирование, цели `Makefile` | ✅ Done | [план](impl/backend/tasks/task-19-lint-format/plan.md) \| [summary](impl/backend/tasks/task-19-lint-format/summary.md) |
 | 20 | 8 | Таймауты, fallback, логи без секретов | ✅ Done | [план](impl/backend/tasks/task-20-resilience-logging/plan.md) \| [summary](impl/backend/tasks/task-20-resilience-logging/summary.md) |
+| 21 | 9 | Профиль ученика + длительность занятия ([data-model.md](../data-model.md)) | ✅ Done | [итерация 9](impl/backend/iteration-9-student-profile-lesson-duration/plan.md) \| [summary итерации](impl/backend/iteration-9-student-profile-lesson-duration/summary.md) \| [task-21](impl/backend/iteration-9-student-profile-lesson-duration/tasks/task-21-user-profile-lesson-duration/summary.md) |
+
+---
+
+## Итерация 9 — Профиль ученика и длительность занятия
+
+Кратко: расширение `users` и `lessons`, Alembic `a3f8c91d2b04`, API и документация. См. [plan](impl/backend/iteration-9-student-profile-lesson-duration/plan.md).
 
 ---
 

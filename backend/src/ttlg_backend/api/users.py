@@ -8,7 +8,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ttlg_backend.api.errors import api_error
@@ -28,6 +28,32 @@ class UserCreate(BaseModel):
         default=None,
         description="Telegram user id; для бота обязателен у ученика",
     )
+    class_label: str | None = Field(
+        default=None,
+        max_length=32,
+        description="Номер/литера класса (например 10А); обычно у ученика",
+    )
+    phone: str | None = Field(default=None, max_length=32, description="Телефон")
+    email: EmailStr | None = Field(default=None, description="Email")
+
+    @field_validator("class_label", "phone", mode="before")
+    @classmethod
+    def strip_optional(cls, value: object) -> str | None:
+        if value is None:
+            return None
+        if isinstance(value, str):
+            s = value.strip()
+            return s if s else None
+        return str(value)
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def empty_email_to_none(cls, value: object) -> str | None:
+        if value is None:
+            return None
+        if isinstance(value, str) and not value.strip():
+            return None
+        return str(value).strip() if isinstance(value, str) else value
 
 
 class UserRead(BaseModel):
@@ -38,6 +64,9 @@ class UserRead(BaseModel):
         default=None,
         description="Привязка к Telegram, если задана",
     )
+    class_label: str | None = Field(default=None, description="Класс (лейбл)")
+    phone: str | None = Field(default=None, description="Телефон")
+    email: str | None = Field(default=None, description="Email")
     created_at: datetime = Field(..., description="Время создания записи (UTC)")
 
     model_config = {"from_attributes": True}
@@ -68,6 +97,9 @@ async def create_user(
         name=body.name,
         role=body.role,
         telegram_id=body.telegram_id,
+        class_label=body.class_label,
+        phone=body.phone,
+        email=body.email,
     )
     await session.commit()
     await session.refresh(user)

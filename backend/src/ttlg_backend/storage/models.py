@@ -6,7 +6,19 @@ import uuid
 from datetime import date, datetime
 from enum import StrEnum
 
-from sqlalchemy import BigInteger, Date, DateTime, ForeignKey, Index, String, Text, UniqueConstraint, Uuid
+from sqlalchemy import (
+    BigInteger,
+    CheckConstraint,
+    Date,
+    DateTime,
+    ForeignKey,
+    Index,
+    SmallInteger,
+    String,
+    Text,
+    UniqueConstraint,
+    Uuid,
+)
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
@@ -53,6 +65,9 @@ class User(Base):
     )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     telegram_id: Mapped[int | None] = mapped_column(BigInteger(), nullable=True)
+    class_label: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    phone: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    email: Mapped[str | None] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
@@ -74,7 +89,10 @@ class User(Base):
 
 class Lesson(Base):
     __tablename__ = "lessons"
-    __table_args__ = (Index("ix_lessons_scheduled_at", "scheduled_at"),)
+    __table_args__ = (
+        Index("ix_lessons_scheduled_at", "scheduled_at"),
+        CheckConstraint("duration_minutes > 0", name="ck_lessons_duration_positive"),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     student_id: Mapped[uuid.UUID] = mapped_column(
@@ -91,6 +109,12 @@ class Lesson(Base):
     )
     topic: Mapped[str] = mapped_column(String(512), nullable=False)
     scheduled_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    duration_minutes: Mapped[int] = mapped_column(
+        SmallInteger(),
+        nullable=False,
+        default=60,
+        server_default="60",
+    )
     status: Mapped[LessonStatus] = mapped_column(
         SQLEnum(LessonStatus, name="lesson_status", native_enum=True, values_callable=lambda e: [i.value for i in e]),
     )
@@ -140,9 +164,7 @@ class Assignment(Base):
 
 class Progress(Base):
     __tablename__ = "progress"
-    __table_args__ = (
-        UniqueConstraint("student_id", "period_start", "period_end", name="uq_progress_student_period"),
-    )
+    __table_args__ = (UniqueConstraint("student_id", "period_start", "period_end", name="uq_progress_student_period"),)
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     student_id: Mapped[uuid.UUID] = mapped_column(

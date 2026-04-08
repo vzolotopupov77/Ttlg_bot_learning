@@ -16,6 +16,9 @@
 | role | enum (`user_role`) | NOT NULL | `student` · `teacher` |
 | name | VARCHAR(255) | NOT NULL | Имя пользователя |
 | telegram_id | BIGINT | NULL, UNIQUE | Привязка к Telegram-аккаунту |
+| class_label | VARCHAR(32) | NULL | Номер / литера класса (например `10А`); обычно у ученика |
+| phone | VARCHAR(32) | NULL | Телефон; обычно у ученика |
+| email | VARCHAR(255) | NULL | Email; обычно у ученика (уникальность в MVP не enforced) |
 | created_at | TIMESTAMPTZ | NOT NULL | Дата регистрации; `DEFAULT now()` |
 
 ---
@@ -31,6 +34,7 @@
 | teacher_id | UUID → users.id | NOT NULL | Преподаватель; `ON DELETE CASCADE` |
 | topic | VARCHAR(512) | NOT NULL | Тема занятия |
 | scheduled_at | TIMESTAMPTZ | NOT NULL | Запланированное время |
+| duration_minutes | SMALLINT | NOT NULL | Длительность занятия в минутах; `DEFAULT 60`, `> 0` |
 | status | enum (`lesson_status`) | NOT NULL | `scheduled` · `completed` · `cancelled` |
 | notes | TEXT | NULL | Заметки по итогам занятия |
 
@@ -108,6 +112,9 @@ erDiagram
         string role
         string name
         bigint telegram_id
+        string class_label
+        string phone
+        string email
         timestamptz created_at
     }
 
@@ -117,6 +124,7 @@ erDiagram
         UUID teacher_id
         string topic
         timestamptz scheduled_at
+        int duration_minutes
         string status
         text notes
     }
@@ -177,16 +185,20 @@ users
   role          user_role     NOT NULL
   name          VARCHAR(255)  NOT NULL
   telegram_id   BIGINT        NULL      UNIQUE
+  class_label   VARCHAR(32)   NULL
+  phone         VARCHAR(32)   NULL
+  email         VARCHAR(255)  NULL
   created_at    TIMESTAMPTZ   NOT NULL  DEFAULT now()
 
 lessons
-  id            UUID          NOT NULL  PRIMARY KEY
-  student_id    UUID          NOT NULL  → users.id ON DELETE CASCADE
-  teacher_id    UUID          NOT NULL  → users.id ON DELETE CASCADE
-  topic         VARCHAR(512)  NOT NULL
-  scheduled_at  TIMESTAMPTZ   NOT NULL
-  status        lesson_status NOT NULL
-  notes         TEXT          NULL
+  id                 UUID          NOT NULL  PRIMARY KEY
+  student_id         UUID          NOT NULL  → users.id ON DELETE CASCADE
+  teacher_id         UUID          NOT NULL  → users.id ON DELETE CASCADE
+  topic              VARCHAR(512)  NOT NULL
+  scheduled_at       TIMESTAMPTZ   NOT NULL
+  duration_minutes   SMALLINT      NOT NULL  DEFAULT 60  CHECK (duration_minutes > 0)
+  status             lesson_status NOT NULL
+  notes              TEXT          NULL
 
 assignments
   id            UUID               NOT NULL  PRIMARY KEY
@@ -250,6 +262,7 @@ messages
 
 | Таблица | Constraint | Обоснование |
 |---------|-----------|------------|
+| `lessons` | `CHECK (duration_minutes > 0)` | осмысленная длительность занятия |
 | `progress` | `UNIQUE(student_id, period_start, period_end)` | предотвращает дублирование агрегата за один период |
 
 ---

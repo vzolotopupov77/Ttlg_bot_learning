@@ -30,6 +30,12 @@ class LessonCreate(BaseModel):
         description="Статус занятия",
     )
     notes: str | None = Field(default=None, description="Заметки (что принести и т.п.)")
+    duration_minutes: int = Field(
+        default=60,
+        ge=1,
+        le=32767,
+        description="Длительность занятия в минутах (по умолчанию 60)",
+    )
 
 
 class LessonRead(BaseModel):
@@ -38,6 +44,7 @@ class LessonRead(BaseModel):
     teacher_id: UUID = Field(..., description="UUID преподавателя")
     topic: str = Field(..., description="Тема")
     scheduled_at: datetime = Field(..., description="Запланированное время")
+    duration_minutes: int = Field(..., description="Длительность занятия, минуты")
     status: LessonStatus = Field(..., description="Текущий статус")
     notes: str | None = Field(default=None, description="Заметки")
 
@@ -68,6 +75,7 @@ async def create_lesson(
         scheduled_at=body.scheduled_at,
         status=body.status,
         notes=body.notes,
+        duration_minutes=body.duration_minutes,
     )
     await session.commit()
     await session.refresh(lesson)

@@ -22,6 +22,8 @@
 | `GET` | `/v1/assignments/{assignment_id}` | Получить ДЗ |
 | `PATCH` | `/v1/assignments/{assignment_id}/status` | Обновить статус ДЗ |
 
+При создании пользователя можно передать опционально `class_label`, `phone`, `email`; при создании занятия — опционально `duration_minutes` (иначе 60). См. `GET /docs`.
+
 Проверка готовности: `GET /health` (вне префикса `/v1`).
 
 #### Регистрация пользователя перед smoke-тестом
@@ -32,14 +34,14 @@
 ```bash
 curl -s -X POST http://localhost:8000/v1/users \
   -H "Content-Type: application/json" \
-  -d '{"telegram_id": <ваш_telegram_id>, "name": "Test User", "role": "student"}' | python -m json.tool
+  -d '{"telegram_id": <ваш_telegram_id>, "name": "Test User", "role": "student", "class_label": "10А", "phone": "+79001234567", "email": "student@example.com"}' | python -m json.tool
 ```
 
 **PowerShell:**
 ```powershell
 Invoke-RestMethod -Method Post -Uri http://localhost:8000/v1/users `
   -ContentType "application/json" `
-  -Body '{"telegram_id": <ваш_telegram_id>, "name": "Test User", "role": "student"}'
+  -Body '{"telegram_id": <ваш_telegram_id>, "name": "Test User", "role": "student", "class_label": "10А"}'
 ```
 
 Успешный ответ — объект пользователя с `id` (UUID). После этого бот принимает сообщения.
