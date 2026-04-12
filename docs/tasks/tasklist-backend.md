@@ -4,7 +4,20 @@
 
 **Backend** — ядро системы: клиенты (Telegram-бот, веб) ходят только в API; интеграции (PostgreSQL, LLM, при необходимости Telegram Bot API для исходящих сообщений) подключаются из backend. Этот тасклист описывает **текущий этап**: ядро, диалог ученика с ассистентом («как решить задачу / объяснить тему»), рефакторинг бота на вызовы API, базовое качество.
 
-**Skills:** на этапах выбора стека и проектирования API уместно выполнить `/find-skills` и при необходимости подключить релевантные skills (шаблоны FastAPI, ORM, контракты REST).
+## Навыки для API и backend работ
+
+При проектировании и изменении API и backend-кода применять:
+
+- **`api-design-principles`** — ресурсно-ориентированные URL (существительные во мн.ч.), HTTP-методы по семантике, единый формат `ErrorResponse` (`error`, `message`, `details`), корректные статус-коды (201/204/400/401/403/404/422), пагинация `PaginatedResponse` для list-эндпоинтов, версионирование `/v1/`.
+- **`fastapi-templates`** — структура `api/` / `services/` / `storage/`; `Depends` для инъекции сессии и аутентификации; `response_model=` на каждом эндпоинте; сервисный слой отделяет бизнес-логику от роутера; `AsyncSession` везде; `pydantic-settings` для конфига.
+- **`modern-python`** — `uv add` / `uv remove` для зависимостей (не редактировать `pyproject.toml` вручную); `[dependency-groups]` для dev/test-зависимостей; `uv run` в Makefile-целях; `ruff` для линтинга и форматирования; `uv.lock` в git.
+
+При изменениях схемы БД применять дополнительно:
+
+- **`postgresql-table-design`** — `BIGINT GENERATED ALWAYS AS IDENTITY` для PK (не `SERIAL`, не `UUID` без необходимости); `TIMESTAMPTZ` вместо `TIMESTAMP`; `TEXT` вместо `VARCHAR(n)`; `NOT NULL` везде, где семантически обязательно; FK-колонки требуют явного `CREATE INDEX` (PostgreSQL не индексирует FK автоматически!); флаги — `BOOLEAN NOT NULL DEFAULT false`; статусы с конечным набором значений — `TEXT NOT NULL CHECK (status IN (...))` если набор устойчив, или enum-тип если набор стабилен; `CREATE INDEX CONCURRENTLY` для добавления индексов в production без блокировки записей; волатильные DEFAULT при `ALTER TABLE` вызывают полный rewrite таблицы — планировать с осторожностью.
+- **`sharp-edges`** — при работе с аутентификацией/JWT: алгоритм подписи не берётся из заголовка токена (`"alg": "none"` атака); `SECRET_KEY=""` или отсутствие ключа должно падать при старте, не в рантайме; `password_hash` — выбор алгоритма не должен быть конфигурируемым пользователем; все security-critical значения валидировать при старте через `pydantic-settings` (не принимать `None`/пустую строку); параметры JWT (срок жизни `0`, отрицательные значения) должны быть отвергнуты с ошибкой, а не трактоваться как «не истекает».
+
+> Держать в актуальном состоянии: `docs/tech/api-contracts.md`, `docs/data-model.md`, `.env.example`, `docs/vision.md`. При добавлении нового эндпоинта или изменении схемы — обновить соответствующий артефакт в той же задаче.
 
 Дорожная карта по итерациям продукта — [plan.md](../plan.md). Детализация следующих блоков backend — в отдельных файлах: [tasklist-backend-iteration-4-schedule-hw.md](tasklist-backend-iteration-4-schedule-hw.md), [tasklist-backend-iteration-6-progress.md](tasklist-backend-iteration-6-progress.md).
 
@@ -52,15 +65,9 @@
 
 ---
 
-## Итерация 9 — Профиль ученика и длительность занятия
-
-Кратко: расширение `users` и `lessons`, Alembic `a3f8c91d2b04`, API и документация. См. [plan](impl/backend/iteration-9-student-profile-lesson-duration/plan.md).
-
----
-
 ## Этап 1 — Выбор стека и фиксация конвенций
 
-**Skills:** `/find-skills` (FastAPI, SQLAlchemy, Alembic, uv/pytest).
+**Skills:** `modern-python` (uv, ruff, pyproject.toml), `fastapi-templates` (структура проекта, async-паттерны).
 
 ### Задача 01: Согласовать и зафиксировать backend-стек ✅
 
@@ -166,7 +173,7 @@
 
 ## Этап 2 — Проектирование API-контракта
 
-**Skills:** `/find-skills` (REST API, OpenAPI, версионирование).
+**Skills:** `api-design-principles` (ресурсы, HTTP-методы, коды ответов, единый формат ошибок, пагинация).
 
 Базовый сценарий из [idea.md](../idea.md): ученик **спрашивает ассистента, как решить задачу или объяснить тему** — первый контракт должен это закрывать без лишних сущностей в запросе.
 
@@ -815,6 +822,12 @@ make check
 ```
 
 **Результат:** репозиторий готов к расширению API (расписание, ДЗ — см. отдельные tasklist'ы).
+
+---
+
+## Итерация 9 — Профиль ученика и длительность занятия
+
+Расширение `users` и `lessons`, Alembic `a3f8c91d2b04`, API и документация. См. [plan](impl/backend/iteration-9-student-profile-lesson-duration/plan.md).
 
 ---
 
