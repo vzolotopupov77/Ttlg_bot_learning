@@ -68,6 +68,8 @@ class User(Base):
     class_label: Mapped[str | None] = mapped_column(String(32), nullable=True)
     phone: Mapped[str | None] = mapped_column(String(32), nullable=True)
     email: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    password_hash: Mapped[str | None] = mapped_column(Text, nullable=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
@@ -85,6 +87,10 @@ class User(Base):
     assignments: Mapped[list[Assignment]] = relationship(back_populates="student")
     progress_rows: Mapped[list[Progress]] = relationship(back_populates="student")
     dialogues: Mapped[list[Dialogue]] = relationship(back_populates="student")
+    reschedule_requests: Mapped[list[RescheduleRequest]] = relationship(
+        back_populates="student",
+        foreign_keys="RescheduleRequest.student_id",
+    )
 
 
 class Lesson(Base):
@@ -119,6 +125,11 @@ class Lesson(Base):
         SQLEnum(LessonStatus, name="lesson_status", native_enum=True, values_callable=lambda e: [i.value for i in e]),
     )
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    notification_sent: Mapped[bool] = mapped_column(nullable=False, server_default="false")
+    confirmed_by_student: Mapped[bool] = mapped_column(nullable=False, server_default="false")
+    homework_sent: Mapped[bool] = mapped_column(nullable=False, server_default="false")
+    solution_received: Mapped[bool] = mapped_column(nullable=False, server_default="false")
+    solution_checked: Mapped[bool] = mapped_column(nullable=False, server_default="false")
 
     student: Mapped[User] = relationship(
         back_populates="lessons_as_student",
@@ -129,6 +140,48 @@ class Lesson(Base):
         foreign_keys=[teacher_id],
     )
     assignments: Mapped[list[Assignment]] = relationship(back_populates="lesson")
+    reschedule_requests: Mapped[list[RescheduleRequest]] = relationship(back_populates="lesson")
+
+
+class RescheduleRequest(Base):
+    __tablename__ = "reschedule_requests"
+    __table_args__ = (
+        Index("ix_reschedule_requests_lesson_id", "lesson_id"),
+        Index("ix_reschedule_requests_student_id", "student_id"),
+        CheckConstraint(
+            "status IN ('pending', 'accepted', 'rejected')",
+            name="ck_reschedule_requests_status",
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    lesson_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid(as_uuid=True),
+        ForeignKey("lessons.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    student_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    proposed_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    requested_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+    )
+    status: Mapped[str] = mapped_column(Text, nullable=False, server_default="pending")
+
+    lesson: Mapped[Lesson] = relationship(back_populates="reschedule_requests")
+    student: Mapped[User] = relationship(back_populates="reschedule_requests", foreign_keys=[student_id])
+
+
+class SystemSetting(Base):
+    __tablename__ = "system_settings"
+
+    key: Mapped[str] = mapped_column(Text, primary_key=True)
+    value: Mapped[str] = mapped_column(Text, nullable=False)
 
 
 class Assignment(Base):

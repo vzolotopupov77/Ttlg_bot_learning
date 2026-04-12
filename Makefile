@@ -61,4 +61,4 @@ backend-test:
 
 # Выгрузить OpenAPI JSON в docs/openapi.json (без запуска сервера)
 openapi-export:
-	uv run --package ttlg-backend python -c "import json, pathlib; from ttlg_backend.main import app; pathlib.Path('docs/openapi.json').write_text(json.dumps(app.openapi(), indent=2, ensure_ascii=False), encoding='utf-8')"
+	uv run --package ttlg-backend python -c "import json, os, pathlib; os.environ.setdefault('SECRET_KEY','dev-openapi-export-only'); os.environ.setdefault('ACCESS_TOKEN_EXPIRE_MINUTES','60'); from ttlg_backend.main import app; pathlib.Path('docs/openapi.json').write_text(json.dumps(app.openapi(), indent=2, ensure_ascii=False), encoding='utf-8')"

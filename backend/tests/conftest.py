@@ -8,6 +8,9 @@ which have known compatibility issues with asyncpg.
 from __future__ import annotations
 
 import os
+
+os.environ.setdefault("SECRET_KEY", "test-secret-key-for-jwt-minimum-length-32chars")
+os.environ.setdefault("ACCESS_TOKEN_EXPIRE_MINUTES", "60")
 from collections.abc import AsyncGenerator
 
 import pytest

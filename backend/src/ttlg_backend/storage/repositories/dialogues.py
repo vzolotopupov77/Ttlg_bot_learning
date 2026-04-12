@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ttlg_backend.storage.models import Dialogue, DialogueChannel, Message, MessageRole
@@ -54,3 +54,26 @@ async def list_messages_for_dialogue(
     stmt = select(Message).where(Message.dialogue_id == dialogue_id).order_by(Message.created_at.asc()).limit(limit)
     result = await session.execute(stmt)
     return list(result.scalars().all())
+
+
+async def list_messages_for_student(
+    session: AsyncSession,
+    student_id: UUID,
+    *,
+    limit: int,
+    offset: int,
+) -> tuple[list[Message], int]:
+    base = select(Message).join(Dialogue, Message.dialogue_id == Dialogue.id).where(Dialogue.student_id == student_id)
+    count_stmt = (
+        select(func.count())
+        .select_from(Message)
+        .join(
+            Dialogue,
+            Message.dialogue_id == Dialogue.id,
+        )
+        .where(Dialogue.student_id == student_id)
+    )
+    total = int((await session.execute(count_stmt)).scalar_one())
+    stmt = base.order_by(Message.created_at.desc()).offset(offset).limit(limit)
+    result = await session.execute(stmt)
+    return list(result.scalars().all()), total

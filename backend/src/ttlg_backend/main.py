@@ -5,13 +5,18 @@ from __future__ import annotations
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
 
 from ttlg_backend.api.assignments import router as assignments_router
+from ttlg_backend.api.auth import router as auth_router
 from ttlg_backend.api.dialogue import router as dialogue_router
 from ttlg_backend.api.lessons import router as lessons_router
+from ttlg_backend.api.settings import router as settings_router
+from ttlg_backend.api.student_schedule import router as student_schedule_router
+from ttlg_backend.api.students import router as students_router
+from ttlg_backend.api.teacher import router as teacher_router
 from ttlg_backend.api.users import router as users_router
 from ttlg_backend.config import get_settings
 from ttlg_backend.db import close_db, ensure_sqlite_schema, init_db, ping_db
@@ -44,10 +49,31 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
+    app.include_router(auth_router, prefix="/v1")
     app.include_router(dialogue_router, prefix="/v1")
     app.include_router(users_router, prefix="/v1")
     app.include_router(lessons_router, prefix="/v1")
     app.include_router(assignments_router, prefix="/v1")
+    app.include_router(teacher_router, prefix="/v1")
+    app.include_router(students_router, prefix="/v1")
+    app.include_router(settings_router, prefix="/v1")
+    app.include_router(student_schedule_router, prefix="/v1")
+
+    @app.exception_handler(HTTPException)
+    async def http_exception_handler(_request: Request, exc: HTTPException) -> JSONResponse:
+        code = "error"
+        if exc.status_code == 401:
+            code = "unauthorized"
+        elif exc.status_code == 403:
+            code = "forbidden"
+        elif exc.status_code == 404:
+            code = "not_found"
+        detail = exc.detail
+        message = detail if isinstance(detail, str) else str(detail)
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"error": {"code": code, "message": message}},
+        )
 
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(

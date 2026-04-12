@@ -18,6 +18,17 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
+    secret_key: str = Field(
+        ...,
+        min_length=1,
+        description="Secret for signing JWT (HS256). Must be non-empty.",
+    )
+    access_token_expire_minutes: int = Field(
+        default=60,
+        gt=0,
+        description="JWT lifetime in minutes; must be > 0.",
+    )
+
     database_url: str | None = Field(
         default=None,
         description="Async SQLAlchemy URL (postgresql+asyncpg://...). If unset, API starts without DB.",
@@ -67,6 +78,18 @@ class Settings(BaseSettings):
             return self
         msg = "DATABASE_URL must use postgresql+asyncpg:// (or sqlite+aiosqlite:// with TTLG_ALLOW_SQLITE_TEST=1)"
         raise ValueError(msg)
+
+    @field_validator("secret_key", mode="before")
+    @classmethod
+    def reject_empty_secret_key(cls, v: object) -> str:
+        if v is None:
+            msg = "SECRET_KEY is required"
+            raise ValueError(msg)
+        s = str(v).strip()
+        if not s:
+            msg = "SECRET_KEY must not be empty"
+            raise ValueError(msg)
+        return s
 
 
 @lru_cache
