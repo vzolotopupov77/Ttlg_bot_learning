@@ -19,6 +19,8 @@
 | class_label | VARCHAR(32) | NULL | Номер / литера класса (например `10А`); обычно у ученика |
 | phone | VARCHAR(32) | NULL | Телефон; обычно у ученика |
 | email | VARCHAR(255) | NULL | Email; обычно у ученика (уникальность в MVP не enforced) |
+| password_hash | TEXT | NULL | Bcrypt-хеш пароля (веб-логин преподавателя/ученика); `NULL` для пользователей только из Telegram |
+| notes | TEXT | NULL | Заметки / цель обучения (профиль ученика; форма преподавателя) |
 | created_at | TIMESTAMPTZ | NOT NULL | Дата регистрации; `DEFAULT now()` |
 
 ---
@@ -37,6 +39,39 @@
 | duration_minutes | SMALLINT | NOT NULL | Длительность занятия в минутах; `DEFAULT 60`, `> 0` |
 | status | enum (`lesson_status`) | NOT NULL | `scheduled` · `completed` · `cancelled` |
 | notes | TEXT | NULL | Заметки по итогам занятия |
+| notification_sent | BOOLEAN | NOT NULL | Уведомление о занятии отправлено; `DEFAULT false` |
+| confirmed_by_student | BOOLEAN | NOT NULL | Ученик подтвердил занятие; `DEFAULT false` |
+| homework_sent | BOOLEAN | NOT NULL | ДЗ отправлено; `DEFAULT false` |
+| solution_received | BOOLEAN | NOT NULL | Решение получено; `DEFAULT false` |
+| solution_checked | BOOLEAN | NOT NULL | Решение проверено; `DEFAULT false` |
+
+---
+
+### RescheduleRequest (Запрос на перенос занятия)
+
+Запрос ученика перенести занятие на другое время. Обрабатывает преподаватель.
+
+| Поле | Тип | Nullable | Описание |
+|------|-----|----------|---------|
+| id | UUID | NOT NULL | Первичный ключ |
+| lesson_id | UUID → lessons.id | NOT NULL | Занятие; `ON DELETE CASCADE` |
+| student_id | UUID → users.id | NOT NULL | Ученик; `ON DELETE CASCADE` |
+| proposed_time | TIMESTAMPTZ | NOT NULL | Предлагаемое время |
+| requested_at | TIMESTAMPTZ | NOT NULL | Время запроса; `DEFAULT now()` |
+| status | TEXT | NOT NULL | `pending` · `accepted` · `rejected` (CHECK в БД) |
+
+Индексы: `(lesson_id)`, `(student_id)`.
+
+---
+
+### SystemSetting (Настройки системы)
+
+Key-value хранилище настроек веб-интерфейса (имя преподавателя, длительность по умолчанию, интервалы напоминаний).
+
+| Поле | Тип | Nullable | Описание |
+|------|-----|----------|---------|
+| key | TEXT | NOT NULL | Первичный ключ (имя параметра) |
+| value | TEXT | NOT NULL | Значение (строка; числа — как текст) |
 
 ---
 
@@ -115,6 +150,8 @@ erDiagram
         string class_label
         string phone
         string email
+        text password_hash
+        text notes
         timestamptz created_at
     }
 
@@ -127,6 +164,25 @@ erDiagram
         int duration_minutes
         string status
         text notes
+        bool notification_sent
+        bool confirmed_by_student
+        bool homework_sent
+        bool solution_received
+        bool solution_checked
+    }
+
+    reschedule_requests {
+        UUID id
+        UUID lesson_id
+        UUID student_id
+        timestamptz proposed_time
+        timestamptz requested_at
+        string status
+    }
+
+    system_settings {
+        text key
+        text value
     }
 
     assignments {
@@ -169,7 +225,9 @@ erDiagram
     users ||--o{ assignments : "получает"
     users ||--o{ progress : "имеет"
     users ||--o{ dialogues : "ведёт"
+    users ||--o{ reschedule_requests : "запрашивает перенос"
     lessons ||--o{ assignments : "порождает"
+    lessons ||--o{ reschedule_requests : "имеет запросы"
     dialogues ||--o{ messages : "содержит"
 ```
 
@@ -188,6 +246,8 @@ users
   class_label   VARCHAR(32)   NULL
   phone         VARCHAR(32)   NULL
   email         VARCHAR(255)  NULL
+  password_hash TEXT          NULL
+  notes         TEXT          NULL
   created_at    TIMESTAMPTZ   NOT NULL  DEFAULT now()
 
 lessons
@@ -199,6 +259,23 @@ lessons
   duration_minutes   SMALLINT      NOT NULL  DEFAULT 60  CHECK (duration_minutes > 0)
   status             lesson_status NOT NULL
   notes              TEXT          NULL
+  notification_sent   BOOLEAN NOT NULL DEFAULT false
+  confirmed_by_student BOOLEAN NOT NULL DEFAULT false
+  homework_sent       BOOLEAN NOT NULL DEFAULT false
+  solution_received   BOOLEAN NOT NULL DEFAULT false
+  solution_checked    BOOLEAN NOT NULL DEFAULT false
+
+reschedule_requests
+  id             UUID          NOT NULL  PRIMARY KEY
+  lesson_id      UUID          NOT NULL  → lessons.id ON DELETE CASCADE
+  student_id     UUID          NOT NULL  → users.id ON DELETE CASCADE
+  proposed_time  TIMESTAMPTZ   NOT NULL
+  requested_at   TIMESTAMPTZ   NOT NULL  DEFAULT now()
+  status         TEXT          NOT NULL  DEFAULT 'pending'  CHECK (status IN ('pending','accepted','rejected'))
+
+system_settings
+  key    TEXT  NOT NULL  PRIMARY KEY
+  value  TEXT  NOT NULL
 
 assignments
   id            UUID               NOT NULL  PRIMARY KEY
@@ -243,6 +320,8 @@ messages
 | `progress.student_id` → `users.id` | CASCADE |
 | `dialogues.student_id` → `users.id` | CASCADE |
 | `messages.dialogue_id` → `dialogues.id` | CASCADE |
+| `reschedule_requests.lesson_id` → `lessons.id` | CASCADE |
+| `reschedule_requests.student_id` → `users.id` | CASCADE |
 
 ### Индексы
 
@@ -257,6 +336,8 @@ messages
 | `progress` | `student_id` | B-tree | фильтр прогресса по ученику |
 | `dialogues` | `student_id` | B-tree | фильтр диалогов по ученику |
 | `messages` | `(dialogue_id, created_at)` | B-tree composite | SC-S-03: выборка сообщений диалога по времени |
+| `reschedule_requests` | `lesson_id` | B-tree | FK join |
+| `reschedule_requests` | `student_id` | B-tree | FK join |
 
 ### Дополнительные constraints (принятые по итогам ревью)
 
@@ -273,7 +354,7 @@ messages
 |----|--------|--------|---------|
 | G-01 | Нет сущности `Topic` | Отложено | В MVP `Lesson.topic VARCHAR(512)` достаточно; `Topic` как отдельная сущность — при появлении требований к базе материалов (SC-T-05) |
 | G-02 | Нет сущности `Material` | Отложено | Зависит от G-01; реализация — в отдельной итерации |
-| G-03 | Нет механизма переноса занятия | Отложено | Не блокирует MVP; кандидат: флаг `reschedule_requested BOOLEAN` в `lessons` |
+| G-03 | Нет механизма переноса занятия | Закрыто (см. `reschedule_requests`) | Таблица `reschedule_requests` + статусы `pending` / `accepted` / `rejected` |
 | G-04 | `Progress` — пересчёт | Зафиксировано | Вручную через API; автоматический пересчёт — будущая итерация |
 | G-05 | `Lesson.notes` — одно поле | Подтверждено | Достаточно для MVP |
 
