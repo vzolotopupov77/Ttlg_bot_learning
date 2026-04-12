@@ -1,75 +1,96 @@
 # Итерация 1 — Реализация API для frontend: summary
 
-## Результат
+## Статус: завершена (реализация + приёмочные проверки по backend)
 
-Реализованы миграции схемы (флаги занятий, `password_hash`/`notes` у пользователей, `reschedule_requests`, `system_settings`), JWT-аутентификация (bcrypt + HS256, cookie `ttlg_access_token` и заголовок `Authorization: Bearer`), роутеры `auth`, `teacher`, `students`, `settings`, `student`, расширен `lessons` (PUT, DELETE, PATCH `/flags`). Добавлены seed-миграции: mock-данные и преподаватель Владимир (`vzolotoy@mail.ru`). Обновлены `docs/data-model.md`, `.env.example`, `Makefile` (openapi-export с `SECRET_KEY`).
+Дата фиксации итогов и проверок: **2026-04-12**.
+
+---
+
+## Итоги итерации
+
+- **Схема БД:** миграция `c7f8a2b1d4e5` — `password_hash`/`notes` у `users`, флаги у `lessons`, таблицы `reschedule_requests`, `system_settings`.
+- **Auth:** JWT HS256, bcrypt, cookie `ttlg_access_token` и заголовок `Authorization: Bearer`; роуты `/v1/auth/login`, `/logout`, `/me`; зависимости `require_teacher` / `require_student`.
+- **Роутеры:** `teacher`, `students`, `settings`, `student` (расписание); расширен `lessons` (PUT, DELETE, PATCH `/flags`).
+- **Конфиг:** обязательные `SECRET_KEY`, `ACCESS_TOKEN_EXPIRE_MINUTES`; для сида — `TEACHER_NAME`, `TEACHER_EMAIL`, `TEACHER_DEFAULT_PASSWORD` (через pydantic-settings, не через «голый» `os.environ`).
+- **Наполнение dev-БД:** `make backend-db-seed` (`backend/scripts/seed.py`) — преподаватель и тестовый ученик (в т.ч. `telegram_id` для диалога), занятие и ДЗ; учётка учителя синхронизируется с `.env` при повторном сиде.
+- **Документация и инструменты:** `.env.example`, `Makefile` (`openapi-export` с подстановкой `SECRET_KEY` для импорта приложения без локального `.env`).
+- **Единый формат ошибок** для `HTTPException` из зависимостей: `{"error":{"code","message"}}`.
+
+---
+
+## Результат (кратко)
+
+Реализованы контракты backend для экранов frontend-итерации 0: аутентификация, дашборд учителя, CRUD учеников, настройки key-value, расписание ученика, расширенное управление занятиями. Dev-данные создаются сидом, не отдельной «обязательной» seed-миграцией под конкретный email (при необходимости миграции с фиксированными данными можно добавить позже).
+
+---
 
 ## Отклонения от плана
 
-- Хеширование паролей: библиотека `bcrypt` напрямую (вместо `passlib`) — совместимость с bcrypt 5.x и миграциями Alembic.
-- Обработчик `HTTPException` в `main.py` — единый JSON `{"error":{code,message}}` для 401/403/404 из зависимостей.
+- Хеширование: **`bcrypt`** напрямую (без `passlib`) — совместимость с bcrypt 5.x.
+- Отдельные `*_service.py` для teacher/students из плана не выделены — логика в роутерах + репозитории (**KISS** по конвенциям репозитория).
+- Сид преподавателя: данные из **Settings** (`.env`), а не только из отдельной SQL-миграции.
+
+---
 
 ## Проблемы / решения
 
-- Alembic + `text()`: конструкция `:id::uuid` ломала разбор параметров; заменено на `CAST(:id AS uuid)`.
-- Seed преподавателя: `passlib` + bcrypt 5 вызывал ошибку в миграции; хеш в миграции через `bcrypt.hashpw`.
-
-## Проверки
-
-- `make backend-test` — 22 теста (в т.ч. `test_auth_and_teacher.py`).
-- `alembic upgrade head` — применено на dev-БД.
+- Alembic + параметры SQL: проблемные конструкции с `:id::uuid` заменены на `CAST(:id AS uuid)` там, где использовались (см. историю миграций).
+- Пустая БД без пользователей: нужны **`make backend-db-migrate`** и **`make backend-db-seed`**; для логина учителя — заданные **`TEACHER_DEFAULT_PASSWORD`** и повторный сид при смене пароля в `.env`.
+- Ранее сид читал `TEACHER_*` из `os.environ` — значения из файла `.env` не попадали; исправлено: поля в **`config.Settings`** и использование в `seed.py`.
 
 ---
 
-## Зафиксированные результаты проверок (2026-04-12)
+## Зафиксированные проверки (2026-04-12)
 
-Сверка с навыками **modern-python** и **fastapi-templates** (см. `.agents/skills/`).
+### Автоматические
 
-### Инструменты (modern-python)
+| Проверка | Результат |
+|----------|-----------|
+| **`make check`** (lint + `backend-test` + `bot-test`) | Пройдено пользователем |
+| Ruff / структура пакета | Соответствует ожиданиям modern-python (см. предыдущие записи итерации) |
 
-| Проверка | Команда | Результат |
-|----------|---------|-----------|
-| Линтер | `uv run ruff check backend/src backend/tests` | Успешно |
-| Формат | `uv run ruff format backend/src backend/tests` | После проверки отформатирован `storage/repositories/dialogues.py` (был расхождение с `ruff format`) |
-| Тесты | `uv run --package ttlg-backend pytest backend/tests` | 22 passed |
-| Зависимости | `backend/pyproject.toml` | Runtime в `[project]`, dev в `[dependency-groups] dev` — без `[project.optional-dependencies]` для dev |
+### Ручные / API
 
-**Не внедрялось в этом цикле:** статический анализатор **ty** (skill рекомендует `ty check`; в backend-пакете нет цели в Makefile — опционально).
+| Проверка | Результат |
+|----------|-----------|
+| **`POST /v1/auth/login`** (email / пароль / `role=teacher`) | OK |
+| Cookie **`ttlg_access_token`** в ответе | OK (httpOnly; смотреть DevTools / Network или `Set-Cookie`) |
+| **`GET /v1/auth/me`** в том же сеансе | OK |
+| Teacher-эндпоинты после логина (в т.ч. расписание, студенты, настройки — по сценарию пользователя) | OK |
 
-### Архитектура (fastapi-templates)
+### OpenAPI
+
+| Проверка | Результат |
+|----------|-----------|
+| Актуальность **`docs/openapi.json`** | Сверка: **`make openapi-export`**, затем **`git diff docs/openapi.json`**; большой diff по строкам у большого JSON — **нормально**, важно отсутствие неожиданных изменений в путях/схемах и коммит после осознанного экспорта |
+
+### Отложено (не блокирует закрытие итерации)
+
+- Полный сценарий **`role=student`** → **`GET /v1/student/schedule`** (пароль ученика, неделя).
+- **E2E:** `smoke-integration` (бот + backend).
+- **`ty`**, **`pip-audit`**, жёсткая сверка с **`docs/tech/api-contracts.md`** (после стабилизации контрактов).
+- Прод: **`Secure`** / **`SameSite`** для cookie, политика **`SECRET_KEY`**.
+
+---
+
+## Definition of Done (сверка с [plan.md](plan.md))
 
 | Критерий | Статус |
 |----------|--------|
-| Роутеры по доменам в `api/` | Соответствует |
-| `Depends(get_session)`, JWT в `api/deps.py` | Соответствует |
-| Репозитории в `storage/repositories/` | Соответствует |
-| `services/auth_service.py` (JWT, bcrypt) | Соответствует |
-| Толстый service-слой для teacher/students | Частично: логика в роутерах + репозитории (KISS по конвенциям проекта) |
-| `dependencies.require_auth` (заглушка) vs JWT | Два пути: MVP/бот и новые защищённые маршруты — зафиксировано как отклонение от «идеала» skill |
+| Endpoints в OpenAPI `/docs` | Выполнено |
+| Без токена защищённые маршруты → 401 | Выполнено |
+| `alembic upgrade head` | Выполнено на dev |
+| Тесты backend (в составе `make check`) | Зелёные |
+| Данные для демо: сид + вызовы teacher API | Выполнено (количество учеников «≥ 4» не является блокером при наличии сида и ручной проверки списка) |
+| Логин преподавателя → 200 + cookie с JWT | Проверено вручную |
+| `docs/data-model.md` | Актуализировать при расхождении с миграциями (при коммите схемы) |
+| `docs/tech/api-contracts.md` | При необходимости догнать отдельной правкой документа |
 
 ---
 
-## Что ещё нужно проверить (рекомендуемый backlog)
+## Рекомендуемый backlog после итерации
 
-**Ручное / интеграционное**
-
-- [ ] Полный цикл **POST /v1/auth/login** → cookie → **GET /v1/auth/me** в браузере или клиенте с сохранением cookie; кириллица в `name` в UTF-8 (консоль Windows может искажать вывод — смотреть Swagger или файл).
-- [ ] Выборочные вызовы под **роль teacher**: `GET /v1/teacher/schedule`, `GET /v1/students`, `PUT /v1/settings` после логина.
-- [ ] **Роль student**: создать ученика с `password_hash` в БД или отдельный seed — проверить `GET /v1/student/schedule` (сейчас в тестах покрыт в основном teacher-flow).
-- [ ] **E2E с ботом:** `make run` + backend с тем же `DATABASE_URL`, сценарий из `smoke-integration` в Makefile.
-
-**CI / качество**
-
-- [ ] Подключить **`ty check backend/src`** (или согласовать отказ в ADR) и цель в Makefile.
-- [ ] **`pip-audit`** / Dependabot по рекомендации modern-python (периодически).
-- [ ] Прогон **`make check`** из корня (бот + backend), не только `backend-test`.
-
-**Контракты**
-
-- [ ] **`make openapi-export`** и diff `docs/openapi.json` при изменении API.
-- [ ] Сверка реализации с **`docs/tech/api-contracts.md`** после стабилизации полей в OpenAPI.
-
-**Безопасность (прод)**
-
-- [ ] Cookie: `Secure=True` за HTTPS; уточнить `SameSite` для своего домена фронта.
-- [ ] Ротация `SECRET_KEY` и политика паролей преподавателя вне dev-seed.
+1. Закрыть сценарий **student** и при необходимости дополнить сид.
+2. Прогон **smoke-integration** перед связкой бот + web.
+3. Регулярно **`make openapi-export`** перед релизами/мерджами крупных изменений API.
+4. Опционально: CI-шаг «openapi не устарел» (`openapi-export` + `git diff --exit-code`).

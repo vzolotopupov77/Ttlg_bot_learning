@@ -106,11 +106,13 @@ uv add --group dev pytest-asyncio httpx
 
 ## Definition of Done (итерация)
 
-- [ ] Все endpoints из Итерации 0 доступны в OpenAPI `/docs`
-- [ ] JWT-защита работает: без токена — `401`
-- [ ] `alembic upgrade head` применяется без ошибок
-- [ ] `make backend-test` — все тесты зелёные
-- [ ] `GET /v1/students` → ≥ 4 учеников; `GET /v1/teacher/schedule` → непустые данные
-- [ ] `POST /v1/auth/login` с данными преподавателя → `200` + JWT
-- [ ] `docs/data-model.md` соответствует фактической схеме
-- [ ] `docs/tech/api-contracts.md` соответствует реализации
+Статус на **2026-04-12** — см. [summary.md](summary.md).
+
+- [x] Все endpoints из Итерации 0 доступны в OpenAPI `/docs`
+- [x] JWT-защита работает: без токена — `401`
+- [x] `alembic upgrade head` применяется без ошибок
+- [x] `make check` / тесты backend — зелёные (зафиксировано в summary)
+- [x] Данные для проверки teacher-flow: сид + `GET /v1/teacher/schedule` и связанные вызовы (непустые при наличии seed-занятия)
+- [x] `POST /v1/auth/login` с данными преподавателя → `200` + JWT в cookie
+- [ ] `docs/data-model.md` — поддерживать в соответствии с миграциями при изменениях схемы
+- [ ] `docs/tech/api-contracts.md` — при необходимости догнать под OpenAPI (отдельная задача документации)

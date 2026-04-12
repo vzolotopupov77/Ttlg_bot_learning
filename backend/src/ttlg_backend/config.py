@@ -43,6 +43,21 @@ class Settings(BaseSettings):
     llm_model: str = Field(default="openai/gpt-4o-mini")
     llm_timeout_seconds: float = Field(default=30.0, ge=1.0, le=300.0)
     log_level: str = Field(default="INFO")
+
+    # Сид преподавателя (backend/scripts/seed.py); читаются из .env
+    teacher_name: str = Field(
+        default="Преподаватель",
+        description="Отображаемое имя учителя при make backend-db-seed",
+    )
+    teacher_email: str = Field(
+        default="teacher@local.dev",
+        description="Email для POST /v1/auth/login после сида",
+    )
+    teacher_default_password: SecretStr | None = Field(
+        default=None,
+        description="Пароль для сида dev; bcrypt в БД",
+    )
+
     allow_sqlite_test: bool = Field(
         default=False,
         validation_alias="TTLG_ALLOW_SQLITE_TEST",
