@@ -1,4 +1,4 @@
-.PHONY: install run bot-test backend-install backend-run backend-db-up backend-db-migrate backend-db-reset backend-db-shell backend-db-logs backend-db-seed backend-db-test-create backend-test smoke-integration openapi-export lint format check
+.PHONY: install run bot-test backend-install backend-run backend-db-up backend-db-migrate backend-db-reset backend-db-shell backend-db-logs backend-db-seed backend-db-test-create backend-test smoke-integration openapi-export lint format check frontend-dev frontend-build frontend-lint frontend-test
 
 install:
 	uv sync --all-packages
@@ -16,7 +16,19 @@ lint:
 format:
 	uv run ruff format src backend/src backend/tests tests backend/alembic backend/scripts
 
-check: lint backend-test bot-test
+check: lint backend-test bot-test frontend-lint
+
+frontend-dev:
+	pnpm --filter frontend dev
+
+frontend-build:
+	pnpm --filter frontend build
+
+frontend-lint:
+	pnpm --filter frontend lint
+
+frontend-test:
+	pnpm --filter frontend test
 
 # Печатает чек-лист ручного smoke (бот + backend). См. README «End-to-end».
 smoke-integration:

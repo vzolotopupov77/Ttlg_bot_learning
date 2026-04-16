@@ -44,6 +44,11 @@ class Settings(BaseSettings):
     llm_timeout_seconds: float = Field(default=30.0, ge=1.0, le=300.0)
     log_level: str = Field(default="INFO")
 
+    cors_origins: str = Field(
+        default="http://localhost:3000,http://127.0.0.1:3000",
+        description="Comma-separated origins for browser CORS (Next.js dev on another port).",
+    )
+
     # Сид преподавателя (backend/scripts/seed.py); читаются из .env
     teacher_name: str = Field(
         default="Преподаватель",

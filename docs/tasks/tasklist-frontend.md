@@ -26,8 +26,24 @@
 | Итерация 4 | Экран Ученики |
 | Итерация 5 | Экран Настройки системы |
 | Итерация 6 | Экран Расписание Ученика |
-| Итерация 7 | Ревью качества кода |
+| Итерация 7 | Ревью качества кода, палитра темы по макетам |
 | Итерация 8 | Тестирование |
+
+## Прогресс (актуально на 2026-04-16)
+
+| Итерация | Статус |
+|----------|--------|
+| 0 — Требования UI и API | ✅ Done |
+| 1 — Backend API для frontend | ✅ Done |
+| 2 — Каркас frontend | ✅ Done |
+| 3 — Календарь преподавателя | ✅ Done — реализация и проверки зафиксированы в [summary итерации 3](impl/frontend/iteration-3-teacher-calendar/summary.md) |
+| 4 — Ученики | 📋 Planned (**следующая**) |
+| 5 — Настройки | 📋 Planned |
+| 6 — Расписание ученика | 📋 Planned |
+| 7 — Ревью качества, палитра по макетам | 📋 Planned |
+| 8 — Тестирование | 📋 Planned |
+
+**Текущий фокус:** итерация 4 (задачи 18–20).
 
 ---
 
@@ -41,23 +57,23 @@
 | 04 | 1 | Новые endpoints backend для frontend | ✅ Done | [план](impl/frontend/iteration-1-backend-api/tasks/task-04-new-endpoints/plan.md) \| [summary](impl/frontend/iteration-1-backend-api/tasks/task-04-new-endpoints/summary.md) |
 | 05 | 1 | Миграция с mock-данными | ✅ Done | [план](impl/frontend/iteration-1-backend-api/tasks/task-05-mock-migration/plan.md) \| [summary](impl/frontend/iteration-1-backend-api/tasks/task-05-mock-migration/summary.md) |
 | 06 | 1 | Миграция: добавить преподавателя в БД | ✅ Done | [план](impl/frontend/iteration-1-backend-api/tasks/task-06-teacher-migration/plan.md) \| [summary](impl/frontend/iteration-1-backend-api/tasks/task-06-teacher-migration/summary.md) |
-| 07 | 2 | Инициализация проекта Next.js | 📋 Planned | [план](impl/frontend/iteration-2-scaffold/tasks/task-07-project-init/plan.md) \| [summary](impl/frontend/iteration-2-scaffold/tasks/task-07-project-init/summary.md) |
-| 08 | 2 | Темы: светлая/тёмная, CSS variables | 📋 Planned | [план](impl/frontend/iteration-2-scaffold/tasks/task-08-themes/plan.md) \| [summary](impl/frontend/iteration-2-scaffold/tasks/task-08-themes/summary.md) |
-| 09 | 2 | Форма входа и защищённые роуты | 📋 Planned | [план](impl/frontend/iteration-2-scaffold/tasks/task-09-auth/plan.md) \| [summary](impl/frontend/iteration-2-scaffold/tasks/task-09-auth/summary.md) |
-| 10 | 2 | Общий layout: навигация, header, drawer | 📋 Planned | [план](impl/frontend/iteration-2-scaffold/tasks/task-10-layout/plan.md) \| [summary](impl/frontend/iteration-2-scaffold/tasks/task-10-layout/summary.md) |
-| 11 | 2 | Маршрутизация по ролям, Makefile-цели | 📋 Planned | [план](impl/frontend/iteration-2-scaffold/tasks/task-11-routing-makefile/plan.md) \| [summary](impl/frontend/iteration-2-scaffold/tasks/task-11-routing-makefile/summary.md) |
-| 12 | 3 | Недельное расписание: сетка + карточки занятий | 📋 Planned | [план](impl/frontend/iteration-3-teacher-calendar/tasks/task-12-weekly-schedule/plan.md) \| [summary](impl/frontend/iteration-3-teacher-calendar/tasks/task-12-weekly-schedule/summary.md) |
-| 13 | 3 | Диалог занятия: CRUD, флаги, кнопки действий | 📋 Planned | [план](impl/frontend/iteration-3-teacher-calendar/tasks/task-13-lesson-dialog/plan.md) \| [summary](impl/frontend/iteration-3-teacher-calendar/tasks/task-13-lesson-dialog/summary.md) |
-| 14 | 3 | Лента последних 10 bot-запросов учеников | 📋 Planned | [план](impl/frontend/iteration-3-teacher-calendar/tasks/task-14-bot-feed/plan.md) \| [summary](impl/frontend/iteration-3-teacher-calendar/tasks/task-14-bot-feed/summary.md) |
-| 15 | 3 | Блок неподтверждённых занятий (2 дня) + напоминания | 📋 Planned | [план](impl/frontend/iteration-3-teacher-calendar/tasks/task-15-unconfirmed-lessons/plan.md) \| [summary](impl/frontend/iteration-3-teacher-calendar/tasks/task-15-unconfirmed-lessons/summary.md) |
-| 16 | 3 | Блок несданных ДЗ (2 дня) + напоминания | 📋 Planned | [план](impl/frontend/iteration-3-teacher-calendar/tasks/task-16-pending-hw/plan.md) \| [summary](impl/frontend/iteration-3-teacher-calendar/tasks/task-16-pending-hw/summary.md) |
-| 17 | 3 | Блок запросов учеников на перенос занятий | 📋 Planned | [план](impl/frontend/iteration-3-teacher-calendar/tasks/task-17-reschedule-requests/plan.md) \| [summary](impl/frontend/iteration-3-teacher-calendar/tasks/task-17-reschedule-requests/summary.md) |
+| 07 | 2 | Инициализация проекта Next.js | ✅ Done | [план](impl/frontend/iteration-2-scaffold/tasks/task-07-project-init/plan.md) \| [summary](impl/frontend/iteration-2-scaffold/tasks/task-07-project-init/summary.md) |
+| 08 | 2 | Темы: светлая/тёмная, CSS variables | ✅ Done | [план](impl/frontend/iteration-2-scaffold/tasks/task-08-themes/plan.md) \| [summary](impl/frontend/iteration-2-scaffold/tasks/task-08-themes/summary.md) |
+| 09 | 2 | Форма входа и защищённые роуты | ✅ Done | [план](impl/frontend/iteration-2-scaffold/tasks/task-09-auth/plan.md) \| [summary](impl/frontend/iteration-2-scaffold/tasks/task-09-auth/summary.md) |
+| 10 | 2 | Общий layout: навигация, header, drawer | ✅ Done | [план](impl/frontend/iteration-2-scaffold/tasks/task-10-layout/plan.md) \| [summary](impl/frontend/iteration-2-scaffold/tasks/task-10-layout/summary.md) |
+| 11 | 2 | Маршрутизация по ролям, Makefile-цели | ✅ Done | [план](impl/frontend/iteration-2-scaffold/tasks/task-11-routing-makefile/plan.md) \| [summary](impl/frontend/iteration-2-scaffold/tasks/task-11-routing-makefile/summary.md) |
+| 12 | 3 | Недельное расписание: сетка + карточки занятий | ✅ Done | [план](impl/frontend/iteration-3-teacher-calendar/tasks/task-12-weekly-schedule/plan.md) \| [summary](impl/frontend/iteration-3-teacher-calendar/tasks/task-12-weekly-schedule/summary.md) |
+| 13 | 3 | Диалог занятия: CRUD, флаги, кнопки действий | ✅ Done | [план](impl/frontend/iteration-3-teacher-calendar/tasks/task-13-lesson-dialog/plan.md) \| [summary](impl/frontend/iteration-3-teacher-calendar/tasks/task-13-lesson-dialog/summary.md) |
+| 14 | 3 | Лента последних 10 bot-запросов учеников | ✅ Done | [план](impl/frontend/iteration-3-teacher-calendar/tasks/task-14-bot-feed/plan.md) \| [summary](impl/frontend/iteration-3-teacher-calendar/tasks/task-14-bot-feed/summary.md) |
+| 15 | 3 | Блок неподтверждённых занятий (2 дня) + напоминания | ✅ Done | [план](impl/frontend/iteration-3-teacher-calendar/tasks/task-15-unconfirmed-lessons/plan.md) \| [summary](impl/frontend/iteration-3-teacher-calendar/tasks/task-15-unconfirmed-lessons/summary.md) |
+| 16 | 3 | Блок несданных ДЗ (2 дня) + напоминания | ✅ Done | [план](impl/frontend/iteration-3-teacher-calendar/tasks/task-16-pending-hw/plan.md) \| [summary](impl/frontend/iteration-3-teacher-calendar/tasks/task-16-pending-hw/summary.md) |
+| 17 | 3 | Блок запросов учеников на перенос занятий | ✅ Done | [план](impl/frontend/iteration-3-teacher-calendar/tasks/task-17-reschedule-requests/plan.md) \| [summary](impl/frontend/iteration-3-teacher-calendar/tasks/task-17-reschedule-requests/summary.md) |
 | 18 | 4 | Список учеников: карточки/таблица, CRUD | 📋 Planned | [план](impl/frontend/iteration-4-students/tasks/task-18-students-list/plan.md) \| [summary](impl/frontend/iteration-4-students/tasks/task-18-students-list/summary.md) |
 | 19 | 4 | Детальная форма ученика: занятия, счётчики, ДЗ | 📋 Planned | [план](impl/frontend/iteration-4-students/tasks/task-19-student-detail/plan.md) \| [summary](impl/frontend/iteration-4-students/tasks/task-19-student-detail/summary.md) |
 | 20 | 4 | Лента диалога ученика с ботом в детальной форме | 📋 Planned | [план](impl/frontend/iteration-4-students/tasks/task-20-student-dialogue/plan.md) \| [summary](impl/frontend/iteration-4-students/tasks/task-20-student-dialogue/summary.md) |
 | 21 | 5 | Форма настроек системы | 📋 Planned | [план](impl/frontend/iteration-5-settings/tasks/task-21-settings-form/plan.md) \| [summary](impl/frontend/iteration-5-settings/tasks/task-21-settings-form/summary.md) |
 | 22 | 6 | Календарь расписания ученика | 📋 Planned | [план](impl/frontend/iteration-6-student-schedule/tasks/task-22-student-calendar/plan.md) \| [summary](impl/frontend/iteration-6-student-schedule/tasks/task-22-student-calendar/summary.md) |
-| 23 | 7 | Ревью кода: Server/Client, мемоизация, bundle | 📋 Planned | [план](impl/frontend/iteration-7-quality-review/tasks/task-23-code-review/plan.md) \| [summary](impl/frontend/iteration-7-quality-review/tasks/task-23-code-review/summary.md) |
+| 23 | 7 | Ревью кода: Server/Client, мемоизация, bundle; тема по макетам (`globals.css`) | 📋 Planned | [план](impl/frontend/iteration-7-quality-review/tasks/task-23-code-review/plan.md) \| [summary](impl/frontend/iteration-7-quality-review/tasks/task-23-code-review/summary.md) |
 | 24 | 8 | Тест-сценарии для 5 экранов (ручные чек-листы) | 📋 Planned | [план](impl/frontend/iteration-8-testing/tasks/task-24-test-scenarios/plan.md) \| [summary](impl/frontend/iteration-8-testing/tasks/task-24-test-scenarios/summary.md) |
 | 25 | 8 | Автотесты: unit + integration; `make frontend-test` | 📋 Planned | [план](impl/frontend/iteration-8-testing/tasks/task-25-automated-tests/plan.md) \| [summary](impl/frontend/iteration-8-testing/tasks/task-25-automated-tests/summary.md) |
 
@@ -402,7 +418,7 @@
 
 ---
 
-## Итерация 2 — Каркас frontend-проекта 📋
+## Итерация 2 — Каркас frontend-проекта ✅
 
 ### Цель
 
@@ -419,11 +435,13 @@
 ### Документы итерации
 
 - 📋 [План итерации](impl/frontend/iteration-2-scaffold/plan.md)
-- 📝 [Summary итерации](impl/frontend/iteration-2-scaffold/summary.md)
+- ✅ [Summary итерации](impl/frontend/iteration-2-scaffold/summary.md)
+
+**Приёмка:** автоматические `frontend-lint` / `frontend-build` и ручной смоук по чек-листу зафиксированы в [summary итерации 2](impl/frontend/iteration-2-scaffold/summary.md) (раздел «Проверки», 2026-04-15).
 
 ---
 
-### Задача 07: Инициализация проекта Next.js 📋
+### Задача 07: Инициализация проекта Next.js ✅
 
 #### Цель
 
@@ -476,7 +494,7 @@
 
 ---
 
-### Задача 08: Темы — светлая и тёмная 📋
+### Задача 08: Темы — светлая и тёмная ✅
 
 #### Цель
 
@@ -520,7 +538,7 @@
 
 ---
 
-### Задача 09: Форма входа и защищённые роуты 📋
+### Задача 09: Форма входа и защищённые роуты ✅
 
 #### Цель
 
@@ -575,7 +593,7 @@
 
 ---
 
-### Задача 10: Общий layout — навигация, header, drawer 📋
+### Задача 10: Общий layout — навигация, header, drawer ✅
 
 #### Цель
 
@@ -633,7 +651,7 @@
 
 ---
 
-### Задача 11: Маршрутизация по ролям и Makefile-цели 📋
+### Задача 11: Маршрутизация по ролям и Makefile-цели ✅
 
 #### Цель
 
@@ -693,7 +711,7 @@
 
 ---
 
-## Итерация 3 — Экран Преподавателя: Календарь 📋
+## Итерация 3 — Экран Преподавателя: Календарь ✅
 
 ### Цель
 
@@ -702,11 +720,13 @@
 ### Документы итерации
 
 - 📋 [План итерации](impl/frontend/iteration-3-teacher-calendar/plan.md)
-- 📝 [Summary итерации](impl/frontend/iteration-3-teacher-calendar/summary.md)
+- ✅ [Summary итерации](impl/frontend/iteration-3-teacher-calendar/summary.md)
+
+**Приёмка:** ручные проверки по сценариям итерации зафиксированы в [summary итерации 3](impl/frontend/iteration-3-teacher-calendar/summary.md) (раздел «Проверки», 2026-04-16).
 
 ---
 
-### Задача 12: Недельная сетка расписания 📋
+### Задача 12: Недельная сетка расписания ✅
 
 #### Цель
 
@@ -730,15 +750,15 @@
 
 **Агент:**
 
-- [ ] Сетка отображает 7 дней с датами
-- [ ] Занятия из API отображаются в правильных колонках
-- [ ] 5 флагов визуально различимы (цвет/иконка)
-- [ ] Навигация по неделям работает, данные перезагружаются
+- [x] Сетка отображает 7 дней с датами
+- [x] Занятия из API отображаются в правильных колонках
+- [x] 5 флагов визуально различимы (цвет/иконка)
+- [x] Навигация по неделям работает, данные перезагружаются
 
 **Пользователь:**
 
-- [ ] Открыть `/teacher/calendar` — видна сетка с занятиями из mock-данных
-- [ ] Нажать «Следующая неделя» — данные обновились
+- [x] Открыть `/teacher/calendar` — видна сетка с занятиями из mock-данных
+- [x] Нажать «Следующая неделя» — данные обновились
 
 #### Документы
 
@@ -747,7 +767,7 @@
 
 ---
 
-### Задача 13: Диалог занятия — CRUD, флаги, действия 📋
+### Задача 13: Диалог занятия — CRUD, флаги, действия ✅
 
 #### Цель
 
@@ -771,17 +791,17 @@
 
 **Агент:**
 
-- [ ] Создание занятия через диалог → занятие появляется в сетке
-- [ ] Редактирование занятия → изменения сохраняются
-- [ ] Удаление с подтверждением → занятие исчезает из сетки
-- [ ] Флаги переключаются через `PATCH /v1/lessons/{id}/flags`
-- [ ] TypeScript-ошибок нет
+- [x] Создание занятия через диалог → занятие появляется в сетке
+- [x] Редактирование занятия → изменения сохраняются
+- [x] Удаление с подтверждением → занятие исчезает из сетки
+- [x] Флаги переключаются через `PATCH /v1/lessons/{id}/flags`
+- [x] TypeScript-ошибок нет
 
 **Пользователь:**
 
-- [ ] Нажать «+ Добавить занятие» → заполнить форму → сохранить → занятие появилось
-- [ ] Нажать на карточку занятия → открылся диалог с заполненными полями
-- [ ] Переключить флаг «Подтверждено учеником» → изменение сохраняется
+- [x] Нажать «+ Добавить занятие» → заполнить форму → сохранить → занятие появилось
+- [x] Нажать на карточку занятия → открылся диалог с заполненными полями
+- [x] Переключить флаг «Подтверждено учеником» → изменение сохраняется
 
 #### Документы
 
@@ -790,7 +810,7 @@
 
 ---
 
-### Задача 14: Лента bot-запросов 📋
+### Задача 14: Лента bot-запросов ✅
 
 #### Цель
 
@@ -811,13 +831,13 @@
 
 **Агент:**
 
-- [ ] Список отображает 10 (или меньше, если данных меньше) последних запросов
-- [ ] Каждая запись содержит имя ученика, текст, время
-- [ ] При пустом ответе — плейсхолдер «Нет запросов»
+- [x] Список отображает 10 (или меньше, если данных меньше) последних запросов
+- [x] Каждая запись содержит имя ученика, текст, время
+- [x] При пустом ответе — плейсхолдер «Нет запросов»
 
 **Пользователь:**
 
-- [ ] Открыть `/teacher/calendar` — виден блок с bot-запросами из mock-данных
+- [x] Открыть `/teacher/calendar` — виден блок с bot-запросами из mock-данных
 
 #### Документы
 
@@ -826,7 +846,7 @@
 
 ---
 
-### Задача 15: Блок неподтверждённых занятий 📋
+### Задача 15: Блок неподтверждённых занятий ✅
 
 #### Цель
 
@@ -847,14 +867,14 @@
 
 **Агент:**
 
-- [ ] Список фильтруется по 2 дням и флагу подтверждения
-- [ ] Кнопка «Напомнить всем» отправляет запрос и показывает toast
-- [ ] При пустом списке — плейсхолдер
+- [x] Список фильтруется по 2 дням и флагу подтверждения
+- [x] Кнопка «Напомнить всем» отправляет запрос и показывает toast
+- [x] При пустом списке — плейсхолдер
 
 **Пользователь:**
 
-- [ ] Открыть `/teacher/calendar` — виден блок с неподтверждёнными занятиями (из mock-данных)
-- [ ] Нажать «Напомнить всем» — появился toast-уведомление
+- [x] Открыть `/teacher/calendar` — виден блок с неподтверждёнными занятиями (из mock-данных)
+- [x] Нажать «Напомнить всем» — появился toast-уведомление
 
 #### Документы
 
@@ -863,7 +883,7 @@
 
 ---
 
-### Задача 16: Блок несданных ДЗ 📋
+### Задача 16: Блок несданных ДЗ ✅
 
 #### Цель
 
@@ -884,13 +904,13 @@
 
 **Агент:**
 
-- [ ] Список отображает ученика, тему, дату занятия
-- [ ] Кнопка «Напомнить всем» работает и показывает toast
-- [ ] При пустом списке — плейсхолдер
+- [x] Список отображает ученика, тему, дату занятия
+- [x] Кнопка «Напомнить всем» работает и показывает toast
+- [x] При пустом списке — плейсхолдер
 
 **Пользователь:**
 
-- [ ] Открыть `/teacher/calendar` — виден блок несданных ДЗ из mock-данных
+- [x] Открыть `/teacher/calendar` — виден блок несданных ДЗ из mock-данных
 
 #### Документы
 
@@ -899,7 +919,7 @@
 
 ---
 
-### Задача 17: Блок запросов на перенос занятий 📋
+### Задача 17: Блок запросов на перенос занятий ✅
 
 #### Цель
 
@@ -921,14 +941,14 @@
 
 **Агент:**
 
-- [ ] Список отображает запросы из mock-данных
-- [ ] Принять/Отклонить отправляет PATCH-запрос
-- [ ] После действия запись удаляется из UI без перезагрузки
+- [x] Список отображает запросы из mock-данных
+- [x] Принять/Отклонить отправляет PATCH-запрос
+- [x] После действия запись удаляется из UI без перезагрузки
 
 **Пользователь:**
 
-- [ ] Открыть `/teacher/calendar` — виден блок с запросами на перенос
-- [ ] Нажать «Принять» — запрос исчез из списка
+- [x] Открыть `/teacher/calendar` — виден блок с запросами на перенос
+- [x] Нажать «Принять» — запрос исчез из списка
 
 #### Документы
 
@@ -1190,7 +1210,7 @@
 
 ### Цель
 
-Проверен и исправлен код frontend по best practices Next.js App Router и React; критические замечания устранены.
+Проверен и исправлен код frontend по best practices Next.js App Router и React; критические замечания устранены. **Цветовая палитра из макетов** внедрена в семантические токены shadcn (`--primary`, `--ring`, `--accent` и др. в `globals.css` для `:root` и `.dark`), без raw-классов в компонентах — визуальное соответствие макетам форм до перехода к финальному тестированию (итерация 8).
 
 ### Документы итерации
 
@@ -1203,7 +1223,7 @@
 
 #### Цель
 
-Проверен весь `frontend/src/` по checklists skills `vercel-react-best-practices` и `nextjs-app-router-patterns`; критические ошибки исправлены; изменения задокументированы.
+Проверен весь `frontend/src/` по checklists skills `vercel-react-best-practices` и `nextjs-app-router-patterns`; критические ошибки исправлены; изменения задокументированы. **Согласована тема с цветными макетами:** перенос палитры в CSS-переменные shadcn (light/dark), проверка контраста и акцентов на ключевых экранах.
 
 #### Состав работ
 
@@ -1213,9 +1233,11 @@
 - Добавить `loading.tsx` для основных роутов
 - Добавить `error.tsx` для основных роутов
 - Исправить критические находки; задокументировать в summary
+- **Палитра по макетам:** обновить `frontend/src/app/globals.css` — задать акцентные и фоновые токены (OKLCH или hex → OKLCH) для светлой и тёмной темы; не добавлять `bg-blue-*` в компонентах; при необходимости подкрутить `chart-*`, sidebar-токены; кратко зафиксировать в summary ссылку на макеты/источник значений
 
 #### Артефакты
 
+- `frontend/src/app/globals.css` — палитра темы по макетам (семантические токены)
 - `frontend/src/app/(app)/teacher/calendar/loading.tsx`
 - `frontend/src/app/(app)/teacher/students/loading.tsx`
 - `frontend/src/app/(app)/error.tsx`
@@ -1229,11 +1251,13 @@
 - [ ] `pnpm --filter frontend build` — нет TypeScript/ESLint ошибок
 - [ ] `loading.tsx` добавлен для основных роутов
 - [ ] Критические находки исправлены, задокументированы в summary
+- [ ] Палитра из макетов отражена в теме (`globals.css`); новые экранные цвета не вводятся через raw Tailwind-классы
 
 **Пользователь:**
 
 - [ ] Запустить `make frontend-build` — сборка проходит без ошибок
 - [ ] Открыть `/teacher/calendar` с медленной сетью (DevTools Throttling) — видна skeleton/loading UI
+- [ ] Визуально сверить ключевые экраны с макетами (акцент, кнопки, фоны) в light и dark
 
 #### Документы
 

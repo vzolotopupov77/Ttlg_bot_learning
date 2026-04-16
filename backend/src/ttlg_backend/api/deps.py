@@ -40,7 +40,7 @@ async def get_current_user(
     if token is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authenticated",
+            detail="Требуется вход",
         )
     try:
         payload = auth_service.decode_token(token, settings.secret_key)
@@ -48,26 +48,26 @@ async def get_current_user(
         if sub is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token",
+                detail="Недействительный токен",
             )
         user_id = UUID(str(sub))
     except (JWTError, ValueError):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token",
+            detail="Недействительный токен",
         ) from None
 
     user = await session.get(User, user_id)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found",
+            detail="Пользователь не найден",
         )
     role_in_token = payload.get("role")
     if role_in_token is not None and role_in_token != user.role.value:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token role mismatch",
+            detail="Роль в сессии не совпадает с данными",
         )
     return user
 
@@ -78,7 +78,7 @@ async def require_teacher(
     if user.role != UserRole.teacher:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Teacher role required",
+            detail="Нужна роль преподавателя",
         )
     return user
 
@@ -89,6 +89,6 @@ async def require_student(
     if user.role != UserRole.student:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Student role required",
+            detail="Нужна роль ученика",
         )
     return user

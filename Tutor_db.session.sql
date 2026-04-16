@@ -1,0 +1,1 @@
+delete from users where id = '67693793-017a-40fb-92b1-659ebe3d537c'

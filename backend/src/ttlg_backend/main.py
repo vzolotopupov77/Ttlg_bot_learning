@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 
 from ttlg_backend.api.assignments import router as assignments_router
@@ -23,6 +24,13 @@ from ttlg_backend.db import close_db, ensure_sqlite_schema, init_db, ping_db
 from ttlg_backend.logging import setup_logging
 
 logger = logging.getLogger(__name__)
+
+
+def _cors_allow_origins() -> list[str]:
+    raw = get_settings().cors_origins.strip()
+    if not raw:
+        return ["http://localhost:3000", "http://127.0.0.1:3000"]
+    return [o.strip() for o in raw.split(",") if o.strip()]
 
 
 def create_app() -> FastAPI:
@@ -47,6 +55,14 @@ def create_app() -> FastAPI:
         ),
         version="0.1.0",
         lifespan=lifespan,
+    )
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_cors_allow_origins(),
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
 
     app.include_router(auth_router, prefix="/v1")
@@ -86,7 +102,7 @@ def create_app() -> FastAPI:
             content={
                 "error": {
                     "code": "validation_error",
-                    "message": "Request validation failed",
+                    "message": "Проверьте введённые данные",
                 }
             },
         )
