@@ -1,0 +1,11 @@
+import { NextResponse } from "next/server"
+
+import { cookies } from "next/headers"
+
+import { ACCESS_TOKEN_COOKIE } from "@/lib/constants"
+
+export async function POST() {
+  const cookieStore = await cookies()
+  cookieStore.delete(ACCESS_TOKEN_COOKIE)
+  return new NextResponse(null, { status: 204 })
+}
