@@ -9,7 +9,7 @@
 - В [`docs/tech/api-contracts.md`](../../../../../../tech/api-contracts.md) добавлен раздел **«API для frontend (проект)»**:
   - аутентификация: `POST /v1/auth/login` (поля `email`, `password`, `role`), `POST /v1/auth/logout`, `GET /v1/auth/me`;
   - преподаватель: `GET /v1/teacher/schedule`, bot-requests, unconfirmed-lessons, pending-homework, напоминания, reschedule-requests;
-  - ученики (CRUD): `/v1/students`, в т.ч. `notes` без `telegram_id` в форме; опционально `GET .../stats` или агрегаты в профиле;
+  - ученики (CRUD): `/v1/students`, в т.ч. `notes` и **`telegram_id`** в теле запроса/ответа; опционально `GET .../stats` или агрегаты в профиле;
   - занятия: `PUT`, `DELETE`, `PATCH .../flags` (немедленное обновление флагов);
   - настройки: `GET`/`PUT /v1/settings`;
   - ученик: `GET /v1/student/schedule?week_start=`.

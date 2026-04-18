@@ -29,6 +29,10 @@ class StudentCreateBody(BaseModel):
     phone: str | None = None
     email: EmailStr | None = None
     notes: str | None = None
+    telegram_id: int | None = Field(
+        default=None,
+        description="Telegram user id (целое число); необязательно",
+    )
 
     @field_validator("class_label", "phone", "notes", mode="before")
     @classmethod
@@ -39,6 +43,13 @@ class StudentCreateBody(BaseModel):
             s = v.strip()
             return s if s else None
         return str(v)
+
+    @field_validator("telegram_id")
+    @classmethod
+    def telegram_id_positive(cls, v: int | None) -> int | None:
+        if v is not None and v < 1:
+            raise ValueError("telegram_id must be a positive integer")
+        return v
 
 
 class StudentUpdateBody(BaseModel):
@@ -47,6 +58,10 @@ class StudentUpdateBody(BaseModel):
     phone: str | None = None
     email: EmailStr | None = None
     notes: str | None = None
+    telegram_id: int | None = Field(
+        ...,
+        description="Telegram user id; null — сбросить привязку (поле обязательно в теле PUT)",
+    )
 
     @field_validator("class_label", "phone", "notes", mode="before")
     @classmethod
@@ -57,6 +72,13 @@ class StudentUpdateBody(BaseModel):
             s = v.strip()
             return s if s else None
         return str(v)
+
+    @field_validator("telegram_id")
+    @classmethod
+    def telegram_id_positive(cls, v: int | None) -> int | None:
+        if v is not None and v < 1:
+            raise ValueError("telegram_id must be a positive integer")
+        return v
 
 
 class StudentRead(BaseModel):
@@ -67,6 +89,7 @@ class StudentRead(BaseModel):
     phone: str | None
     email: str | None
     notes: str | None
+    telegram_id: int | None
     created_at: datetime
 
 
@@ -75,6 +98,14 @@ class PaginatedStudents(BaseModel):
     total: int
     limit: int
     offset: int
+
+
+class LessonFlagsOut(BaseModel):
+    notification_sent: bool
+    confirmed_by_student: bool
+    homework_sent: bool
+    solution_received: bool
+    solution_checked: bool
 
 
 class LessonItemOut(BaseModel):
@@ -86,6 +117,7 @@ class LessonItemOut(BaseModel):
     duration_minutes: int
     status: str
     notes: str | None
+    flags: LessonFlagsOut
 
     model_config = {"from_attributes": True}
 
@@ -117,6 +149,7 @@ class StatsRead(BaseModel):
     lessons_total: int
     assignments_done: int
     assignments_total: int
+    lessons_solution_checked: int
 
 
 @router.get("", response_model=PaginatedStudents)
@@ -136,6 +169,7 @@ async def list_students(
             phone=u.phone,
             email=u.email,
             notes=u.notes,
+            telegram_id=u.telegram_id,
             created_at=u.created_at,
         )
         for u in users
@@ -153,10 +187,15 @@ async def create_student(
         existing = await users_repo.get_user_by_email(session, email=str(body.email))
         if existing is not None:
             return api_error(409, "conflict", "Email already in use")
+    if body.telegram_id is not None:
+        tid_user = await users_repo.get_user_by_telegram_id(session, body.telegram_id)
+        if tid_user is not None:
+            return api_error(409, "conflict", "Telegram ID already in use")
     user = await users_repo.create_user(
         session,
         name=body.name,
         role=UserRole.student,
+        telegram_id=body.telegram_id,
         class_label=body.class_label,
         phone=body.phone,
         email=str(body.email) if body.email else None,
@@ -172,6 +211,7 @@ async def create_student(
         phone=user.phone,
         email=user.email,
         notes=user.notes,
+        telegram_id=user.telegram_id,
         created_at=user.created_at,
     )
 
@@ -193,6 +233,7 @@ async def get_student(
         phone=user.phone,
         email=user.email,
         notes=user.notes,
+        telegram_id=user.telegram_id,
         created_at=user.created_at,
     )
 
@@ -211,6 +252,10 @@ async def update_student(
         other = await users_repo.get_user_by_email(session, email=str(body.email))
         if other is not None and other.id != user.id:
             return api_error(409, "conflict", "Email already in use")
+    if body.telegram_id is not None:
+        tid_user = await users_repo.get_user_by_telegram_id(session, body.telegram_id)
+        if tid_user is not None and tid_user.id != user.id:
+            return api_error(409, "conflict", "Telegram ID already in use")
     await users_repo.update_user_fields(
         session,
         user,
@@ -219,6 +264,7 @@ async def update_student(
         phone=body.phone,
         email=str(body.email) if body.email else None,
         notes=body.notes,
+        telegram_id=body.telegram_id,
     )
     await session.commit()
     await session.refresh(user)
@@ -230,6 +276,7 @@ async def update_student(
         phone=user.phone,
         email=user.email,
         notes=user.notes,
+        telegram_id=user.telegram_id,
         created_at=user.created_at,
     )
 
@@ -275,6 +322,13 @@ async def list_student_lessons(
             duration_minutes=int(lesson.duration_minutes),
             status=lesson.status.value,
             notes=lesson.notes,
+            flags=LessonFlagsOut(
+                notification_sent=lesson.notification_sent,
+                confirmed_by_student=lesson.confirmed_by_student,
+                homework_sent=lesson.homework_sent,
+                solution_received=lesson.solution_received,
+                solution_checked=lesson.solution_checked,
+            ),
         )
         for lesson in lessons
     ]
@@ -326,4 +380,5 @@ async def student_stats(
         lessons_total=summary["lessons_total"],
         assignments_done=summary["assignments_done"],
         assignments_total=summary["assignments_total"],
+        lessons_solution_checked=summary["lessons_solution_checked"],
     )

@@ -78,6 +78,10 @@ class ProgressSummaryRead(BaseModel):
     lessons_total: int = Field(..., description="Всего занятий у ученика")
     assignments_done: int = Field(..., description="Число выполненных ДЗ")
     assignments_total: int = Field(..., description="Всего назначенных ДЗ")
+    lessons_solution_checked: int = Field(
+        ...,
+        description="Число занятий с проверенным решением (solution_checked)",
+    )
 
 
 @router.post(

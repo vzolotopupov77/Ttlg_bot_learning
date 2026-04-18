@@ -36,11 +36,22 @@ async def get_student_progress_summary(session: AsyncSession, student_id: UUID) 
             Assignment.student_id == student_id,
         )
     )
+    lessons_solution_checked_stmt = (
+        select(func.count())
+        .select_from(Lesson)
+        .where(
+            Lesson.student_id == student_id,
+            Lesson.solution_checked.is_(True),
+        )
+    )
 
     lessons_completed = int((await session.execute(lessons_completed_stmt)).scalar_one())
     lessons_total = int((await session.execute(lessons_total_stmt)).scalar_one())
     assignments_done = int((await session.execute(assignments_done_stmt)).scalar_one())
     assignments_total = int((await session.execute(assignments_total_stmt)).scalar_one())
+    lessons_solution_checked = int(
+        (await session.execute(lessons_solution_checked_stmt)).scalar_one(),
+    )
 
     return {
         "student_id": str(student_id),
@@ -48,4 +59,5 @@ async def get_student_progress_summary(session: AsyncSession, student_id: UUID) 
         "lessons_total": lessons_total,
         "assignments_done": assignments_done,
         "assignments_total": assignments_total,
+        "lessons_solution_checked": lessons_solution_checked,
     }

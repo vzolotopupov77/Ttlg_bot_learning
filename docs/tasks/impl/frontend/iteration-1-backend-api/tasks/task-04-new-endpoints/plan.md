@@ -157,7 +157,7 @@ def decode_token(token: str, secret_key: str) -> dict:
 }
 ```
 
-`telegram_id` не принимается с формы преподавателя.
+`telegram_id` принимается в `POST/PUT /v1/students` (форма преподавателя в веб-клиенте); уникальность в БД, конфликт — `409`.
 
 **Конфликт при создании:** если `email` уже занят → `409` `conflict`.
 

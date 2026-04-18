@@ -29,7 +29,7 @@
 | Итерация 7 | Ревью качества кода, палитра темы по макетам |
 | Итерация 8 | Тестирование |
 
-## Прогресс (актуально на 2026-04-16)
+## Прогресс (актуально на 2026-04-19)
 
 | Итерация | Статус |
 |----------|--------|
@@ -37,13 +37,13 @@
 | 1 — Backend API для frontend | ✅ Done |
 | 2 — Каркас frontend | ✅ Done |
 | 3 — Календарь преподавателя | ✅ Done — реализация и проверки зафиксированы в [summary итерации 3](impl/frontend/iteration-3-teacher-calendar/summary.md) |
-| 4 — Ученики | 📋 Planned (**следующая**) |
-| 5 — Настройки | 📋 Planned |
+| 4 — Ученики | ✅ Done — реализация (2026-04-18), ручная приёмка (2026-04-19); [summary итерации 4](impl/frontend/iteration-4-students/summary.md) |
+| 5 — Настройки | 📋 Planned (**следующая**) |
 | 6 — Расписание ученика | 📋 Planned |
 | 7 — Ревью качества, палитра по макетам | 📋 Planned |
 | 8 — Тестирование | 📋 Planned |
 
-**Текущий фокус:** итерация 4 (задачи 18–20).
+**Текущий фокус:** итерация 5 (задача 21).
 
 ---
 
@@ -68,9 +68,9 @@
 | 15 | 3 | Блок неподтверждённых занятий (2 дня) + напоминания | ✅ Done | [план](impl/frontend/iteration-3-teacher-calendar/tasks/task-15-unconfirmed-lessons/plan.md) \| [summary](impl/frontend/iteration-3-teacher-calendar/tasks/task-15-unconfirmed-lessons/summary.md) |
 | 16 | 3 | Блок несданных ДЗ (2 дня) + напоминания | ✅ Done | [план](impl/frontend/iteration-3-teacher-calendar/tasks/task-16-pending-hw/plan.md) \| [summary](impl/frontend/iteration-3-teacher-calendar/tasks/task-16-pending-hw/summary.md) |
 | 17 | 3 | Блок запросов учеников на перенос занятий | ✅ Done | [план](impl/frontend/iteration-3-teacher-calendar/tasks/task-17-reschedule-requests/plan.md) \| [summary](impl/frontend/iteration-3-teacher-calendar/tasks/task-17-reschedule-requests/summary.md) |
-| 18 | 4 | Список учеников: карточки/таблица, CRUD | 📋 Planned | [план](impl/frontend/iteration-4-students/tasks/task-18-students-list/plan.md) \| [summary](impl/frontend/iteration-4-students/tasks/task-18-students-list/summary.md) |
-| 19 | 4 | Детальная форма ученика: занятия, счётчики, ДЗ | 📋 Planned | [план](impl/frontend/iteration-4-students/tasks/task-19-student-detail/plan.md) \| [summary](impl/frontend/iteration-4-students/tasks/task-19-student-detail/summary.md) |
-| 20 | 4 | Лента диалога ученика с ботом в детальной форме | 📋 Planned | [план](impl/frontend/iteration-4-students/tasks/task-20-student-dialogue/plan.md) \| [summary](impl/frontend/iteration-4-students/tasks/task-20-student-dialogue/summary.md) |
+| 18 | 4 | Список учеников: карточки/таблица, CRUD | ✅ Done | [план](impl/frontend/iteration-4-students/tasks/task-18-students-list/plan.md) \| [summary](impl/frontend/iteration-4-students/tasks/task-18-students-list/summary.md) |
+| 19 | 4 | Детальная форма ученика: занятия, счётчики, ДЗ | ✅ Done | [план](impl/frontend/iteration-4-students/tasks/task-19-student-detail/plan.md) \| [summary](impl/frontend/iteration-4-students/tasks/task-19-student-detail/summary.md) |
+| 20 | 4 | Лента диалога ученика с ботом в детальной форме | ✅ Done | [план](impl/frontend/iteration-4-students/tasks/task-20-student-dialogue/plan.md) \| [summary](impl/frontend/iteration-4-students/tasks/task-20-student-dialogue/summary.md) |
 | 21 | 5 | Форма настроек системы | 📋 Planned | [план](impl/frontend/iteration-5-settings/tasks/task-21-settings-form/plan.md) \| [summary](impl/frontend/iteration-5-settings/tasks/task-21-settings-form/summary.md) |
 | 22 | 6 | Календарь расписания ученика | 📋 Planned | [план](impl/frontend/iteration-6-student-schedule/tasks/task-22-student-calendar/plan.md) \| [summary](impl/frontend/iteration-6-student-schedule/tasks/task-22-student-calendar/summary.md) |
 | 23 | 7 | Ревью кода: Server/Client, мемоизация, bundle; тема по макетам (`globals.css`) | 📋 Planned | [план](impl/frontend/iteration-7-quality-review/tasks/task-23-code-review/plan.md) \| [summary](impl/frontend/iteration-7-quality-review/tasks/task-23-code-review/summary.md) |
@@ -957,7 +957,7 @@
 
 ---
 
-## Итерация 4 — Экран Ученики 📋
+## Итерация 4 — Экран Ученики ✅
 
 ### Цель
 
@@ -966,11 +966,17 @@
 ### Документы итерации
 
 - 📋 [План итерации](impl/frontend/iteration-4-students/plan.md)
-- 📝 [Summary итерации](impl/frontend/iteration-4-students/summary.md)
+- ✅ [Summary итерации](impl/frontend/iteration-4-students/summary.md)
+
+**Приёмка и закрытие (2026-04-19)**
+
+- **Самопроверки агента (2026-04-18)** — [summary итерации 4](impl/frontend/iteration-4-students/summary.md), раздел «Самопроверки (агент)».
+- **Ручные сценарии (2026-04-19)** — таблица в том же summary; чек-листы «Пользователь» задач **18–19** закрыты; у задачи **20** открыт только пункт про подгрузку при скролле вверх (нет объёма данных) — **отложенная проверка**, на закрытие итерации не влияет.
+- **Итерация 4 формально закрыта** — см. раздел «Закрытие итерации» в [summary.md](impl/frontend/iteration-4-students/summary.md).
 
 ---
 
-### Задача 18: Список учеников — карточки/таблица, CRUD 📋
+### Задача 18: Список учеников — карточки/таблица, CRUD ✅
 
 #### Цель
 
@@ -997,16 +1003,18 @@
 
 **Агент:**
 
-- [ ] Оба представления отображают данные из API
-- [ ] Переключатель сохраняет выбор (localStorage или URL-параметр)
-- [ ] CRUD работает: создать / редактировать / удалить ученика
-- [ ] Список обновляется без перезагрузки страницы
+- [x] Оба представления отображают данные из API
+- [x] Переключатель сохраняет выбор (localStorage или URL-параметр)
+- [x] CRUD работает: создать / редактировать / удалить ученика
+- [x] Список обновляется без перезагрузки страницы
 
 **Пользователь:**
 
-- [ ] Открыть `/teacher/students` — виден список учеников из mock-данных
-- [ ] Переключить вид — данные те же, но другое представление
-- [ ] Добавить ученика через диалог → он появился в списке
+- [x] Открыть `/teacher/students` — виден список учеников из API
+- [x] Переключить вид — данные те же, но другое представление
+- [x] Добавить ученика через диалог → он появился в списке
+
+*Ручная приёмка (2026): также проверены редактирование, Telegram ID, конфликт дубликата (toast), удаление — см. [summary итерации 4](impl/frontend/iteration-4-students/summary.md).*
 
 #### Документы
 
@@ -1015,7 +1023,7 @@
 
 ---
 
-### Задача 19: Детальная форма ученика — занятия и счётчики 📋
+### Задача 19: Детальная форма ученика — занятия и счётчики ✅
 
 #### Цель
 
@@ -1039,14 +1047,14 @@
 
 **Агент:**
 
-- [ ] Страница отображает профиль, счётчики и историю занятий
-- [ ] Флаги занятий визуально консистентны с Экраном Календарь
-- [ ] Прогресс-бар ДЗ рассчитывается корректно
+- [x] Страница отображает профиль, счётчики и историю занятий
+- [x] Флаги занятий визуально консистентны с Экраном Календарь
+- [x] Прогресс-бар ДЗ рассчитывается корректно
 
 **Пользователь:**
 
-- [ ] Нажать на ученика в списке → открылась детальная форма
-- [ ] Виден список занятий с датами, темами и флагами
+- [x] Нажать на ученика в списке → открылась детальная форма
+- [x] Виден список занятий с датами, темами и флагами
 
 #### Документы
 
@@ -1055,7 +1063,7 @@
 
 ---
 
-### Задача 20: Лента диалога ученика с ботом 📋
+### Задача 20: Лента диалога ученика с ботом ✅
 
 #### Цель
 
@@ -1076,14 +1084,14 @@
 
 **Агент:**
 
-- [ ] Лента показывает последние 20 сообщений
-- [ ] Скролл вверх подгружает следующую порцию
-- [ ] Сообщения user и assistant визуально различимы
+- [x] Лента показывает последние 20 сообщений
+- [x] Скролл вверх подгружает следующую порцию
+- [x] Сообщения user и assistant визуально различимы
 
 **Пользователь:**
 
-- [ ] Открыть детальную форму ученика → видна лента диалога
-- [ ] Прокрутить вверх → загрузились более старые сообщения
+- [x] Открыть детальную форму ученика → видна лента диалога
+- [ ] Прокрутить вверх → загрузились более старые сообщения *(не проверено 2026-04-19: в БД мало сообщений; приёмка ленты в остальном OK — см. [summary итерации 4](impl/frontend/iteration-4-students/summary.md))*
 
 #### Документы
 

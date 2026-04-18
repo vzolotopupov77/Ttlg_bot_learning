@@ -47,6 +47,13 @@ async def get_student_by_telegram_id(session: AsyncSession, telegram_id: int) ->
     return result.scalar_one_or_none()
 
 
+async def get_user_by_telegram_id(session: AsyncSession, telegram_id: int) -> User | None:
+    """Любая роль — для проверки уникальности `telegram_id` в БД."""
+    stmt = select(User).where(User.telegram_id == telegram_id)
+    result = await session.execute(stmt)
+    return result.scalar_one_or_none()
+
+
 async def get_user_by_email_and_role(
     session: AsyncSession,
     *,
@@ -89,6 +96,13 @@ async def delete_user(session: AsyncSession, user_id: UUID) -> bool:
     return True
 
 
+class _UnsetType:
+    """Значение по умолчанию: не менять `telegram_id` при обновлении."""
+
+
+UNSET_TELEGRAM_ID = _UnsetType()
+
+
 async def update_user_fields(
     session: AsyncSession,
     user: User,
@@ -98,6 +112,7 @@ async def update_user_fields(
     phone: str | None = None,
     email: str | None = None,
     notes: str | None = None,
+    telegram_id: int | None | _UnsetType = UNSET_TELEGRAM_ID,
 ) -> User:
     if name is not None:
         user.name = name
@@ -109,5 +124,7 @@ async def update_user_fields(
         user.email = email
     if notes is not None:
         user.notes = notes
+    if telegram_id is not UNSET_TELEGRAM_ID:
+        user.telegram_id = telegram_id
     await session.flush()
     return user

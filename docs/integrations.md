@@ -28,7 +28,7 @@
 
 #### Регистрация пользователя перед smoke-тестом
 
-Бот возвращает `Профиль не найден` если `telegram_id` отправителя отсутствует в БД. Перед тестом зарегистрируйте себя (узнать свой `telegram_id` можно через [@userinfobot](https://t.me/userinfobot)).
+Бот возвращает `Профиль не найден` если `telegram_id` отправителя отсутствует в БД. Перед тестом зарегистрируйте себя (узнать свой `telegram_id` можно через [@userinfobot](https://t.me/userinfobot)). Преподаватель может задать или изменить **Telegram ID** ученика в веб-интерфейсе (`POST/PUT /v1/students`, см. [api-contracts.md](tech/api-contracts.md)).
 
 **curl (bash/WSL):**
 ```bash

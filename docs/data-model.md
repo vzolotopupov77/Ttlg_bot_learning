@@ -15,7 +15,7 @@
 | id | UUID | NOT NULL | Первичный ключ |
 | role | enum (`user_role`) | NOT NULL | `student` · `teacher` |
 | name | VARCHAR(255) | NOT NULL | Имя пользователя |
-| telegram_id | BIGINT | NULL, UNIQUE | Привязка к Telegram-аккаунту |
+| telegram_id | BIGINT | NULL, UNIQUE | Привязка к Telegram-аккаунту; для учеников задаётся и редактируется преподавателем через `POST/PUT /v1/students` (веб) либо при создании пользователя иным способом |
 | class_label | VARCHAR(32) | NULL | Номер / литера класса (например `10А`); обычно у ученика |
 | phone | VARCHAR(32) | NULL | Телефон; обычно у ученика |
 | email | VARCHAR(255) | NULL | Email; обычно у ученика (уникальность в MVP не enforced) |

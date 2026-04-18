@@ -165,3 +165,4 @@ async def test_user_progress_summary(
     body = r.json()
     assert body["lessons_completed"] == 1
     assert body["assignments_done"] == 1
+    assert body["lessons_solution_checked"] == 0
