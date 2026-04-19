@@ -38,12 +38,12 @@
 | 2 — Каркас frontend | ✅ Done |
 | 3 — Календарь преподавателя | ✅ Done — реализация и проверки зафиксированы в [summary итерации 3](impl/frontend/iteration-3-teacher-calendar/summary.md) |
 | 4 — Ученики | ✅ Done — реализация (2026-04-18), ручная приёмка (2026-04-19); [summary итерации 4](impl/frontend/iteration-4-students/summary.md) |
-| 5 — Настройки | 📋 Planned (**следующая**) |
-| 6 — Расписание ученика | 📋 Planned |
+| 5 — Настройки | ✅ Done — реализация **2026-04-19**, ручная приёмка **2026-04-19**; [summary итерации 5](impl/frontend/iteration-5-settings/summary.md) |
+| 6 — Расписание ученика | 📋 Planned (**следующая**) |
 | 7 — Ревью качества, палитра по макетам | 📋 Planned |
 | 8 — Тестирование | 📋 Planned |
 
-**Текущий фокус:** итерация 5 (задача 21).
+**Текущий фокус:** итерация 6 (задача 22).
 
 ---
 
@@ -71,7 +71,7 @@
 | 18 | 4 | Список учеников: карточки/таблица, CRUD | ✅ Done | [план](impl/frontend/iteration-4-students/tasks/task-18-students-list/plan.md) \| [summary](impl/frontend/iteration-4-students/tasks/task-18-students-list/summary.md) |
 | 19 | 4 | Детальная форма ученика: занятия, счётчики, ДЗ | ✅ Done | [план](impl/frontend/iteration-4-students/tasks/task-19-student-detail/plan.md) \| [summary](impl/frontend/iteration-4-students/tasks/task-19-student-detail/summary.md) |
 | 20 | 4 | Лента диалога ученика с ботом в детальной форме | ✅ Done | [план](impl/frontend/iteration-4-students/tasks/task-20-student-dialogue/plan.md) \| [summary](impl/frontend/iteration-4-students/tasks/task-20-student-dialogue/summary.md) |
-| 21 | 5 | Форма настроек системы | 📋 Planned | [план](impl/frontend/iteration-5-settings/tasks/task-21-settings-form/plan.md) \| [summary](impl/frontend/iteration-5-settings/tasks/task-21-settings-form/summary.md) |
+| 21 | 5 | Форма настроек системы | ✅ Done | [план](impl/frontend/iteration-5-settings/tasks/task-21-settings-form/plan.md) \| [summary](impl/frontend/iteration-5-settings/tasks/task-21-settings-form/summary.md) |
 | 22 | 6 | Календарь расписания ученика | 📋 Planned | [план](impl/frontend/iteration-6-student-schedule/tasks/task-22-student-calendar/plan.md) \| [summary](impl/frontend/iteration-6-student-schedule/tasks/task-22-student-calendar/summary.md) |
 | 23 | 7 | Ревью кода: Server/Client, мемоизация, bundle; тема по макетам (`globals.css`) | 📋 Planned | [план](impl/frontend/iteration-7-quality-review/tasks/task-23-code-review/plan.md) \| [summary](impl/frontend/iteration-7-quality-review/tasks/task-23-code-review/summary.md) |
 | 24 | 8 | Тест-сценарии для 5 экранов (ручные чек-листы) | 📋 Planned | [план](impl/frontend/iteration-8-testing/tasks/task-24-test-scenarios/plan.md) \| [summary](impl/frontend/iteration-8-testing/tasks/task-24-test-scenarios/summary.md) |
@@ -1100,7 +1100,7 @@
 
 ---
 
-## Итерация 5 — Экран Настройки системы 📋
+## Итерация 5 — Экран Настройки системы ✅
 
 ### Цель
 
@@ -1109,11 +1109,19 @@
 ### Документы итерации
 
 - 📋 [План итерации](impl/frontend/iteration-5-settings/plan.md)
-- 📝 [Summary итерации](impl/frontend/iteration-5-settings/summary.md)
+- ✅ [Summary итерации](impl/frontend/iteration-5-settings/summary.md)
+
+**Приёмка и закрытие (2026-04-19)**
+
+- **Самопроверки агента** — [summary итерации 5](impl/frontend/iteration-5-settings/summary.md), разделы «Прогресс итерации» и «Самопроверки (агент)».
+- **Ручные сценарии** — таблица в том же summary (шаги **0–4** и **6** проверены; шаг **5** — skeleton при **Slow 3G** — **пропущен**, на закрытие итерации не влияет).
+- **Итерация 5 формально закрыта** — см. «Закрытие итерации» в [summary.md](impl/frontend/iteration-5-settings/summary.md).
+
+**Реализация:** [`settings-form.tsx`](../../../frontend/src/components/settings-form.tsx), [`updateSettingsAction`](../../../frontend/src/app/actions/settings.ts), [`fetchSettings()`](../../../frontend/src/lib/api-server.ts) — детали в summary.
 
 ---
 
-### Задача 21: Форма настроек системы 📋
+### Задача 21: Форма настроек системы ✅
 
 #### Цель
 
@@ -1124,31 +1132,36 @@
 - Создать страницу `frontend/src/app/(app)/teacher/settings/page.tsx`
 - Поля формы (react-hook-form + zod-валидация):
   - «Имя репетитора» — `Input`, обязательное
-  - «Длительность занятия по умолчанию (мин)» — `Input type=number`, min=30, max=180
-  - «Напоминание о занятии за N часов» — `Input type=number`, min=1, max=48
-  - «Напоминание о ДЗ за N часов» — `Input type=number`, min=1, max=48
+  - «Длительность занятия по умолчанию (мин)» — `Input type=number`, min=15, max=240 (как `SettingsBody` в backend)
+  - «Напоминание о занятии за N часов» — `Input type=number`, min=1, max=168
+  - «Напоминание о ДЗ за N часов» — `Input type=number`, min=1, max=336
 - Загружать текущие значения через `GET /v1/settings`
-- «Сохранить» → `PUT /v1/settings` → toast с результатом
+- «Сохранить» → Server Action → `PUT /v1/settings` → toast с результатом
 - «Сбросить» → восстановить значения из API без сохранения
 
 #### Артефакты
 
 - `frontend/src/app/(app)/teacher/settings/page.tsx`
+- `frontend/src/app/(app)/teacher/settings/loading.tsx`
+- `frontend/src/components/settings-form.tsx`
+- `frontend/src/lib/types/settings.ts`
+- `frontend/src/lib/api-server.ts` — `fetchSettings()`
+- `frontend/src/app/actions/settings.ts` — `updateSettingsAction`
 
 #### Definition of Done
 
 **Агент:**
 
-- [ ] Форма загружает текущие значения из API
-- [ ] Валидация полей через zod: числовые поля в допустимом диапазоне
-- [ ] «Сохранить» отправляет `PUT /v1/settings` и показывает toast
-- [ ] «Сбросить» восстанавливает значения без запроса к API
+- [x] Форма загружает текущие значения из API
+- [x] Валидация полей через zod: числовые поля в допустимом диапазоне
+- [x] «Сохранить» отправляет `PUT /v1/settings` и показывает toast
+- [x] «Сбросить» восстанавливает значения без запроса к API
 
 **Пользователь:**
 
-- [ ] Открыть `/teacher/settings` — форма заполнена текущими настройками
-- [ ] Изменить значение → «Сохранить» → toast «Настройки сохранены»
-- [ ] Изменить значение → «Сбросить» → значения вернулись к сохранённым
+- [x] Открыть `/teacher/settings` — форма заполнена текущими настройками
+- [x] Изменить значение → «Сохранить» → toast «Настройки сохранены»
+- [x] Изменить значение → «Сбросить» → значения вернулись к сохранённым
 
 #### Документы
 

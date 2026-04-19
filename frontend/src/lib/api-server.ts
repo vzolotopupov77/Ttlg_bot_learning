@@ -1,6 +1,7 @@
 import { cookies } from "next/headers"
 
 import { ACCESS_TOKEN_COOKIE, getApiUrl } from "@/lib/constants"
+import type { SystemSettings } from "@/lib/types/settings"
 
 export async function serverApiFetch<T>(
   path: string,
@@ -28,4 +29,8 @@ export async function serverApiFetch<T>(
     throw new Error(json.error?.message ?? res.statusText)
   }
   return json as T
+}
+
+export async function fetchSettings(): Promise<SystemSettings> {
+  return serverApiFetch<SystemSettings>("/v1/settings")
 }

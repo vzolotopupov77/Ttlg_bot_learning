@@ -49,4 +49,4 @@
 |--|--|
 | **Результат** | Экраны `/teacher/students` и `/teacher/students/[id]` согласованы с [frontend-requirements.md](../../../spec/frontend-requirements.md) и [api-contracts.md](../../../tech/api-contracts.md); автоматические проверки и ручной прогон в браузере задокументированы выше. |
 | **Открытый хвост** | В [tasklist-frontend.md](../../../tasks/tasklist-frontend.md) у задачи **20** остаётся неотмеченным пункт «скролл вверх → подгрузка» до появления в БД **>20** сообщений диалога у ученика; после проверки проставить чекбокс. |
-| **Следующий шаг по tasklist** | [Итерация 5 — Настройки](../../../tasks/tasklist-frontend.md) (задача 21). |
+| **Следующий шаг по tasklist** | [Итерация 5 — Настройки](../../../tasks/tasklist-frontend.md) (задача 21) — ✅ закрыта; далее [итерация 6 — Расписание ученика](../../../tasks/tasklist-frontend.md) (задача 22). |
