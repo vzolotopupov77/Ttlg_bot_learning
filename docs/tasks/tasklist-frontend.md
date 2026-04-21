@@ -29,7 +29,7 @@
 | Итерация 7 | Ревью качества кода, палитра темы по макетам |
 | Итерация 8 | Тестирование |
 
-## Прогресс (актуально на 2026-04-19)
+## Прогресс (актуально на 2026-04-21)
 
 | Итерация | Статус |
 |----------|--------|
@@ -39,11 +39,11 @@
 | 3 — Календарь преподавателя | ✅ Done — реализация и проверки зафиксированы в [summary итерации 3](impl/frontend/iteration-3-teacher-calendar/summary.md) |
 | 4 — Ученики | ✅ Done — реализация (2026-04-18), ручная приёмка (2026-04-19); [summary итерации 4](impl/frontend/iteration-4-students/summary.md) |
 | 5 — Настройки | ✅ Done — реализация **2026-04-19**, ручная приёмка **2026-04-19**; [summary итерации 5](impl/frontend/iteration-5-settings/summary.md) |
-| 6 — Расписание ученика | 📋 Planned (**следующая**) |
-| 7 — Ревью качества, палитра по макетам | 📋 Planned |
-| 8 — Тестирование | 📋 Planned |
+| 6 — Расписание ученика | ✅ Done — реализация **2026-04-21**, приёмка и фиксация артефактов **2026-04-21**; [summary итерации 6](impl/frontend/iteration-6-student-schedule/summary.md) |
+| 7 — Ревью качества, палитра по макетам | ✅ Done — реализация **2026-04-21**; [summary итерации 7](impl/frontend/iteration-7-quality-review/summary.md) |
+| 8 — Тестирование | 📋 Planned (**следующая**) |
 
-**Текущий фокус:** итерация 6 (задача 22).
+**Текущий фокус:** итерация 8 (задача 24–25).
 
 ---
 
@@ -72,8 +72,8 @@
 | 19 | 4 | Детальная форма ученика: занятия, счётчики, ДЗ | ✅ Done | [план](impl/frontend/iteration-4-students/tasks/task-19-student-detail/plan.md) \| [summary](impl/frontend/iteration-4-students/tasks/task-19-student-detail/summary.md) |
 | 20 | 4 | Лента диалога ученика с ботом в детальной форме | ✅ Done | [план](impl/frontend/iteration-4-students/tasks/task-20-student-dialogue/plan.md) \| [summary](impl/frontend/iteration-4-students/tasks/task-20-student-dialogue/summary.md) |
 | 21 | 5 | Форма настроек системы | ✅ Done | [план](impl/frontend/iteration-5-settings/tasks/task-21-settings-form/plan.md) \| [summary](impl/frontend/iteration-5-settings/tasks/task-21-settings-form/summary.md) |
-| 22 | 6 | Календарь расписания ученика | 📋 Planned | [план](impl/frontend/iteration-6-student-schedule/tasks/task-22-student-calendar/plan.md) \| [summary](impl/frontend/iteration-6-student-schedule/tasks/task-22-student-calendar/summary.md) |
-| 23 | 7 | Ревью кода: Server/Client, мемоизация, bundle; тема по макетам (`globals.css`) | 📋 Planned | [план](impl/frontend/iteration-7-quality-review/tasks/task-23-code-review/plan.md) \| [summary](impl/frontend/iteration-7-quality-review/tasks/task-23-code-review/summary.md) |
+| 22 | 6 | Календарь расписания ученика | ✅ Done | [план](impl/frontend/iteration-6-student-schedule/tasks/task-22-student-calendar/plan.md) \| [summary](impl/frontend/iteration-6-student-schedule/tasks/task-22-student-calendar/summary.md) |
+| 23 | 7 | Ревью кода: Server/Client, мемоизация, bundle; тема по макетам (`globals.css`) | ✅ Done | [план](impl/frontend/iteration-7-quality-review/tasks/task-23-code-review/plan.md) \| [summary](impl/frontend/iteration-7-quality-review/tasks/task-23-code-review/summary.md) |
 | 24 | 8 | Тест-сценарии для 5 экранов (ручные чек-листы) | 📋 Planned | [план](impl/frontend/iteration-8-testing/tasks/task-24-test-scenarios/plan.md) \| [summary](impl/frontend/iteration-8-testing/tasks/task-24-test-scenarios/summary.md) |
 | 25 | 8 | Автотесты: unit + integration; `make frontend-test` | 📋 Planned | [план](impl/frontend/iteration-8-testing/tasks/task-25-automated-tests/plan.md) \| [summary](impl/frontend/iteration-8-testing/tasks/task-25-automated-tests/summary.md) |
 
@@ -1170,55 +1170,56 @@
 
 ---
 
-## Итерация 6 — Расписание Ученика 📋
+## Итерация 6 — Расписание Ученика ✅
 
 ### Цель
 
-Реализован экран `/student/schedule` — календарь занятий ученика.
+Реализован экран `/student/schedule` — недельный календарь занятий ученика (см. [frontend-requirements.md](../../spec/frontend-requirements.md), экран 5).
 
 ### Документы итерации
 
 - 📋 [План итерации](impl/frontend/iteration-6-student-schedule/plan.md)
 - 📝 [Summary итерации](impl/frontend/iteration-6-student-schedule/summary.md)
 
+**Реализация и приёмка:** см. [summary итерации 6](impl/frontend/iteration-6-student-schedule/summary.md) (ручные проверки — OK; **2026-04-22** — зафиксированы `backend/alembic/env.py` и проверка смены пароля ученика через миграцию).
+
 ---
 
-### Задача 22: Календарь занятий ученика 📋
+### Задача 22: Календарь занятий ученика ✅
 
 #### Цель
 
-Реализована страница `/student/schedule` с месячным и недельным видом расписания ученика.
+Страница `/student/schedule` с **недельным** видом (месячный — вне спецификации MVP).
 
 #### Состав работ
 
-- Создать страницу `frontend/src/app/(app)/student/schedule/page.tsx`
-- Переключатель «Месяц / Неделя»
-- Месячный вид: сетка месяца, дни с занятиями подсвечены, счётчик занятий на день
-- Недельный вид: 7 колонок, карточки занятий (тема, время, статус)
-- Клик по занятию → попап/drawer с деталями: тема, ДЗ, статус, заметки
-- Загружать через `GET /v1/students/{id}/schedule?month=YYYY-MM`
-- Навигация: «< Предыдущий / Следующий месяц (или неделя) >»
+- Страница `frontend/src/app/(app)/student/schedule/page.tsx` — `GET /v1/student/schedule?week_start=`
+- Недельная сетка (переиспользование `WeeklySchedule`), без кнопки «+ Занятие»
+- Клик по занятию → `Sheet` с темой, датой, временем, статусом, 5 флагами
+- Миграция: `password_hash` для тестового ученика `alex@example.com` (вход в веб для проверки)
 
 #### Артефакты
 
 - `frontend/src/app/(app)/student/schedule/page.tsx`
-- `frontend/src/components/student-monthly-calendar.tsx`
-- `frontend/src/components/student-weekly-view.tsx`
-- `frontend/src/components/lesson-detail-popup.tsx`
+- `frontend/src/components/student-schedule-view.tsx`
+- `frontend/src/components/weekly-schedule.tsx`, `lesson-card.tsx` (доработки)
+- `frontend/src/lib/api-server.ts` — `fetchStudentSchedule`
+- `backend/alembic/versions/e1f2a3b4c5d6_seed_student_web_password.py`
 
 #### Definition of Done
 
 **Агент:**
 
-- [ ] Оба вида (месяц/неделя) отображают занятия из API
-- [ ] Навигация по месяцам/неделям работает
-- [ ] Клик по занятию открывает попап с деталями
+- [x] Недельный вид отображает занятия из API
+- [x] Навигация по неделям (`week_start` в URL)
+- [x] Клик по занятию открывает панель с деталями
+- [x] Кнопки добавления занятия нет
 
 **Пользователь:**
 
-- [ ] Войти как ученик → открыть `/student/schedule`
-- [ ] Переключить вид месяц/неделя — данные те же, вид разный
-- [ ] Нажать на занятие → попап с темой и статусом
+- [x] Войти как ученик → открыть `/student/schedule`
+- [x] Сетка недели и навигация
+- [x] Клик по занятию — детали
 
 #### Документы
 
@@ -1227,7 +1228,7 @@
 
 ---
 
-## Итерация 7 — Ревью качества кода frontend 📋
+## Итерация 7 — Ревью качества кода frontend ✅
 
 ### Цель
 

@@ -4,7 +4,7 @@ import { jwtVerify } from "jose"
 
 import { ACCESS_TOKEN_COOKIE } from "@/lib/constants"
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   if (

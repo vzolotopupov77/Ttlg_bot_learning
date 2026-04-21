@@ -1,13 +1,28 @@
-# Summary — Итерация 7 (ревью качества + палитра)
+# Итерация 7 — Ревью качества frontend: summary
 
-Статус: 📋 Planned (заполнить после завершения).
+## Дата завершения
 
-## Факт выполнения
+2026-04-21
 
-- (ревью кода, список исправлений)
-- (палитра: какие токены изменены, ссылка на макеты)
+## Результат
 
-## Проверки
+Код `frontend/src/` проверен по чеклистам `vercel-react-best-practices` и `nextjs-app-router-patterns`. Критические находки исправлены. Фиолетовая палитра (Variant B, hue 285) внедрена в семантические токены shadcn.
 
-- `make frontend-build` / `make frontend-lint`
-- Сверка ключевых экранов с макетами (light / dark)
+## Состав изменений
+
+| Файл | Изменение |
+|------|-----------|
+| `frontend/src/proxy.ts` | Создан (переименован из `middleware.ts`, функция `middleware → proxy`) |
+| `frontend/src/middleware.ts` | Удалён |
+| `frontend/src/app/globals.css` | Фиолетовая палитра `:root`/`.dark`, токены `--success`/`--success-foreground`, `chart-*`, `sidebar-*` |
+| `frontend/src/components/student-stats.tsx` | `text-green-600 dark:text-green-500` → `text-success` |
+
+## Задачи итерации
+
+| № | Задача | Статус |
+|---|--------|--------|
+| 23 | Ревью кода, палитра по макетам | ✅ Done |
+
+## Связанные документы
+
+- [Задача 23 — summary](tasks/task-23-code-review/summary.md)

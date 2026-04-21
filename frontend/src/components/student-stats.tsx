@@ -51,8 +51,7 @@ export function StudentStats({ stats }: StudentStatsProps) {
           <p
             className={cn(
               "text-2xl font-semibold",
-              hwPercent >= 70 &&
-                "text-green-600 dark:text-green-500",
+              hwPercent >= 70 && "text-success",
             )}
           >
             {stats.assignments_total === 0 ? "—" : `${hwPercent}%`}
