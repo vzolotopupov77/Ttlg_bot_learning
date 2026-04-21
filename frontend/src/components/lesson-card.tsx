@@ -17,22 +17,28 @@ import type { ScheduleLessonItem } from "@/lib/types/teacher-calendar"
 type LessonCardProps = {
   lesson: ScheduleLessonItem
   timeLabel: string
-  onOpen: () => void
+  /** Без колбэка — только просмотр (без клика). */
+  onOpen?: () => void
 }
 
 export function LessonCard({ lesson, timeLabel, onOpen }: LessonCardProps) {
+  const body = (
+    <>
+      <p className="font-medium leading-tight">{lesson.student_name}</p>
+      <p className="text-muted-foreground text-xs">{timeLabel}</p>
+      <p className="mt-1 line-clamp-2 text-xs">{lesson.topic}</p>
+    </>
+  )
   return (
     <Card className="gap-0 py-0">
       <CardContent className="space-y-2 p-2">
-        <button
-          type="button"
-          onClick={onOpen}
-          className="w-full text-left"
-        >
-          <p className="font-medium leading-tight">{lesson.student_name}</p>
-          <p className="text-muted-foreground text-xs">{timeLabel}</p>
-          <p className="mt-1 line-clamp-2 text-xs">{lesson.topic}</p>
-        </button>
+        {onOpen ? (
+          <button type="button" onClick={onOpen} className="w-full text-left">
+            {body}
+          </button>
+        ) : (
+          <div className="w-full text-left">{body}</div>
+        )}
         <LessonFlagsRow flags={lesson.flags} />
       </CardContent>
     </Card>

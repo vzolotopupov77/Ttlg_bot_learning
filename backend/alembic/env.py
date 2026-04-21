@@ -5,10 +5,15 @@ from __future__ import annotations
 import asyncio
 import os
 from logging.config import fileConfig
+from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
+# Корень репозитория (…/backend/alembic/env.py → parents[2]). Так .env подхватывается
+# при любом cwd (uv, IDE, запуск из backend/), иначе миграции с os.environ.get(..., default)
+# видят только дефолты из кода.
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+load_dotenv(_REPO_ROOT / ".env")
 
 from alembic import context
 from sqlalchemy import pool

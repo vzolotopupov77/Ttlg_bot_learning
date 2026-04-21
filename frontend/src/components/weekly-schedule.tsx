@@ -50,13 +50,17 @@ function timeRange(lesson: ScheduleLessonItem): string {
 type WeeklyScheduleProps = {
   weekStart: string
   items: ScheduleLessonItem[]
-  onOpenLesson: (lesson: ScheduleLessonItem) => void
-  onAddLesson: (dayKey: string) => void
+  /** Базовый путь для ссылок навигации (например `/teacher/calendar` или `/student/schedule`). */
+  basePath?: string
+  onOpenLesson?: (lesson: ScheduleLessonItem) => void
+  /** Если не передан — кнопка «+ Занятие» скрыта. */
+  onAddLesson?: (dayKey: string) => void
 }
 
 export function WeeklySchedule({
   weekStart,
   items,
+  basePath = "/teacher/calendar",
   onOpenLesson,
   onAddLesson,
 }: WeeklyScheduleProps) {
@@ -70,20 +74,20 @@ export function WeeklySchedule({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-1">
           <Link
-            href={`/teacher/calendar?week_start=${encodeURIComponent(prev)}`}
+            href={`${basePath}?week_start=${encodeURIComponent(prev)}`}
             aria-label="Предыдущая неделя"
             className={cn(buttonVariants({ variant: "outline", size: "icon-sm" }))}
           >
             <ChevronLeft className="size-4" />
           </Link>
           <Link
-            href="/teacher/calendar"
+            href={basePath}
             className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
           >
             Сегодня
           </Link>
           <Link
-            href={`/teacher/calendar?week_start=${encodeURIComponent(next)}`}
+            href={`${basePath}?week_start=${encodeURIComponent(next)}`}
             aria-label="Следующая неделя"
             className={cn(buttonVariants({ variant: "outline", size: "icon-sm" }))}
           >
@@ -126,11 +130,17 @@ export function WeeklySchedule({
                       key={lesson.id}
                       lesson={lesson}
                       timeLabel={timeRange(lesson)}
-                      onOpen={() => onOpenLesson(lesson)}
+                      onOpen={
+                        onOpenLesson
+                          ? () => onOpenLesson(lesson)
+                          : undefined
+                      }
                     />
                   ))
                 )}
-                <AddLessonButton onClick={() => onAddLesson(day.key)} />
+                {onAddLesson ? (
+                  <AddLessonButton onClick={() => onAddLesson(day.key)} />
+                ) : null}
               </div>
             </div>
           )

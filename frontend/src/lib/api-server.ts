@@ -1,6 +1,7 @@
 import { cookies } from "next/headers"
 
 import { ACCESS_TOKEN_COOKIE, getApiUrl } from "@/lib/constants"
+import type { ScheduleResponse } from "@/lib/types/teacher-calendar"
 import type { SystemSettings } from "@/lib/types/settings"
 
 export async function serverApiFetch<T>(
@@ -33,4 +34,12 @@ export async function serverApiFetch<T>(
 
 export async function fetchSettings(): Promise<SystemSettings> {
   return serverApiFetch<SystemSettings>("/v1/settings")
+}
+
+export async function fetchStudentSchedule(
+  weekStart: string,
+): Promise<ScheduleResponse> {
+  return serverApiFetch<ScheduleResponse>(
+    `/v1/student/schedule?week_start=${encodeURIComponent(weekStart)}`,
+  )
 }
