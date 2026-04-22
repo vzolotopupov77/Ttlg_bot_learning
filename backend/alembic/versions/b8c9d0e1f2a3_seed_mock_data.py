@@ -8,8 +8,10 @@ Create Date: 2026-04-12
 
 from __future__ import annotations
 
+import os
 from datetime import UTC, datetime, timedelta
 
+import bcrypt
 from alembic import op
 from sqlalchemy import text
 
@@ -30,20 +32,49 @@ RR1 = "00000000-0000-0000-0000-000000000030"
 def upgrade() -> None:
     conn = op.get_bind()
     now = datetime.now(tz=UTC)
+    teacher_password = os.environ.get("TEACHER_DEFAULT_PASSWORD", "changeme_teacher")
+    teacher_password_hash = bcrypt.hashpw(
+        teacher_password.encode("utf-8"),
+        bcrypt.gensalt(),
+    ).decode("ascii")
 
     conn.execute(
         text(
             """
-            INSERT INTO users (id, role, name, telegram_id, email, class_label, phone, notes, created_at)
+            INSERT INTO users (
+              id, role, name, telegram_id, email, class_label, phone, notes, password_hash, created_at
+            )
             VALUES
-              (:tid, 'teacher', 'Seed Teacher', NULL, 'seed.teacher@example.com', NULL, NULL, NULL, now()),
-              (:s1, 'student', 'Алексей Иванов', 100000001, 'alex@example.com', '10А', '+79001000101', 'ЕГЭ математика', now()),
-              (:s2, 'student', 'Мария Петрова', 100000002, 'maria@example.com', '9Б', '+79001000102', NULL, now()),
-              (:s3, 'student', 'Дмитрий Сидоров', 100000003, 'dmitry@example.com', '11А', NULL, NULL, now()),
-              (:s4, 'student', 'Анна Козлова', 100000004, 'anna@example.com', '8В', NULL, NULL, now())
+              (
+                :tid, 'teacher', 'Владимир', NULL, 'vzolotoy@mail.ru',
+                NULL, NULL, NULL, :tph, now()
+              ),
+              (
+                :s1, 'student', 'Алексей Иванов', 100000001, 'alex@example.com',
+                '10А', '+79001000101', 'ЕГЭ математика', NULL, now()
+              ),
+              (
+                :s2, 'student', 'Мария Петрова', 100000002, 'maria@example.com',
+                '9Б', '+79001000102', NULL, NULL, now()
+              ),
+              (
+                :s3, 'student', 'Дмитрий Сидоров', 100000003, 'dmitry@example.com',
+                '11А', NULL, NULL, NULL, now()
+              ),
+              (
+                :s4, 'student', 'Анна Козлова', 100000004, 'anna@example.com',
+                '8В', NULL, NULL, NULL, now()
+              )
             """
         ),
-        {"tid": TEACHER_SEED_ID, "s1": S1, "s2": S2, "s3": S3, "s4": S4},
+        {
+            "tid": TEACHER_SEED_ID,
+            "tph": teacher_password_hash,
+            "s1": S1,
+            "s2": S2,
+            "s3": S3,
+            "s4": S4,
+        },
     )
 
     lessons_rows: list[tuple[str, str, str, str, datetime, int, str, bool, bool, bool, bool, bool]] = []

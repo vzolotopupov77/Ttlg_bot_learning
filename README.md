@@ -5,7 +5,7 @@ Telegram-бот + веб-приложение для поддержки учен
 
 ## О проекте
 
-Ученик занимается индивидуально — преподаватель хочет видеть факты о занятиях и домашних работах, а не договорённости «на словах». Система обеспечивает персональный диалог через Telegram (LLM-ассистент с контекстом), фиксацию расписания и статусов ДЗ, напоминания. В перспективе — единый веб-интерфейс для ученика и преподавателя через общий backend.
+Ученик занимается индивидуально — преподаватель хочет видеть факты о занятиях и домашних работах, а не договорённости «на словах». Система обеспечивает персональный диалог через Telegram (LLM-ассистент с контекстом), фиксацию расписания и статусов ДЗ, напоминания. **Веб-клиент** (Next.js) для ученика и преподавателя работает через тот же backend API.
 
 ## Архитектура
 
@@ -18,7 +18,7 @@ graph TD
 
     subgraph Clients["Клиенты"]
         TGBot["Telegram-бот\naiogram · long polling"]
-        WebApp["Веб-приложение\nученик · преподаватель"]
+        WebApp["Веб-приложение\nNext.js · ученик · преподаватель"]
     end
 
     subgraph Core["Backend (ядро)"]
@@ -42,16 +42,18 @@ graph TD
 
 ## Статус
 
+Актуальная дорожная карта и пояснения — **[docs/plan.md](docs/plan.md)**.
+
 | # | Итерация | Цель | Статус |
 |---|----------|------|--------|
 | 1 | Базовый бот с LLM | Рабочий бот с диалогом через LLM | ✅ Done |
 | 2 | Backend Core | FastAPI + PostgreSQL + доменная модель | ✅ Done |
 | 3 | Персонализированный диалог | Бот как тонкий клиент; контекст из БД в LLM | ✅ Done |
-| 4 | Расписание и домашние задания | Занятия, ДЗ, напоминания через backend | 📋 Planned |
-| 5 | Веб-интерфейс | Фронтенд для ученика и преподавателя | 📋 Planned |
-| 6 | Прогресс и аналитика | Агрегация результатов, отчёты | 📋 Planned |
+| 4 | Расписание и домашние задания | Занятия, ДЗ, напоминания через backend | ✅ Done (MVP) |
+| 5 | Веб-интерфейс | Фронтенд для ученика и преподавателя | ✅ Done |
+| 6 | Прогресс и аналитика | Агрегация, отчёты, обогащение LLM-контекста | 🚧 Частично |
 
-Детальный ход работ по product-итерациям — [docs/tasks/tasklist-backend.md](docs/tasks/tasklist-backend.md). Слой данных (ORM, миграции, тесты PostgreSQL) — [docs/tasks/tasklist-database.md](docs/tasks/tasklist-database.md) (5 итераций, ✅ Done). **Итерация 3** (персонализированный диалог) закрыта: бот — тонкий клиент через POST /v1/dialogue/message, история и контекст (занятия, ДЗ) сохраняются в PostgreSQL. Детали — [tasklist бота](docs/tasks/tasklist-bot-iteration-3-personalized-dialog.md).
+Детализация по областям: [backend](docs/tasks/tasklist-backend.md), [frontend](docs/tasks/tasklist-frontend.md), [слой данных](docs/tasks/tasklist-database.md) (✅ Done). **Итерация 3:** бот — тонкий клиент (`POST /v1/dialogue/message`), история и контекст в PostgreSQL — [tasklist бота](docs/tasks/tasklist-bot-iteration-3-personalized-dialog.md).
 
 ## Документация
 
@@ -64,6 +66,8 @@ graph TD
 - [Конвенции HTTP API](docs/api-conventions.md)
 - [Дорожная карта](docs/plan.md)
 - [Задачи backend](docs/tasks/tasklist-backend.md)
+- [Задачи frontend (веб)](docs/tasks/tasklist-frontend.md)
+- [Требования к UI (спецификация экранов)](docs/spec/frontend-requirements.md)
 - [Задачи: слой данных](docs/tasks/tasklist-database.md)
 
 ## Быстрый старт (бот)
@@ -129,8 +133,22 @@ make backend-test            # pytest backend/tests -v (PostgreSQL ttlg_test, LL
 make bot-test                # pytest tests/ — интеграция BackendClient (SQLite, без Docker)
 make lint                    # ruff check (src, backend, тесты, Alembic)
 make format                  # ruff format
-make check                   # lint + backend-test + bot-test (удобно перед PR)
+make check                   # lint + backend-test + bot-test + frontend-lint (удобно перед PR)
 ```
+
+## Frontend (Next.js)
+
+Каталог: `frontend/`. Менеджер пакетов: **pnpm** (workspace в корне репозитория).
+
+```bash
+pnpm install                 # зависимости workspace (в т.ч. frontend)
+make frontend-dev            # dev-сервер (см. вывод в терминале, обычно http://127.0.0.1:3000)
+make frontend-build          # production-сборка
+make frontend-lint           # ESLint
+make frontend-test           # Vitest (unit + integration, см. frontend/vitest.config.ts)
+```
+
+Для работы UI нужен запущенный backend и корректный `BACKEND_URL` / авторизация — см. [docs/tech/api-contracts.md](docs/tech/api-contracts.md) и `.env.example`.
 
 ### OpenAPI
 

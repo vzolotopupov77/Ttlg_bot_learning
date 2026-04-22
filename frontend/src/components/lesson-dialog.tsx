@@ -160,11 +160,15 @@ export function LessonDialog({
   }, [open, mode, editSyncKey])
 
   useEffect(() => {
-    if (!open || mode !== "edit" || !lesson) {
+    if (!open || mode !== "edit") {
+      return
+    }
+    const lessonId = lesson?.id
+    if (!lessonId) {
       return
     }
     let cancelled = false
-    void getLessonAction(lesson.id).then((data) => {
+    void getLessonAction(lessonId).then((data) => {
       if (!cancelled && data) {
         setNotes(data.notes ?? "")
         setLessonStatus(data.status)

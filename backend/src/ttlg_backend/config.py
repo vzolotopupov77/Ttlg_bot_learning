@@ -51,11 +51,11 @@ class Settings(BaseSettings):
 
     # Сид преподавателя (backend/scripts/seed.py); читаются из .env
     teacher_name: str = Field(
-        default="Преподаватель",
+        default="Владимир",
         description="Отображаемое имя учителя при make backend-db-seed",
     )
     teacher_email: str = Field(
-        default="teacher@local.dev",
+        default="vzolotoy@mail.ru",
         description="Email для POST /v1/auth/login после сида",
     )
     teacher_default_password: SecretStr | None = Field(

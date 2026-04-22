@@ -1,151 +1,131 @@
 # Дорожная карта
 
+**Актуализация:** 2026-04-22 — приведено в соответствие с репозиторием (закрытый MVP веб-клиента, текущий backend API).
+
 ## Организация работ
 
-`plan.md` фиксирует высокоуровневую последовательность итераций по всей системе. Каждая итерация соответствует одному файлу `tasklist-<area>-iteration-<n>-<slug>.md` в `docs/tasks/`. Детальная декомпозиция на задачи и артефакты — только внутри соответствующего tasklist'а и папок итерации.
+`plan.md` задаёт **продуктовые** итерации (что должно появиться в системе). Детальная декомпозиция — в **tasklist** по областям:
+
+| Область | Основной tasklist | Примечание |
+|---------|-------------------|------------|
+| Бот | [tasklist-bot-iteration-1-basic-bot.md](tasks/tasklist-bot-iteration-1-basic-bot.md), [tasklist-bot-iteration-3-personalized-dialog.md](tasks/tasklist-bot-iteration-3-personalized-dialog.md) | Итерации плана 1 и 3 |
+| Backend (ядро) | [tasklist-backend.md](tasks/tasklist-backend.md), [tasklist-backend-iteration-2-core.md](tasks/tasklist-backend-iteration-2-core.md) | Итерация плана 2 + ежедневные задачи |
+| Frontend (веб) | **[tasklist-frontend.md](tasks/tasklist-frontend.md)** | Итерации **0–8** (от требований до тестов); единый файл |
+| Черновики расширений | [tasklist-backend-iteration-4-schedule-hw.md](tasks/tasklist-backend-iteration-4-schedule-hw.md), [tasklist-backend-iteration-6-progress.md](tasks/tasklist-backend-iteration-6-progress.md), [tasklist-frontend-iteration-5-web.md](tasks/tasklist-frontend-iteration-5-web.md) | Не синхронизированы с фактом; см. примечания внутри файлов |
 
 ## Ключевые особенности плана
 
-**API-first.** Backend — единственное ядро системы; бот и веб — тонкие клиенты. Итерации строятся от ядра наружу: сначала API и домен, потом клиенты.
+**API-first.** Backend — ядро; бот и веб — тонкие клиенты. Сначала контракты и данные, затем клиенты.
 
-**Инкрементальная ценность.** Каждая итерация даёт рабочий артефакт, которым можно пользоваться независимо от следующих этапов. Нет длинных «невидимых» периодов без результата.
+**Инкрементальная ценность.** Каждая итерация даёт проверяемый результат.
 
-**Параллелизация по областям.** Итерации `bot` и `backend` стартуют независимо друг от друга; `frontend` стартует после стабилизации API.
+**Параллелизация по областям.** Бот и backend могли развиваться параллельно; веб опирается на стабильный API (`docs/tech/api-contracts.md`).
 
 ## Легенда статусов
 
-📋 Planned — запланирован · ✅ In Progress — в работе · ✅ Done — завершён
+- 📋 Planned — запланировано, не начато или не доведено
+- 🚧 In Progress — в работе / частично
+- ✅ Done — по текущему объёму MVP выполнено
 
 ---
 
 ## Обзор итераций
 
-
-| Итерация | Название                      | Цель                                        | Статус     | Tasklist                                                                                                 |
-| -------- | ----------------------------- | ------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------- |
-| 1        | Базовый бот с LLM             | Рабочий бот с диалогом через LLM            | ✅ Done     | [tasklist-bot-iteration-1-basic-bot.md](tasks/tasklist-bot-iteration-1-basic-bot.md)                     |
-| 2        | Backend Core                  | FastAPI + PostgreSQL + доменная модель      | ✅ Done     | [tasklist-backend.md](tasks/tasklist-backend.md)                                                         |
-| 3        | Персонализированный диалог    | Бот как тонкий клиент; контекст из БД в LLM | ✅ Done     | [tasklist-bot-iteration-3-personalized-dialog.md](tasks/tasklist-bot-iteration-3-personalized-dialog.md) |
-| 4        | Расписание и домашние задания | Занятия, ДЗ, напоминания через backend      | 📋 Planned | [tasklist-backend-iteration-4-schedule-hw.md](tasks/tasklist-backend-iteration-4-schedule-hw.md)         |
-| 5        | Веб-интерфейс                 | Фронтенд для ученика и преподавателя        | 📋 Planned | [tasklist-frontend-iteration-5-web.md](tasks/tasklist-frontend-iteration-5-web.md)                       |
-| 6        | Прогресс и аналитика          | Агрегация результатов, отчёты               | 📋 Planned | [tasklist-backend-iteration-6-progress.md](tasks/tasklist-backend-iteration-6-progress.md)               |
-
+| № | Название | Цель | Статус | Детализация |
+|---|----------|------|--------|-------------|
+| 1 | Базовый бот с LLM | Рабочий бот с диалогом через LLM | ✅ Done | [tasklist-bot-iteration-1-basic-bot.md](tasks/tasklist-bot-iteration-1-basic-bot.md) |
+| 2 | Backend Core | FastAPI + PostgreSQL + доменная модель | ✅ Done | [tasklist-backend-iteration-2-core.md](tasks/tasklist-backend-iteration-2-core.md), [tasklist-backend.md](tasks/tasklist-backend.md) |
+| 3 | Персонализированный диалог | Бот как тонкий клиент; контекст из БД в LLM | ✅ Done | [tasklist-bot-iteration-3-personalized-dialog.md](tasks/tasklist-bot-iteration-3-personalized-dialog.md) |
+| 4 | Расписание и домашние задания | Занятия, ДЗ, напоминания через backend | ✅ Done (MVP) | Реализовано в API под веб и бота: CRUD занятий, флаги, ДЗ, эндпоинты преподавателя (расписание, напоминания, переносы). Черновик [tasklist-backend-iteration-4-schedule-hw.md](tasks/tasklist-backend-iteration-4-schedule-hw.md) не отражает факт. |
+| 5 | Веб-интерфейс | Фронтенд для ученика и преподавателя | ✅ Done | **[tasklist-frontend.md](tasks/tasklist-frontend.md)** (итерации 0–8). Файл [tasklist-frontend-iteration-5-web.md](tasks/tasklist-frontend-iteration-5-web.md) — устаревший набросок. |
+| 6 | Прогресс и аналитика | Агрегации, отчёты, обогащение контекста LLM | 🚧 Частично | Есть `GET /v1/users/{user_id}/progress`, `GET /v1/students/{id}/stats`, отображение на детальной странице ученика. Нет полного слоя «отчёты/тренды для всех» и доработок из [tasklist-backend-iteration-6-progress.md](tasks/tasklist-backend-iteration-6-progress.md). |
 
 ---
 
-## Итерации
+## Итерации (описание)
 
 ### Итерация 1: Базовый бот с LLM
 
-**Цель:** минимальный рабочий бот, принимающий сообщения ученика и отвечающий через OpenRouter.
+**Статус:** ✅ Done.
+
+**Цель:** минимальный бот: сообщения ученика → ответ через OpenRouter.
 
 **Критерии завершения (DoD):**
 
-- `make run` запускает бота без ошибок
-- `/start` и свободный текст обрабатываются
-- Ответ от LLM (OpenRouter) доходит до пользователя в Telegram
+- Запуск бота без ошибок; `/start` и текст обрабатываются
+- Ответ LLM доходит в Telegram
 - Конфиг через `pydantic-settings` + `.env`; `.env.example` в репо
-- Логирование без токенов и персональных данных
 
-**Связь с tasklist:** [tasklist-bot-iteration-1-basic-bot.md](tasks/tasklist-bot-iteration-1-basic-bot.md)
+**Tasklist:** [tasklist-bot-iteration-1-basic-bot.md](tasks/tasklist-bot-iteration-1-basic-bot.md)
 
-**Полезный результат:** ученик может начать диалог с LLM-ассистентом через Telegram.
-
-**Артефакты:** `bot/`, `pyproject.toml`, `Makefile`, `.env.example`
+**Артефакты:** `src/` (бот), корневой `pyproject.toml`, `Makefile`, `.env.example`
 
 ---
 
 ### Итерация 2: Backend Core
 
-**Цель:** FastAPI-сервис с PostgreSQL и базовыми CRUD-эндпоинтами для доменных сущностей.
+**Статус:** ✅ Done.
 
-⚡ **Параллельность:** можно вести параллельно с Итерацией 1 — независимые компоненты, разные пути в репо.
+**Цель:** FastAPI + PostgreSQL, доменные сущности, базовые API.
 
 **Критерии завершения (DoD):**
 
-- FastAPI запускается через `make run`
-- Схема PostgreSQL: `User`, `Lesson`, `Assignment`, `Progress`, `Dialogue`, `Message`
-- Миграции применяются без ошибок
-- Базовые CRUD-эндпоинты для сущностей доступны и проверены smoke-тестами
-- Конфиг через `pydantic-settings`; `DATABASE_URL` из `.env`
+- Сервис запускается (`make backend-run` и тестовый раннер)
+- Схема и миграции; CRUD и smoke-тесты
+- `DATABASE_URL` и секреты из `.env`
 
-**Связь с tasklist:** [tasklist-backend-iteration-2-core.md](tasks/tasklist-backend-iteration-2-core.md)
+**Tasklist:** [tasklist-backend-iteration-2-core.md](tasks/tasklist-backend-iteration-2-core.md), далее [tasklist-backend.md](tasks/tasklist-backend.md)
 
-**Полезный результат:** backend готов принимать вызовы от клиентов; данные персистентны в PostgreSQL.
-
-**Артефакты:** `backend/`, файлы миграций, ADR (при принятии решений по ORM/миграционному инструменту)
+**Артефакты:** `backend/`, Alembic, `docs/data-model.md`, ADR по стеку
 
 ---
 
 ### Итерация 3: Персонализированный диалог
 
-**Цель:** бот вызывает backend API вместо прямого обращения к LLM; контекст ученика из БД обогащает запрос.
+**Статус:** ✅ Done.
 
-**Статус:** ✅ Done: тонкий клиент, POST /v1/dialogue/message, история и контекст из БД (занятия, ДЗ) в backend реализованы; все 3 задачи tasklist бота закрыты (2026-04-05).
+**Цель:** бот вызывает backend API; контекст занятий и ДЗ в промпте; история в `Dialogue` / `Message`.
 
-**Критерии завершения (DoD):**
-
-- Бот не обращается к LLM напрямую — только через backend API
-- LLM-запрос включает: системную роль + данные ученика (занятия, ДЗ) + вопрос пользователя
-- История диалога сохраняется в `Dialogue` / `Message`
-
-**Связь с tasklist:** [tasklist-bot-iteration-3-personalized-dialog.md](tasks/tasklist-bot-iteration-3-personalized-dialog.md)
-
-**Полезный результат:** ассистент узнает ученика и отвечает персонально, а не обобщённо, хранится история диалога
+**Tasklist:** [tasklist-bot-iteration-3-personalized-dialog.md](tasks/tasklist-bot-iteration-3-personalized-dialog.md)
 
 ---
 
 ### Итерация 4: Расписание и домашние задания
 
-**Цель:** полный цикл управления занятиями и ДЗ: создание через API, смена статусов, автоматические напоминания.
+**Статус:** ✅ Done (MVP по продукту).
 
-⚡ **Параллельность:** `frontend` (Итерация 5) можно начинать после стабилизации API занятий и ДЗ — параллельно с разработкой механизма напоминаний.
+**Цель (изначально):** цикл занятий и ДЗ, напоминания, ответы бота о расписании.
 
-**Критерии завершения (DoD):**
+**Факт:** эндпоинты и модель закрывают сценарии веб-MVP и сопутствующую логику (см. [api-contracts.md](tech/api-contracts.md)): уроки с флагами, ДЗ, панели преподавателя, переносы. Отдельный пошаговый tasklist «итерация 4 backend» не ведётся — см. предупреждение в [tasklist-backend-iteration-4-schedule-hw.md](tasks/tasklist-backend-iteration-4-schedule-hw.md).
 
-- Занятие можно создать, обновить, отметить завершённым через API
-- ДЗ создаётся, ученику приходит напоминание в Telegram
-- Статусы ДЗ (`pending` / `submitted` / `overdue`) переходят корректно
-- Бот отвечает на «что задано?» и «когда занятие?» на основе данных из БД
-
-**Связь с tasklist:** [tasklist-backend-iteration-4-schedule-hw.md](tasks/tasklist-backend-iteration-4-schedule-hw.md)
-
-**Полезный результат:** преподаватель и ученик работают с единым расписанием; напоминания приходят автоматически.
+**Оставшиеся улучшения** (вне закрытого MVP): узкоспециализированные сценарии бота («что задано?» как отдельные хендлеры), политика статусов ДЗ, фоновые напоминания — по необходимости заводятся новыми задачами.
 
 ---
 
 ### Итерация 5: Веб-интерфейс
 
-**Цель:** единый фронтенд для ученика и преподавателя с разделением ролей.
+**Статус:** ✅ Done.
 
-⚡ **Параллельность:** старт возможен после стабилизации API в Итерациях 2–4; разработка фронтенда не блокирует backend.
+**Цель:** единый веб-клиент для `student` и `teacher`.
 
-**Критерии завершения (DoD):**
+**Факт:** реализовано в **[tasklist-frontend.md](tasks/tasklist-frontend.md)** — итерации 0–8 (требования, API для фронта, каркас, календарь, ученики, настройки, расписание ученика, ревью качества, тесты). Спецификация экранов: [spec/frontend-requirements.md](spec/frontend-requirements.md).
 
-- Аутентификация с разделением ролей (`student` / `teacher`)
-- Ученик: расписание, статус ДЗ, история занятий
-- Преподаватель: управление расписанием и ДЗ через веб
-- Оба клиента работают через единый backend API (новые эндпоинты не дублируют бот-логику)
-
-**Связь с tasklist:** [tasklist-frontend-iteration-5-web.md](tasks/tasklist-frontend-iteration-5-web.md)
-
-**Полезный результат:** преподаватель получает полноценный интерфейс управления; ученик — веб-доступ к прогрессу и расписанию.
-
-**Артефакты:** `frontend/`, `docs/tasks/tasklist-frontend-iteration-5-web.md`
+**Артефакты:** `frontend/`, Vitest + MSW, документация в `docs/tasks/impl/frontend/`.
 
 ---
 
 ### Итерация 6: Прогресс и аналитика
 
-**Цель:** агрегация прогресса ученика за период; сводные отчёты для преподавателя.
+**Статус:** 🚧 Частично.
 
-**Критерии завершения (DoD):**
+**Цель:** агрегации за период, отчёты, обогащение LLM.
 
-- `Progress` рассчитывается автоматически за заданный период
-- Преподаватель видит сводку по ученику: занятия, ДЗ, тренды
-- Ученик видит свой прогресс в боте и в веб
-- LLM-контекст обогащается данными прогресса при формировании ответа
+**Факт:** частично — прогресс/статы по ученику в API и на UI детальной карточки; общие отчёты, тренды, расширенный LLM-контекст — **не закрыты**. Ориентир по будущим задачам: [tasklist-backend-iteration-6-progress.md](tasks/tasklist-backend-iteration-6-progress.md) (требует пересмотра под факт).
 
-**Связь с tasklist:** [tasklist-backend-iteration-6-progress.md](tasks/tasklist-backend-iteration-6-progress.md)
+---
 
-**Полезный результат:** объективная картина успеваемости доступна обеим сторонам; данные служат мотивацией ученику и инструментом анализа преподавателю.
+## Следующие шаги (вне закрытого MVP)
+
+1. Завершить или переписать **итерацию 6** в tasklist'ах под реальные приоритеты (отчёты, бот, LLM).
+2. При необходимости **архивировать или удалить** устаревшие черновики: `tasklist-frontend-iteration-5-web.md`, несинхронизированные строки в `tasklist-backend-iteration-4-schedule-hw.md`.
+3. Новые продуктовые цели — **новая строка** в таблице обзора и новый tasklist/итерация по правилам в [`.cursor/rules/workflow.mdc`](../.cursor/rules/workflow.mdc).
