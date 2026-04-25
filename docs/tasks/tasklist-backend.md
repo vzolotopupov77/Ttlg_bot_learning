@@ -19,7 +19,7 @@
 
 > Держать в актуальном состоянии: `docs/tech/api-contracts.md`, `docs/data-model.md`, `.env.example`, `docs/vision.md`. При добавлении нового эндпоинта или изменении схемы — обновить соответствующий артефакт в той же задаче.
 
-Дорожная карта продукта — [plan.md](../plan.md). **Итерации 4–6 плана:** по факту большая часть расписания/ДЗ уже в текущем API (см. plan.md); черновики [tasklist-backend-iteration-4-schedule-hw.md](tasklist-backend-iteration-4-schedule-hw.md) и [tasklist-backend-iteration-6-progress.md](tasklist-backend-iteration-6-progress.md) не синхронизированы с репозиторием — использовать как идеи, не как статус.
+Дорожная карта продукта — [plan.md](../plan.md). **Итерация 4 плана:** MVP расписания/ДЗ закрыт в текущем API; краткая заметка и ссылки — [tasklist-backend-iteration-4-schedule-hw.md](tasklist-backend-iteration-4-schedule-hw.md). **Итерация 6:** частично в коде; [tasklist-backend-iteration-6-progress.md](tasklist-backend-iteration-6-progress.md) — черновик идей, не статус репозитория.
 
 ## Легенда статусов
 
@@ -33,7 +33,7 @@
 |------------------|----------------------------|
 | [Итерация 2: Backend Core](../plan.md#итерация-2-backend-core) | Этапы 1–6, задачи 01–16 |
 | [Итерация 3: Персонализированный диалог](../plan.md#итерация-3-персонализированный-диалог) | Задачи 13 (контекст), 17–18 (бот через API) |
-| [Итерация 4: Расписание и ДЗ](../plan.md#итерация-4-расписание-и-домашние-задания) | По продукту закрыто MVP в текущем API; черновик tasklist-backend-iteration-4 не актуален |
+| [Итерация 4: Расписание и ДЗ](../plan.md#итерация-4-расписание-и-домашние-задания) | MVP в API; [tasklist-backend-iteration-4-schedule-hw.md](tasklist-backend-iteration-4-schedule-hw.md) — якорь и ссылки на контракты |
 | [Итерация 5: Веб](../plan.md#итерация-5-веб-интерфейс) | [tasklist-frontend.md](tasklist-frontend.md) |
 | [Итерация 6: Прогресс](../plan.md#итерация-6-прогресс-и-аналитика) | Частично (stats/progress API + UI); tasklist-backend-iteration-6 — черновик |
 

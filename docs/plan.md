@@ -11,7 +11,8 @@
 | Бот | [tasklist-bot-iteration-1-basic-bot.md](tasks/tasklist-bot-iteration-1-basic-bot.md), [tasklist-bot-iteration-3-personalized-dialog.md](tasks/tasklist-bot-iteration-3-personalized-dialog.md) | Итерации плана 1 и 3 |
 | Backend (ядро) | [tasklist-backend.md](tasks/tasklist-backend.md), [tasklist-backend-iteration-2-core.md](tasks/tasklist-backend-iteration-2-core.md) | Итерация плана 2 + ежедневные задачи |
 | Frontend (веб) | **[tasklist-frontend.md](tasks/tasklist-frontend.md)** | Итерации **0–8** (от требований до тестов); единый файл |
-| Черновики расширений | [tasklist-backend-iteration-4-schedule-hw.md](tasks/tasklist-backend-iteration-4-schedule-hw.md), [tasklist-backend-iteration-6-progress.md](tasks/tasklist-backend-iteration-6-progress.md), [tasklist-frontend-iteration-5-web.md](tasks/tasklist-frontend-iteration-5-web.md) | Не синхронизированы с фактом; см. примечания внутри файлов |
+| Черновик расширений | [tasklist-backend-iteration-6-progress.md](tasks/tasklist-backend-iteration-6-progress.md) | Не синхронизирован с фактом; см. примечание в файле |
+| Заглушка (ит. 4 плана) | [tasklist-backend-iteration-4-schedule-hw.md](tasks/tasklist-backend-iteration-4-schedule-hw.md) | MVP закрыт в API; файл — краткая ссылка на контракты |
 
 ## Ключевые особенности плана
 
@@ -36,8 +37,8 @@
 | 1 | Базовый бот с LLM | Рабочий бот с диалогом через LLM | ✅ Done | [tasklist-bot-iteration-1-basic-bot.md](tasks/tasklist-bot-iteration-1-basic-bot.md) |
 | 2 | Backend Core | FastAPI + PostgreSQL + доменная модель | ✅ Done | [tasklist-backend-iteration-2-core.md](tasks/tasklist-backend-iteration-2-core.md), [tasklist-backend.md](tasks/tasklist-backend.md) |
 | 3 | Персонализированный диалог | Бот как тонкий клиент; контекст из БД в LLM | ✅ Done | [tasklist-bot-iteration-3-personalized-dialog.md](tasks/tasklist-bot-iteration-3-personalized-dialog.md) |
-| 4 | Расписание и домашние задания | Занятия, ДЗ, напоминания через backend | ✅ Done (MVP) | Реализовано в API под веб и бота: CRUD занятий, флаги, ДЗ, эндпоинты преподавателя (расписание, напоминания, переносы). Черновик [tasklist-backend-iteration-4-schedule-hw.md](tasks/tasklist-backend-iteration-4-schedule-hw.md) не отражает факт. |
-| 5 | Веб-интерфейс | Фронтенд для ученика и преподавателя | ✅ Done | **[tasklist-frontend.md](tasks/tasklist-frontend.md)** (итерации 0–8). Файл [tasklist-frontend-iteration-5-web.md](tasks/tasklist-frontend-iteration-5-web.md) — устаревший набросок. |
+| 4 | Расписание и домашние задания | Занятия, ДЗ, напоминания через backend | ✅ Done (MVP) | Реализовано в API под веб и бота: CRUD занятий, флаги, ДЗ, эндпоинты преподавателя (расписание, напоминания, переносы). См. [tasklist-backend-iteration-4-schedule-hw.md](tasks/tasklist-backend-iteration-4-schedule-hw.md) (якорь + ссылки на контракты). |
+| 5 | Веб-интерфейс | Фронтенд для ученика и преподавателя | ✅ Done | **[tasklist-frontend.md](tasks/tasklist-frontend.md)** (итерации 0–8). |
 | 6 | Прогресс и аналитика | Агрегации, отчёты, обогащение контекста LLM | 🚧 Частично | Есть `GET /v1/users/{user_id}/progress`, `GET /v1/students/{id}/stats`, отображение на детальной странице ученика. Нет полного слоя «отчёты/тренды для всех» и доработок из [tasklist-backend-iteration-6-progress.md](tasks/tasklist-backend-iteration-6-progress.md). |
 
 ---
@@ -96,7 +97,7 @@
 
 **Цель (изначально):** цикл занятий и ДЗ, напоминания, ответы бота о расписании.
 
-**Факт:** эндпоинты и модель закрывают сценарии веб-MVP и сопутствующую логику (см. [api-contracts.md](tech/api-contracts.md)): уроки с флагами, ДЗ, панели преподавателя, переносы. Отдельный пошаговый tasklist «итерация 4 backend» не ведётся — см. предупреждение в [tasklist-backend-iteration-4-schedule-hw.md](tasks/tasklist-backend-iteration-4-schedule-hw.md).
+**Факт:** эндпоинты и модель закрывают сценарии веб-MVP и сопутствующую логику (см. [api-contracts.md](tech/api-contracts.md)): уроки с флагами, ДЗ, панели преподавателя, переносы. Краткая заметка и ссылки: [tasklist-backend-iteration-4-schedule-hw.md](tasks/tasklist-backend-iteration-4-schedule-hw.md).
 
 **Оставшиеся улучшения** (вне закрытого MVP): узкоспециализированные сценарии бота («что задано?» как отдельные хендлеры), политика статусов ДЗ, фоновые напоминания — по необходимости заводятся новыми задачами.
 
@@ -127,5 +128,4 @@
 ## Следующие шаги (вне закрытого MVP)
 
 1. Завершить или переписать **итерацию 6** в tasklist'ах под реальные приоритеты (отчёты, бот, LLM).
-2. При необходимости **архивировать или удалить** устаревшие черновики: `tasklist-frontend-iteration-5-web.md`, несинхронизированные строки в `tasklist-backend-iteration-4-schedule-hw.md`.
-3. Новые продуктовые цели — **новая строка** в таблице обзора и новый tasklist/итерация по правилам в [`.cursor/rules/workflow.mdc`](../.cursor/rules/workflow.mdc).
+2. Новые продуктовые цели — **новая строка** в таблице обзора и новый tasklist/итерация по правилам в [`.cursor/rules/workflow.mdc`](../.cursor/rules/workflow.mdc).

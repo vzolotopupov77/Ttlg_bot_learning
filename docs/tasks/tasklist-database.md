@@ -713,6 +713,6 @@ Telegram: `/start` и вопрос → ответ из backend. `make backend-db
 |------|----------|
 | Расписание, ДЗ, напоминания | [tasklist-backend-iteration-4-schedule-hw.md](tasklist-backend-iteration-4-schedule-hw.md) |
 | Прогресс и аналитика | [tasklist-backend-iteration-6-progress.md](tasklist-backend-iteration-6-progress.md) |
-| Веб-интерфейс | [tasklist-frontend-iteration-5-web.md](tasklist-frontend-iteration-5-web.md) |
+| Веб-интерфейс | [tasklist-frontend.md](tasklist-frontend.md) |
 
 При появлении новых команд обслуживания БД — обновлять `Makefile` и `docs/tech/db-guide.md`.

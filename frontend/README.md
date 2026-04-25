@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend — веб-клиент TTLG
 
-## Getting Started
+Next.js 16 приложение для ученика и преподавателя. Тонкий клиент над backend API.
 
-First, run the development server:
+## Быстрый старт
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Из корня репозитория
+cp frontend/.env.local.example frontend/.env.local   # NEXT_PUBLIC_API_URL, AUTH_SECRET
+pnpm install                                          # установить зависимости
+
+make backend-run       # в отдельном терминале — нужен работающий backend
+make frontend-dev      # dev-сервер → http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Для полной работы потребуется запущенный backend с заполненной БД — см. [корневой README](../README.md#backend-fastapi).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Переменные окружения
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Скопируйте `.env.local.example` → `.env.local` (файл не коммитить):
 
-## Learn More
+| Переменная | Описание |
+|------------|----------|
+| `NEXT_PUBLIC_API_URL` | URL backend API, по умолчанию `http://localhost:8000` |
+| `AUTH_SECRET` | JWT-секрет, должен совпадать с `SECRET_KEY` в backend `.env` |
+| `NEXT_PUBLIC_SITE_URL` | Базовый URL фронта, по умолчанию `http://localhost:3000` |
 
-To learn more about Next.js, take a look at the following resources:
+## Команды
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+make frontend-dev      # dev-сервер с hot reload
+make frontend-build    # production-сборка
+make frontend-lint     # ESLint
+make frontend-test     # Vitest (unit + integration с MSW)
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Или напрямую через pnpm:
 
-## Deploy on Vercel
+```bash
+pnpm --filter frontend dev
+pnpm --filter frontend test
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Структура
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+frontend/src/
+├── app/               # Next.js App Router
+│   ├── (auth)/        # страницы входа/выхода
+│   ├── (app)/         # защищённые страницы (dashboard, students, schedule…)
+│   └── api/           # Route Handlers (proxy к backend)
+├── components/        # UI-компоненты (shadcn/ui + кастомные)
+└── lib/               # api-клиент, типы, утилиты, константы
+```
+
+## Стек
+
+- **Next.js 16**, **React 19**, **TypeScript**
+- **Tailwind CSS 4**, **shadcn/ui** (Base UI + Radix)
+- **Vitest** + **Testing Library** + **MSW** для тестов
+- **react-hook-form** + **Zod** для форм
+- **pnpm** (workspace в корне репо)
+
+## Документация
+
+- [Требования к UI (спецификация экранов)](../docs/spec/frontend-requirements.md)
+- [HTTP API контракты](../docs/tech/api-contracts.md)
+- [Задачи frontend](../docs/tasks/tasklist-frontend.md)

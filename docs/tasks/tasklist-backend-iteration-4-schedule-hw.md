@@ -1,22 +1,11 @@
 # Backend · Итерация 4: Расписание и домашние задания
 
-> **Черновик, не синхронизирован с репозиторием.** По продукту MVP расписания/ДЗ и связанный API уже закрыты; см. [plan.md](../plan.md) (итерация 4) и [api-contracts.md](../tech/api-contracts.md). Таблицу задач ниже использовать только как идеи для будущих доработок.
+**Статус по продукту:** MVP закрыт в текущем API (см. [plan.md](../plan.md), итерация 4).
 
-## Обзор
+Этот файл оставлен как **якорь** для ссылок из плана и tasklist’ов. Детализация контрактов и сценариев — в [api-contracts.md](../tech/api-contracts.md) и [data-model.md](../data-model.md); сквозная декомпозиция backend — [tasklist-backend.md](tasklist-backend.md).
 
-Полный цикл управления занятиями и домашними заданиями: создание и обновление через API, автоматическая смена статусов ДЗ, напоминания ученику в Telegram. Бот получает способность корректно отвечать на вопросы о расписании и ДЗ.
+**Возможные доработки вне закрытого MVP** (заводить отдельными задачами при необходимости):
 
-## Легенда статусов
-
-- 📋 Planned — Запланирован
-- 🚧 In Progress — В работе
-- ✅ Done — Завершён
-
-## Список задач
-
-| Задача | Описание | Статус | Документы |
-|--------|----------|--------|-----------|
-| 01 | API управления занятиями (create / update / complete) | 📋 Planned | [план](impl/backend/iteration-4-schedule-hw/tasks/task-01-lesson-api/plan.md) \| [summary](impl/backend/iteration-4-schedule-hw/tasks/task-01-lesson-api/summary.md) |
-| 02 | API управления ДЗ и смена статусов | 📋 Planned | [план](impl/backend/iteration-4-schedule-hw/tasks/task-02-hw-api/plan.md) \| [summary](impl/backend/iteration-4-schedule-hw/tasks/task-02-hw-api/summary.md) |
-| 03 | Сервис напоминаний (триггер из backend → Telegram) | 📋 Planned | [план](impl/backend/iteration-4-schedule-hw/tasks/task-03-reminders/plan.md) \| [summary](impl/backend/iteration-4-schedule-hw/tasks/task-03-reminders/summary.md) |
-| 04 | Хендлеры бота: «что задано?», «когда занятие?» | 📋 Planned | [план](impl/backend/iteration-4-schedule-hw/tasks/task-04-bot-handlers/plan.md) \| [summary](impl/backend/iteration-4-schedule-hw/tasks/task-04-bot-handlers/summary.md) |
+- отдельные хендлеры бота под формулировки «что задано?», «когда занятие?»;
+- уточнение политики статусов ДЗ и автоматических переходов;
+- фоновые/периодические напоминания, если текущего триггера недостаточно.
