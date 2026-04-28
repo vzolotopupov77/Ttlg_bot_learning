@@ -13,3 +13,4 @@ build/
 !.cursor/agents/
 !.cursor/agents/**
 node_modules
+.coverage

@@ -27,6 +27,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+      # Запись cache-to: type=gha (BuildKit → GitHub Actions cache)
+      actions: write
 
     strategy:
       fail-fast: false
@@ -43,8 +45,6 @@ jobs:
           - service: frontend
             image: ttlg-frontend
             dockerfile: devops/frontend/Dockerfile
-            build-args: |
-              NEXT_PUBLIC_API_URL=http://localhost:8000
 
     steps:
       - name: Checkout
@@ -71,7 +71,9 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
 
-      - name: Build and push
+      # build-args передаём только для frontend — пустой matrix.build-args ломал docker/build-push-action
+      - name: Build and push (backend, bot)
+        if: matrix.service != 'frontend'
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -79,6 +81,19 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: ${{ matrix.build-args }}
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}
+
+      - name: Build and push (frontend)
+        if: matrix.service == 'frontend'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          dockerfile: ${{ matrix.dockerfile }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=http://localhost:8000
           cache-from: type=gha,scope=${{ matrix.service }}
           cache-to: type=gha,mode=max,scope=${{ matrix.service }}
