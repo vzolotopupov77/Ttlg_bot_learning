@@ -71,6 +71,8 @@ graph TD
 - [HTTP API: контракты](docs/tech/api-contracts.md)
 - [Конвенции HTTP API](docs/api-conventions.md)
 - [Дорожная карта](docs/plan.md)
+- [Запуск в Docker (полный стек)](docs/how-to-docker.md)
+- [Задачи DevOps](docs/tasks/tasklist-devops.md)
 - [Задачи backend](docs/tasks/tasklist-backend.md)
 - [Задачи frontend (веб)](docs/tasks/tasklist-frontend.md)
 - [Требования к UI (спецификация экранов)](docs/spec/frontend-requirements.md)
@@ -88,16 +90,33 @@ graph TD
 | **Node.js** | 20 LTS | [nodejs.org](https://nodejs.org/) |
 | **pnpm** | 9+ | `npm install -g pnpm` (или [pnpm.io](https://pnpm.io/installation)) |
 
-> **Windows:** все `make`-команды выполняются в Git Bash или WSL. В PowerShell команды из Makefile не работают — используйте их раскрытые эквиваленты из `Makefile`.
+> **Windows / PowerShell:**  
+> - Вызывайте **`make`**, а не `makefile` — второе слово в PowerShell воспринимается как имя программы; файл сценария называется `Makefile`, утилита — **GNU Make** (`make`), её нужно [установить и добавить в PATH](https://community.chocolatey.org/packages/make) или использовать среду, где `make` уже есть (часто **Git Bash**).  
+> - Список целей без установленного `make`: из корня репозитория **`.\make-help.cmd`** или `python scripts/make_help.py`.  
+> - `make stack-health` вызывает `python scripts/stack_health.py` (без curl). Прочие рецепты, где нужен POSIX-шелл, удобнее запускать из Git Bash / WSL.
 
 ## Переменные окружения
 
 | Файл | Процессы | Назначение |
 |------|----------|------------|
-| [`.env.example`](.env.example) → `.env` в **корне** | `make run`, `make backend-run`, `make backend-test`, Alembic | `DATABASE_URL`, `SECRET_KEY`, `OPENROUTER_*`, `TELEGRAM_*`, `BACKEND_URL`, `DATABASE_TEST_URL` и др. |
+| [`.env.example`](.env.example) → `.env` в **корне** | `make run`, `make backend-run`, `make backend-test`, Alembic, **Docker Compose** | `DATABASE_URL`, `SECRET_KEY`, `AUTH_SECRET` (как у `SECRET_KEY` для JWT во frontend), `OPENROUTER_*`, `TELEGRAM_*`, `BACKEND_URL`, `DATABASE_TEST_URL` и др. |
 | [`frontend/.env.local.example`](frontend/.env.local.example) → `frontend/.env.local` | Next.js | `NEXT_PUBLIC_API_URL`, `AUTH_SECRET` и публичные URL для клиента |
 
 Копирование: `cp .env.example .env` и `cp frontend/.env.local.example frontend/.env.local`.
+
+## Docker / полный стек
+
+Поднять **PostgreSQL + backend + бот + frontend** в контейнерах: корневой [`docker-compose.yml`](docker-compose.yml), Dockerfile в [`devops/`](devops/README.md).
+
+```bash
+cp .env.example .env   # в т.ч. AUTH_SECRET = тот же секрет, что SECRET_KEY
+make stack-up          # сборка образов и запуск
+make stack-migrate     # Alembic в одноразовом контейнере backend
+```
+
+Справка по переменным, сетям и troubleshooting: **[docs/how-to-docker.md](docs/how-to-docker.md)**. Список задач DevOps: [docs/tasks/tasklist-devops.md](docs/tasks/tasklist-devops.md).
+
+Ручной **продуктовый смоук** на полном стеке в Docker зафиксирован **2026-04-27** — таблица проверок: [docs/how-to-docker.md — «Ручная проверка зафиксировано»](docs/how-to-docker.md#ручная-проверка-зафиксировано).
 
 ## Быстрый старт (бот)
 

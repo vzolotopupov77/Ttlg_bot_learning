@@ -1,0 +1,24 @@
+# Compose override: заменяет локальную сборку (build:) на образы из GHCR.
+#
+# Использование:
+#   docker compose -f docker-compose.yml -f docker-compose.ghcr.yml pull
+#   docker compose -f docker-compose.yml -f docker-compose.ghcr.yml up
+#
+# Образы публикуются пайплайном .github/workflows/docker-publish.yml.
+# По умолчанию тег — latest (ветка main). Для конкретного релиза задайте:
+#   GHCR_TAG=v1.2.3 docker compose -f docker-compose.yml -f docker-compose.ghcr.yml pull
+#
+# Логин в GHCR (однократно, если образы приватные):
+#   echo $GITHUB_TOKEN | docker login ghcr.io -u <github-user> --password-stdin
+
+x-ghcr-owner: &ghcr-owner ghcr.io/vzolotopupov77
+
+services:
+  backend:
+    image: "${GHCR_OWNER:-ghcr.io/vzolotopupov77}/ttlg-backend:${GHCR_TAG:-latest}"
+
+  bot:
+    image: "${GHCR_OWNER:-ghcr.io/vzolotopupov77}/ttlg-bot:${GHCR_TAG:-latest}"
+
+  frontend:
+    image: "${GHCR_OWNER:-ghcr.io/vzolotopupov77}/ttlg-frontend:${GHCR_TAG:-latest}"

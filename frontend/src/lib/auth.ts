@@ -2,7 +2,7 @@ import { cache } from "react"
 
 import { cookies } from "next/headers"
 
-import { ACCESS_TOKEN_COOKIE, getApiUrl } from "@/lib/constants"
+import { ACCESS_TOKEN_COOKIE, getServerApiUrl } from "@/lib/constants"
 
 export type UserPublic = {
   id: string
@@ -24,7 +24,7 @@ export const getUser = cache(async (): Promise<UserPublic | null> => {
   if (!session) {
     return null
   }
-  const res = await fetch(`${getApiUrl()}/v1/auth/me`, {
+  const res = await fetch(`${getServerApiUrl()}/v1/auth/me`, {
     headers: { Cookie: `${ACCESS_TOKEN_COOKIE}=${session.token}` },
     cache: "no-store",
   })

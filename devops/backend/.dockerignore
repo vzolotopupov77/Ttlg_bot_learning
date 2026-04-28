@@ -1,0 +1,28 @@
+# Контекст — корень репозитория. Исключаем лишнее для backend-образа.
+.git
+.github
+.cursor
+.agents
+.vscode
+**/__pycache__
+**/*.py[cod]
+**/.pytest_cache
+**/.ruff_cache
+.coverage
+htmlcov
+*.db
+.env
+.env.*
+!.env.example
+
+# Другие сервисы и фронт
+frontend
+src
+tests
+docs
+devops
+
+# Backend: не нужны для runtime-образа
+backend/tests
+backend/scripts
+backend/**/*.egg-info

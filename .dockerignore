@@ -1,0 +1,36 @@
+# При `docker compose build` с context: . Docker читает ТОЛЬКО этот файл.
+# Игноры в devops/*/.dockerignore не подхватываются для корневого контекста (см. devops/README.md).
+
+.git
+.github
+.cursor
+.agents
+.vscode
+
+# Node / Next — иначе контекст уходит на гигабайты
+**/node_modules
+**/.next
+**/dist
+
+# Python
+**/__pycache__
+**/*.py[cod]
+**/.pytest_cache
+**/.ruff_cache
+**/.venv
+**/*.egg-info
+
+# Локальные данные и секреты
+*.db
+.coverage
+htmlcov
+.env
+.env.*
+!.env.example
+
+# Не нужны в образах приложений
+docs
+devops
+tests
+backend/tests
+backend/scripts

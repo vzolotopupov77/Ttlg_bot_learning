@@ -1,3 +1,11 @@
+networks:
+  # Только БД + backend (без выхода в интернет у контейнеров в этой сети)
+  db_net:
+    internal: true
+  # Backend, bot, frontend; исходящий трафик нужен боту и LLM
+  edge:
+    driver: bridge
+
 services:
   db:
     image: postgres:16-alpine
@@ -14,6 +22,66 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - db_net
+
+  backend:
+    build:
+      context: .
+      dockerfile: devops/backend/Dockerfile
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://ttlg:ttlg@db:5432/ttlg
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - db_net
+      - edge
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 25s
+
+  bot:
+    build:
+      context: .
+      dockerfile: devops/bot/Dockerfile
+    env_file: .env
+    environment:
+      BACKEND_URL: http://backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - edge
+
+  frontend:
+    build:
+      context: .
+      dockerfile: devops/frontend/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    env_file: .env
+    environment:
+      API_INTERNAL_URL: http://backend:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - edge
 
 volumes:
   ttlg_pg_data:

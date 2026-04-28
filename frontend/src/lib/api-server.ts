@@ -1,6 +1,6 @@
 import { cookies } from "next/headers"
 
-import { ACCESS_TOKEN_COOKIE, getApiUrl } from "@/lib/constants"
+import { ACCESS_TOKEN_COOKIE, getServerApiUrl } from "@/lib/constants"
 import type { ScheduleResponse } from "@/lib/types/teacher-calendar"
 import type { SystemSettings } from "@/lib/types/settings"
 
@@ -10,7 +10,7 @@ export async function serverApiFetch<T>(
 ): Promise<T> {
   const cookieStore = await cookies()
   const token = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value
-  const url = `${getApiUrl()}${path}`
+  const url = `${getServerApiUrl()}${path}`
   const res = await fetch(url, {
     ...init,
     cache: "no-store",

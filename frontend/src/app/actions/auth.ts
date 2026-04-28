@@ -3,7 +3,7 @@
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
-import { ACCESS_TOKEN_COOKIE, getApiUrl } from "@/lib/constants"
+import { ACCESS_TOKEN_COOKIE, getServerApiUrl } from "@/lib/constants"
 
 export type LoginState = { error?: string } | null
 
@@ -57,7 +57,7 @@ export async function loginAction(
     return { error: "Выберите роль" }
   }
 
-  const res = await fetch(`${getApiUrl()}/v1/auth/login`, {
+  const res = await fetch(`${getServerApiUrl()}/v1/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password, role }),

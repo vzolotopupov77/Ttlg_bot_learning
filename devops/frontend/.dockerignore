@@ -1,0 +1,23 @@
+.git
+.github
+.cursor
+.agents
+.vscode
+**/__pycache__
+**/*.py[cod]
+backend
+src
+tests
+docs
+devops
+pyproject.toml
+uv.lock
+pnpm-workspace.yaml
+*.db
+.coverage
+.env
+.env.*
+!.env.example
+# lockfile — корневой pnpm-lock.yaml (не дублировать в frontend/)
+frontend/node_modules
+frontend/.next

@@ -2,7 +2,7 @@
 
 **Назначение:** зафиксировать состояние документации, приоритезировать доработки и отметить закрытые пробелы.
 
-**Обновлено:** 2026-04-25 — P0–P2 (онбординг, архитектура, contributing, AGENTS, README). **CI в репозиторий не добавлялся** (отложено).
+**Обновлено:** 2026-04-27 — **итерация DevOps 1 закрыта** (артефакты + [ручная приёмка](how-to-docker.md#ручная-проверка-зафиксировано)); полный стек — [how-to-docker.md](how-to-docker.md), сводка результатов — [tasklist-devops.md](tasks/tasklist-devops.md) (раздел «Результаты итерации 1»). Ранее 2026-04-25 — P0–P2. **CI / GHA в репозиторий не добавлялся** (итерация 2 tasklist — 📋).
 
 ---
 
@@ -18,13 +18,13 @@
 | [frontend/README.md](../frontend/README.md) | Frontend: env, make/pnpm, структура, стек, ссылки | ✅ Актуально | — |
 | `bot/README.md` | — | ❌ Нет (папка `bot/` пустая) | Код бота: `src/ttlg_bot/` — см. [README.md](../README.md), [architecture.md](architecture.md) |
 | [docs/vision.md](vision.md) | Архитектурное видение | ✅ Актуально | — |
-| [docs/plan.md](plan.md) | Дорожная карта | ✅ Актуально (2026-04-22) | Итерация 6 — 🚧 частично (ожидаемо) |
+| [docs/plan.md](plan.md) | Дорожная карта | ✅ Актуально (2026-04-27) | DevOps итер. 1 закрыта — см. раздел «Результаты итерации 1» в [tasklist-devops](tasks/tasklist-devops.md); продукт итер. 6 — 🚧 частично |
 | [docs/data-model.md](data-model.md) | Модель данных | ✅ Актуально | — |
 | [docs/tech/api-contracts.md](tech/api-contracts.md) | HTTP API | ✅ Актуально | — |
 | [.env.example](../.env.example) | Переменные окружения (корень) | ✅ Актуально | — |
 | [frontend/.env.local.example](../frontend/.env.local.example) | Env для Next.js | ✅ Актуально | — |
-| [Makefile](../Makefile) | Команды dev/test/lint/БД/frontend | ✅ Актуально | `check` = без `frontend-test` (см. §6) |
-| [docker-compose.yml](../docker-compose.yml) | Только PostgreSQL | ✅ Актуально | dev-only; prod — см. P3 / vision |
+| [Makefile](../Makefile) | Команды dev/test/lint/БД/frontend + `stack-*` | ✅ Актуально | `check` = без `frontend-test` (см. §6) |
+| [docker-compose.yml](../docker-compose.yml) | PostgreSQL + backend + bot + frontend | ✅ Актуально (2026-04-27) | dev/demo; см. [how-to-docker.md](how-to-docker.md) |
 | [.cursor/rules/conventions.mdc](../.cursor/rules/conventions.mdc) | Конвенции для агентов | ✅ Актуально | — |
 | [.cursor/rules/workflow.mdc](../.cursor/rules/workflow.mdc) | Процесс (Plan, согласования) | ✅ Актуально | **Расхождение с фактом:** в правиле сказано «нет вложенных `tasks/`»; в репо есть `docs/tasks/` — см. §6 |
 | [frontend/AGENTS.md](../frontend/AGENTS.md) | Подсказка AI: Next + проект, `src/`, `make`, MSW, middleware | ✅ Расширено (2026-04-25) | — |
@@ -34,7 +34,10 @@
 | [docs/tech/db-guide.md](tech/db-guide.md) | Справка по БД | ✅ Актуально | — |
 | [docs/api-conventions.md](api-conventions.md) | HTTP-конвенции | ✅ Актуально | — |
 | [docs/spec/frontend-requirements.md](spec/frontend-requirements.md) | UI-спека | ✅ Актуально | — |
-| [docs/adr/](adr/) | ADR 001–004 | ✅ Актуально | — |
+| [docs/adr/](adr/) | ADR 001–005 | ✅ Актуально | ADR-005 — layout `devops/` |
+| [docs/how-to-docker.md](how-to-docker.md) | Запуск полного стека в Docker | ✅ Добавлено (2026-04-27) | — |
+| [docs/tasks/tasklist-devops.md](tasks/tasklist-devops.md) | Очередь DevOps (Compose, GHCR) | ✅ Рабочий материал | — |
+| [devops/README.md](../devops/README.md) | Dockerfile по сервисам | ✅ Добавлено (2026-04-27) | — |
 | [docs/openapi.json](openapi.json) | OpenAPI (экспорт) | ✅ Доп. артефакт | `make openapi-export` |
 | [docs/tasks/](tasks/) | Tasklists, impl | ✅ Рабочие материалы | Онбординг: [onboarding.md](onboarding.md) п.4–5 |
 | `.github/workflows/` | CI | ❌ Нет | Запланировано отдельно — см. P1 |
@@ -49,6 +52,7 @@
 | Настройка окружения | ✅ Есть | Таблица **Переменные окружения** в [README.md](../README.md) |
 | Настройка фронтенд-env | ✅ Есть | `frontend/.env.local` |
 | Запуск БД | ✅ Есть | `make backend-db-up` |
+| Запуск полного стека в Docker | ✅ Есть | `make stack-up`, [how-to-docker.md](how-to-docker.md) |
 | Запуск backend | ✅ Есть | `make backend-run` + [backend/README.md](../backend/README.md) |
 | Запуск frontend | ✅ Есть | `make frontend-dev` + [frontend/README.md](../frontend/README.md) |
 | Запуск бота | ✅ Есть | `make run` (код: `src/ttlg_bot/`) |
@@ -87,7 +91,7 @@
 
 | # | Действие | Зачем |
 |---|----------|--------|
-| 3.1 | Dockerfile’ы + compose full-stack | Деплой/демо без локальной ручной сборки |
+| 3.1 | Dockerfile’ы + compose full-stack | ✅ Закрыто локально (2026-04-27): `devops/`, `docker-compose.yml`, [how-to-docker.md](how-to-docker.md); **GHCR/CI** — см. [tasklist-devops.md](tasks/tasklist-devops.md) |
 | 3.2 | `engines` в [frontend/package.json](../frontend/package.json) (`node`, `pnpm`) | Жёстче зафиксировать версии (удобно под будущий CI) |
 
 ---
