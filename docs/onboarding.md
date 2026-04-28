@@ -62,6 +62,12 @@ make backend-db-test-create
 
 `DATABASE_TEST_URL` в `.env` должен указывать на `ttlg_test` (см. `.env.example`).
 
+<a id="ghcr-docker-stack"></a>
+
+### Полный стек в Docker (GHCR)
+
+Альтернатива запуску сервисов по отдельности: поднять PostgreSQL + backend + бот + frontend из **GitHub Container Registry** (без локальной сборки образов). Пошаговый сценарий, команды `compose` и **результаты ручной проверки (2026-04-28)** — [how-to-docker.md](how-to-docker.md#запуск-с-образами-из-ghcr-без-локальной-сборки) и [§ Ручная проверка GHCR зафиксировано](how-to-docker.md#ручная-проверка-ghcr-зафиксировано).
+
 ---
 
 ## 3. Проверка, что всё работает

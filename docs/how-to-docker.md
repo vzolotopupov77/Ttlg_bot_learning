@@ -137,6 +137,17 @@ GHCR_TAG=v1.2.3 docker compose -f docker-compose.yml -f docker-compose.ghcr.yml 
 > После выхода пайплайна образы видны в разделе **Packages** репозитория на GitHub.
 > Override-файл: [`docker-compose.ghcr.yml`](../docker-compose.ghcr.yml).
 
+### Ручная проверка GHCR зафиксировано
+
+**Дата:** 2026-04-28.
+
+| Шаг проверки | Результат |
+|--------------|-----------|
+| Пайплайн GitHub Actions (`.github/workflows/docker-publish.yml`) | OK |
+| Пакеты в GHCR (`ttlg-backend`, `ttlg-bot`, `ttlg-frontend`) | OK (`pull` возможен без `docker login` — образы **публичные**) |
+| `docker compose -f docker-compose.yml -f docker-compose.ghcr.yml config` | OK (ошибок нет; проверено без предварительного `pull`) |
+| `docker compose … pull` + `up —d` полного стека **без** локального `docker build` | OK (миграции и смоук по сценарию из раздела выше; подтверждено владельцем репозитория) |
+
 ## Дополнительно
 
 - Каталог Dockerfile: [devops/README.md](../devops/README.md)

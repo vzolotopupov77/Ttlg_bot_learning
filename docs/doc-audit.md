@@ -2,7 +2,7 @@
 
 **Назначение:** зафиксировать состояние документации, приоритезировать доработки и отметить закрытые пробелы.
 
-**Обновлено:** 2026-04-27 — **итерация DevOps 1 закрыта** (артефакты + [ручная приёмка](how-to-docker.md#ручная-проверка-зафиксировано)); полный стек — [how-to-docker.md](how-to-docker.md), сводка результатов — [tasklist-devops.md](tasks/tasklist-devops.md) (раздел «Результаты итерации 1»). Ранее 2026-04-25 — P0–P2. **CI / GHA в репозиторий не добавлялся** (итерация 2 tasklist — 📋).
+**Обновлено:** 2026-04-28 — **итерации DevOps 1–2 закрыты:** локальный стек ([how-to-docker.md](how-to-docker.md)), публикация образов в **GHCR** ([tasklist-devops.md](tasks/tasklist-devops.md) — «Результаты итерации 2»), workflow [`.github/workflows/docker-publish.yml`](../.github/workflows/docker-publish.yml). Ранее 2026-04-27 — итерация 1 и P0–P2.
 
 ---
 
@@ -10,7 +10,7 @@
 
 | Файл | Описание | Статус | Проблемы / примечания |
 |------|----------|--------|------------------------|
-| [README.md](../README.md) | Название, архитектура + ссылка на [architecture.md](architecture.md), prereq, env, старт, тесты, `make`, ссылки на `docs/` | ✅ Актуально | — |
+| [README.md](../README.md) | Название, архитектура + ссылка на [architecture.md](architecture.md), prereq, env, старт, тесты, `make`, ссылки на `docs/` | ✅ Актуально (2026-04-28) | Docker §: GHCR + ссылки на смоук 2026-04-27 / 2026-04-28 |
 | [docs/architecture.md](architecture.md) | Технарх: схемы mermaid, компоненты, потоки, ссылки | ✅ Добавлено (2026-04-25) | — |
 | [docs/onboarding.md](onboarding.md) | Пошаговый гайд новичка (6 разделов) | ✅ Добавлено (2026-04-25) | — |
 | [docs/contributing.md](contributing.md) | Ветки, `make check`, коммиты | ✅ Добавлено (2026-04-25) | — |
@@ -18,13 +18,14 @@
 | [frontend/README.md](../frontend/README.md) | Frontend: env, make/pnpm, структура, стек, ссылки | ✅ Актуально | — |
 | `bot/README.md` | — | ❌ Нет (папка `bot/` пустая) | Код бота: `src/ttlg_bot/` — см. [README.md](../README.md), [architecture.md](architecture.md) |
 | [docs/vision.md](vision.md) | Архитектурное видение | ✅ Актуально | — |
-| [docs/plan.md](plan.md) | Дорожная карта | ✅ Актуально (2026-04-27) | DevOps итер. 1 закрыта — см. раздел «Результаты итерации 1» в [tasklist-devops](tasks/tasklist-devops.md); продукт итер. 6 — 🚧 частично |
+| [docs/plan.md](plan.md) | Дорожная карта | ✅ Актуально (2026-04-28) | DevOps итер. 1–2 закрыты — [tasklist-devops](tasks/tasklist-devops.md); продукт итер. 6 — 🚧 частично |
 | [docs/data-model.md](data-model.md) | Модель данных | ✅ Актуально | — |
 | [docs/tech/api-contracts.md](tech/api-contracts.md) | HTTP API | ✅ Актуально | — |
 | [.env.example](../.env.example) | Переменные окружения (корень) | ✅ Актуально | — |
 | [frontend/.env.local.example](../frontend/.env.local.example) | Env для Next.js | ✅ Актуально | — |
 | [Makefile](../Makefile) | Команды dev/test/lint/БД/frontend + `stack-*` | ✅ Актуально | `check` = без `frontend-test` (см. §6) |
-| [docker-compose.yml](../docker-compose.yml) | PostgreSQL + backend + bot + frontend | ✅ Актуально (2026-04-27) | dev/demo; см. [how-to-docker.md](how-to-docker.md) |
+| [docker-compose.yml](../docker-compose.yml) | PostgreSQL + backend + bot + frontend | ✅ Актуально (2026-04-28) | dev/demo; [how-to-docker.md](how-to-docker.md) |
+| [`docker-compose.ghcr.yml`](../docker-compose.ghcr.yml) | Override: образы из GHCR | ✅ Актуально (2026-04-28) | [how-to-docker.md](how-to-docker.md) |
 | [.cursor/rules/conventions.mdc](../.cursor/rules/conventions.mdc) | Конвенции для агентов | ✅ Актуально | — |
 | [.cursor/rules/workflow.mdc](../.cursor/rules/workflow.mdc) | Процесс (Plan, согласования) | ✅ Актуально | **Расхождение с фактом:** в правиле сказано «нет вложенных `tasks/`»; в репо есть `docs/tasks/` — см. §6 |
 | [frontend/AGENTS.md](../frontend/AGENTS.md) | Подсказка AI: Next + проект, `src/`, `make`, MSW, middleware | ✅ Расширено (2026-04-25) | — |
@@ -35,12 +36,12 @@
 | [docs/api-conventions.md](api-conventions.md) | HTTP-конвенции | ✅ Актуально | — |
 | [docs/spec/frontend-requirements.md](spec/frontend-requirements.md) | UI-спека | ✅ Актуально | — |
 | [docs/adr/](adr/) | ADR 001–005 | ✅ Актуально | ADR-005 — layout `devops/` |
-| [docs/how-to-docker.md](how-to-docker.md) | Запуск полного стека в Docker | ✅ Добавлено (2026-04-27) | — |
+| [docs/how-to-docker.md](how-to-docker.md) | Полный стек локально и образы из GHCR | ✅ Актуально (2026-04-28) | Ручные проверки итер. 1 и 2 зафиксированы в документе |
 | [docs/tasks/tasklist-devops.md](tasks/tasklist-devops.md) | Очередь DevOps (Compose, GHCR) | ✅ Рабочий материал | — |
 | [devops/README.md](../devops/README.md) | Dockerfile по сервисам | ✅ Добавлено (2026-04-27) | — |
 | [docs/openapi.json](openapi.json) | OpenAPI (экспорт) | ✅ Доп. артефакт | `make openapi-export` |
 | [docs/tasks/](tasks/) | Tasklists, impl | ✅ Рабочие материалы | Онбординг: [onboarding.md](onboarding.md) п.4–5 |
-| `.github/workflows/` | CI | ❌ Нет | Запланировано отдельно — см. P1 |
+| [.github/workflows/docker-publish.yml](../.github/workflows/docker-publish.yml) | CI: сборка образов → GHCR | ✅ Актуально (2026-04-28) | Триггер: push `main`/теги (`v*.*.*`); это **не** автоматический `make check` на PR — см. P1.1 §4 |
 
 ---
 
@@ -52,14 +53,15 @@
 | Настройка окружения | ✅ Есть | Таблица **Переменные окружения** в [README.md](../README.md) |
 | Настройка фронтенд-env | ✅ Есть | `frontend/.env.local` |
 | Запуск БД | ✅ Есть | `make backend-db-up` |
-| Запуск полного стека в Docker | ✅ Есть | `make stack-up`, [how-to-docker.md](how-to-docker.md) |
+| Запуск полного стека в Docker (локальный `build`) | ✅ Есть | `make stack-up`, [how-to-docker.md](how-to-docker.md) |
+| Запуск стека из образов **GHCR** (без `docker build`) | ✅ Есть | [how-to-docker.md § GHCR](how-to-docker.md#запуск-с-образами-из-ghcr-без-локальной-сборки), [`docker-compose.ghcr.yml`](../docker-compose.ghcr.yml) |
 | Запуск backend | ✅ Есть | `make backend-run` + [backend/README.md](../backend/README.md) |
 | Запуск frontend | ✅ Есть | `make frontend-dev` + [frontend/README.md](../frontend/README.md) |
 | Запуск бота | ✅ Есть | `make run` (код: `src/ttlg_bot/`) |
 | Тесты | ✅ Есть | `make backend-test`, `make bot-test`, `make frontend-test` |
 | Проверка работоспособности | ✅ Есть | `GET /health`, `/docs` — [onboarding.md](onboarding.md) §3 |
 | Качество кода | ✅ Есть | `make lint`, `make format`, `make frontend-lint`, `make check` |
-| CI на push/PR | ❌ | Не автоматизировано — см. бэклог P1 |
+| Автоматизация в CI | ⚠️ Частично | В репо: **сборка и push образов в GHCR** ([`docker-publish.yml`](../.github/workflows/docker-publish.yml)); линт/тесты по push/PR — **нет** ([P1.1 §4](#4-приоритизированный-бэклог)) |
 
 ---
 
@@ -75,7 +77,7 @@
 
 **P2:** [frontend/AGENTS.md](../frontend/AGENTS.md); в [README.md](../README.md) явно указано расположение бота `src/ttlg_bot/`.
 
-> **P1.1 (GitHub Actions** — `make check` на push/PR) **отложено**, в репозиторий не коммитилось; см. §4.
+> **P1.1** (GitHub Actions — `make check` на push/PR) **по-прежнему не настроено**; отдельный workflow [docker-publish.yml](../.github/workflows/docker-publish.yml) публикует **только Docker-образы в GHCR**. См. §4.
 
 ---
 
@@ -91,7 +93,7 @@
 
 | # | Действие | Зачем |
 |---|----------|--------|
-| 3.1 | Dockerfile’ы + compose full-stack | ✅ Закрыто локально (2026-04-27): `devops/`, `docker-compose.yml`, [how-to-docker.md](how-to-docker.md); **GHCR/CI** — см. [tasklist-devops.md](tasks/tasklist-devops.md) |
+| 3.1 | Dockerfile + compose full-stack + **GHCR** | ✅ Закрыто: `devops/`, [`docker-compose.yml`](../docker-compose.yml), [`docker-compose.ghcr.yml`](../docker-compose.ghcr.yml), [how-to-docker.md](how-to-docker.md), workflow [docker-publish.yml](../.github/workflows/docker-publish.yml); сводка [tasklist-devops.md](tasks/tasklist-devops.md) |
 | 3.2 | `engines` в [frontend/package.json](../frontend/package.json) (`node`, `pnpm`) | Жёстче зафиксировать версии (удобно под будущий CI) |
 
 ---

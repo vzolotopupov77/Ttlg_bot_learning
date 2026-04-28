@@ -1,12 +1,9 @@
-# Сборка Docker-образов (backend, bot, frontend) и публикация в GHCR.
+# GHCR — сборка backend, bot, frontend. Подробнее: docs/how-to-docker.md (раздел про GHCR).
 #
-# Триггеры:
-#   - push в ветку main        → теги: latest, sha-<short>
-#   - push тега v*.*.*         → теги: <version>, <major>.<minor>, sha-<short>
-#   - workflow_dispatch        → запуск вручную из UI GitHub Actions
+# Триггеры: push в main или тег `v*.*.*`, ручной запуск (workflow_dispatch).
+# Теги образов: см. шаг «Extract image metadata» (latest, sha-, semver на релизном теге).
 #
-# Образы публикуются в ghcr.io/<owner>/{ttlg-backend,ttlg-bot,ttlg-frontend}.
-# Контекст сборки каждого образа — корень репозитория.
+# Образы: ghcr.io/<owner>/{ttlg-backend,ttlg-bot,ttlg-frontend}; context: корень репозитория.
 
 name: Docker — Build & Push to GHCR
 
@@ -19,16 +16,22 @@ on:
 env:
   REGISTRY: ghcr.io
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-push:
-    name: "${{ matrix.service }}"
-    runs-on: ubuntu-latest
+    name: ${{ matrix.service }}
 
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    # packages — push в GHCR; actions — запись кэша для BuildKit (cache-to type=gha)
     permissions:
+      actions: write
       contents: read
       packages: write
-      # Запись cache-to: type=gha (BuildKit → GitHub Actions cache)
-      actions: write
 
     strategy:
       fail-fast: false
@@ -71,7 +74,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
 
-      # build-args передаём только для frontend — пустой matrix.build-args ломал docker/build-push-action
+      # Два шага: у frontend отдельный build-args (NEXT_PUBLIC_*); для Python-сервисов build-args не задаём.
       - name: Build and push (backend, bot)
         if: matrix.service != 'frontend'
         uses: docker/build-push-action@v5

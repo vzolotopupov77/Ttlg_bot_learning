@@ -11,8 +11,6 @@
 # Логин в GHCR (однократно, если образы приватные):
 #   echo $GITHUB_TOKEN | docker login ghcr.io -u <github-user> --password-stdin
 
-x-ghcr-owner: &ghcr-owner ghcr.io/vzolotopupov77
-
 services:
   backend:
     image: "${GHCR_OWNER:-ghcr.io/vzolotopupov77}/ttlg-backend:${GHCR_TAG:-latest}"

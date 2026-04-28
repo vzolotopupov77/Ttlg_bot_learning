@@ -11,7 +11,7 @@
 | **Telegram-бот** | `src/ttlg_bot/` | Тонкий клиент: long polling, вызовы backend API |
 | **Backend (API)** | `backend/src/ttlg_backend/` | Бизнес-логика, авторизация, LLM, доступ к БД |
 | **Веб-клиент** | `frontend/` | Next.js: ученик и преподаватель через тот же API |
-| **PostgreSQL** | контейнер из корневого `docker-compose.yml` (сервис `db`) | Единое хранилище состояния; полный стек: см. [how-to-docker.md](how-to-docker.md), образы приложений — [devops/README.md](../devops/README.md) |
+| **PostgreSQL** | контейнер из корневого `docker-compose.yml` (сервис `db`) | Единое хранилище состояния; локальная сборка приложений: [how-to-docker.md](how-to-docker.md), образы — [devops/README.md](../devops/README.md). Образы приложений в **GHCR** и запуск без локального `build`: `docker-compose.yml` + [`docker-compose.ghcr.yml`](../docker-compose.ghcr.yml), пайплайн [`.github/workflows/docker-publish.yml`](../.github/workflows/docker-publish.yml). |
 
 > Каталог `bot/` в корне репозитория пустой; код бота живёт в **`src/ttlg_bot/`**.
 

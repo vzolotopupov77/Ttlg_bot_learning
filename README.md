@@ -106,7 +106,7 @@ graph TD
 
 ## Docker / полный стек
 
-Поднять **PostgreSQL + backend + бот + frontend** в контейнерах: корневой [`docker-compose.yml`](docker-compose.yml), Dockerfile в [`devops/`](devops/README.md).
+Поднять **PostgreSQL + backend + бот + frontend** в контейнерах: корневой [`docker-compose.yml`](docker-compose.yml), Dockerfile в [`devops/`](devops/README.md). Собранные образы публикуются в **GHCR** ([`.github/workflows/docker-publish.yml`](.github/workflows/docker-publish.yml)); запуск **без локальной сборки** — [`docker-compose.ghcr.yml`](docker-compose.ghcr.yml) + команды в [how-to-docker.md § GHCR](docs/how-to-docker.md#запуск-с-образами-из-ghcr-без-локальной-сборки).
 
 ```bash
 cp .env.example .env   # в т.ч. AUTH_SECRET = тот же секрет, что SECRET_KEY
@@ -116,7 +116,7 @@ make stack-migrate     # Alembic в одноразовом контейнере 
 
 Справка по переменным, сетям и troubleshooting: **[docs/how-to-docker.md](docs/how-to-docker.md)**. Список задач DevOps: [docs/tasks/tasklist-devops.md](docs/tasks/tasklist-devops.md).
 
-Ручной **продуктовый смоук** на полном стеке в Docker зафиксирован **2026-04-27** — таблица проверок: [docs/how-to-docker.md — «Ручная проверка зафиксировано»](docs/how-to-docker.md#ручная-проверка-зафиксировано).
+Ручной **продуктовый смоук** на полном стеке (локальная сборка) — **2026-04-27**: [how-to-docker — «Ручная проверка зафиксировано»](docs/how-to-docker.md#ручная-проверка-зафиксировано). Проверка **стека из образов GHCR** — **2026-04-28**: [how-to-docker — «Ручная проверка GHCR зафиксировано»](docs/how-to-docker.md#ручная-проверка-ghcr-зафиксировано).
 
 ## Быстрый старт (бот)
 

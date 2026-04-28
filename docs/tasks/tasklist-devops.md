@@ -6,7 +6,7 @@
 
 **Связь с репо:** бот `src/ttlg_bot/`, backend `backend/`, веб `frontend/`; корневой `docker-compose.yml` — полный стек (db + backend + bot + frontend). Продуктовая дорожная карта: [plan.md](../plan.md).
 
-**Актуализация:** 2026-04-27 — итерация 1 (локальный полный стек) выполнена и **подтверждена ручным продуктовым смоуком** (см. [how-to-docker.md — раздел «Ручная проверка зафиксировано»](../how-to-docker.md#ручная-проверка-зафиксировано)); итерация 2 (GHCR/GHA) — 🚧 реализована, ожидает ручного подтверждения (push в main и проверка pull).
+**Актуализация:** 2026-04-28 — итерация 1 выполнена (см. [how-to-docker § Ручная проверка](../how-to-docker.md#ручная-проверка-зафиксировано)); **итерация 2** (GHCR/GHA и запуск из registry) **закрыта** — см. [результаты итерации 2](#результаты-итерации-2-ghcrgha-закрыта) и [how-to-docker § Ручная проверка GHCR](../how-to-docker.md#ручная-проверка-ghcr-зафиксировано).
 
 ## Легенда статусов
 
@@ -35,7 +35,21 @@
 
 **Ручная приёмка:** сборка образов, подъём стека, миграции, `GET /health`, веб UI, продуктовый смоук — таблица в [how-to-docker — «Ручная проверка зафиксировано»](../how-to-docker.md#ручная-проверка-зафиксировано); краткое подтверждение — [docker-review-notes — «Ручной продуктовый смоук»](../tech/docker-review-notes.md#ручной-продуктовый-смоук).
 
-**Дальше:** итерация 2 — задачи **08–10** (GHA → GHCR, compose с `image:`, проверка pull без локального build).
+---
+
+## Результаты итерации 2 (GHCR/GHA, закрыта)
+
+**Дата приёмки:** 2026-04-28.
+
+| Что сделано | Где |
+|-------------|-----|
+| Сборка и push в GHCR | [`.github/workflows/docker-publish.yml`](../../.github/workflows/docker-publish.yml), пакеты в **GitHub → Packages** |
+| Override Compose с `image:` из registry | [`docker-compose.ghcr.yml`](../../docker-compose.ghcr.yml) |
+| Инструкция и теги образов | [how-to-docker.md § GHCR](../how-to-docker.md#запуск-с-образами-из-ghcr-без-локальной-сборки) |
+
+**Ручная приёмка:** пайплайн, образы в GHCR, `compose config`, стек без локального `build` — [how-to-docker — «Ручная проверка GHCR зафиксировано»](../how-to-docker.md#ручная-проверка-ghcr-зафиксировано); кратко — [onboarding.md — полный стек из GHCR](../onboarding.md#ghcr-docker-stack).
+
+---
 
 ## Список задач
 
@@ -57,9 +71,11 @@
 
 | № | Описание | Статус | Документы / примечание |
 |---|----------|--------|-------------------------|
-| 08 | GHA: сборка и публикация в GHCR | 🚧 | [`.github/workflows/docker-publish.yml`](../../.github/workflows/docker-publish.yml) |
-| 09 | Ревью compose для облачных образов (image из registry) | 🚧 | [`docker-compose.ghcr.yml`](../../docker-compose.ghcr.yml), [how-to-docker.md § GHCR](../how-to-docker.md#запуск-с-образами-из-ghcr-без-локальной-сборки) |
-| 10 | Проверка: полный стек на образах из GHCR локально | 📋 | После push в main и появления пакетов в GitHub Packages |
+| 08 | GHA: сборка и публикация в GHCR | ✅ | [`.github/workflows/docker-publish.yml`](../../.github/workflows/docker-publish.yml) |
+| 09 | Ревью compose для облачных образов (image из registry) | ✅ | [`docker-compose.ghcr.yml`](../../docker-compose.ghcr.yml), [how-to-docker.md § GHCR](../how-to-docker.md#запуск-с-образами-из-ghcr-без-локальной-сборки) |
+| 10 | Проверка: полный стек на образах из GHCR локально | ✅ | [how-to-docker § Ручная проверка GHCR](../how-to-docker.md#ручная-проверка-ghcr-зафиксировано) |
+
+**Ручная приёмка итерации 2 (2026-04-28):** см. [how-to-docker.md — «Ручная проверка GHCR зафиксировано»](../how-to-docker.md#ручная-проверка-ghcr-зафиксировано).
 
 ---
 
@@ -279,7 +295,7 @@
 
 > Полноценный CI (lint/test на PR) — **вне** этого tasklist'а, если не сказано иное; фокус — **build + push** образов.
 
-#### Задача 08: Workflow — сборка и публикация образов в GHCR (ит. 2) 📋
+#### Задача 08: Workflow — сборка и публикация образов в GHCR (ит. 2) ✅
 
 ##### Цель
 
@@ -309,7 +325,7 @@
 
 ---
 
-#### Задача 09: Ревью compose для запуска с образами из registry (ит. 2) 📋
+#### Задача 09: Ревью compose для запуска с образами из registry (ит. 2) ✅
 
 ##### Цель
 
@@ -337,7 +353,7 @@ Compose-профиль или **override-файл** (`docker-compose.prod-images
 
 ---
 
-#### Задача 10: Локальная проверка полного стека на образах из GHCR (ит. 2) 📋
+#### Задача 10: Локальная проверка полного стека на образах из GHCR (ит. 2) ✅
 
 ##### Цель
 

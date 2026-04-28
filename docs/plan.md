@@ -1,6 +1,6 @@
 # Дорожная карта
 
-**Актуализация:** 2026-04-27 — добавлена отметка о ручном смоуке локального полного стека в Docker; продуктовые итерации 1–6 без изменений по сравнению с 2026-04-22.
+**Актуализация:** 2026-04-28 — дорожная карта продуктовых итераций 1–6 без изменений содержательно; **DevOps:** итерация 1 — локальный полный стек; **итерация 2** — сборка образов в **GHCR** через GitHub Actions ([`docker-publish.yml`](../.github/workflows/docker-publish.yml)), override [`docker-compose.ghcr.yml`](../docker-compose.ghcr.yml), ручная проверка — [how-to-docker.md § Ручная проверка GHCR зафиксировано](how-to-docker.md#ручная-проверка-ghcr-зафиксировано).
 
 ## Организация работ
 
@@ -8,7 +8,7 @@
 
 | Область | Основной tasklist | Примечание |
 |---------|-------------------|------------|
-| DevOps (Docker, GHCR) | [tasklist-devops.md](tasks/tasklist-devops.md) | Итерация 1: локальный полный стек в Compose — **выполнена**, ручной продуктовый смоук **2026-04-27** ([how-to-docker.md](how-to-docker.md#ручная-проверка-зафиксировано)). Итерация 2 (GHCR/GHA): по [tasklist-devops.md](tasks/tasklist-devops.md) — 📋. |
+| DevOps (Docker, GHCR, GHA) | [tasklist-devops.md](tasks/tasklist-devops.md) | Ит. **1**: локальный полный стек в Compose — ✅; смоук **2026-04-27**. Ит. **2**: образы в **GHCR**, workflow [`.github/workflows/docker-publish.yml`](../.github/workflows/docker-publish.yml), проверка **2026-04-28** ([how-to-docker § GHCR](how-to-docker.md#ручная-проверка-ghcr-зафиксировано)). |
 | Бот | [tasklist-bot-iteration-1-basic-bot.md](tasks/tasklist-bot-iteration-1-basic-bot.md), [tasklist-bot-iteration-3-personalized-dialog.md](tasks/tasklist-bot-iteration-3-personalized-dialog.md) | Итерации плана 1 и 3 |
 | Backend (ядро) | [tasklist-backend.md](tasks/tasklist-backend.md), [tasklist-backend-iteration-2-core.md](tasks/tasklist-backend-iteration-2-core.md) | Итерация плана 2 + ежедневные задачи |
 | Frontend (веб) | **[tasklist-frontend.md](tasks/tasklist-frontend.md)** | Итерации **0–8** (от требований до тестов); единый файл |
